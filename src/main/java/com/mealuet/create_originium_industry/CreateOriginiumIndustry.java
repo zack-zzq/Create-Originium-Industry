@@ -1,6 +1,9 @@
 package com.mealuet.create_originium_industry;
 
-import com.mealuet.create_originium_industry.core.oridust.OriDustTickHandler;
+import com.mealuet.create_originium_industry.config.COIConfig;
+import com.mealuet.create_originium_industry.core.oridust.DustCacheManager;
+import com.mealuet.create_originium_industry.core.oridust.DustDiffusionEngine;
+import com.mealuet.create_originium_industry.core.oridust.PlayerExposureHandler;
 import com.mealuet.create_originium_industry.index.*;
 import com.mojang.logging.LogUtils;
 import com.simibubi.create.foundation.data.CreateRegistrate;
@@ -17,6 +20,7 @@ import net.minecraft.world.level.material.Fluid;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import org.slf4j.Logger;
@@ -34,14 +38,23 @@ public class CreateOriginiumIndustry
     public static final Logger LOGGER = LogUtils.getLogger();
 
     public CreateOriginiumIndustry(IEventBus modEventBus, ModContainer modContainer) {
+        // --- Config ---
+        modContainer.registerConfig(ModConfig.Type.COMMON, COIConfig.COMMON_SPEC);
+
+        // --- Registrate & Deferred Registers ---
         REGISTRATE.registerEventListeners(modEventBus);
         COICreativeTabs.register(modEventBus);
         COIItems.register();
+        COIBlocks.register();
+        COIBlockEntityTypes.register();
         COIFluids.register();
         COIEffects.register(modEventBus);
         COIAttachments.register(modEventBus);
 
-        NeoForge.EVENT_BUS.register(OriDustTickHandler.class);
+        // --- Game Event Handlers ---
+        NeoForge.EVENT_BUS.register(DustCacheManager.class);
+        NeoForge.EVENT_BUS.register(DustDiffusionEngine.class);
+        NeoForge.EVENT_BUS.register(PlayerExposureHandler.class);
 
         modEventBus.addListener(this::addCreative);
     }

@@ -1,5 +1,6 @@
 package com.mealuet.create_originium_industry.core.oridust;
 
+import com.mealuet.create_originium_industry.config.COIConfig;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Mth;
@@ -8,7 +9,6 @@ import org.jetbrains.annotations.NotNull;
 
 public class OriDustData implements INBTSerializable<CompoundTag> {
     private int dustLevel = 0;
-    private static final int MAX_DUST = 10000;
     private static final String NBT_KEY = "DustLevel";
 
     public OriDustData() {}
@@ -18,7 +18,7 @@ public class OriDustData implements INBTSerializable<CompoundTag> {
     }
 
     public void setDustLevel(int level) {
-        this.dustLevel = Mth.clamp(level, 0, MAX_DUST);
+        this.dustLevel = Mth.clamp(level, 0, COIConfig.MAX_DUST_LEVEL.get());
     }
 
     public void addDust(int amount) {

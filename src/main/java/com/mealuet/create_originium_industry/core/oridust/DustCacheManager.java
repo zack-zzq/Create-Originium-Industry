@@ -46,9 +46,12 @@ public class DustCacheManager {
 
     /**
      * Updates the dust level in both the in-memory cache and the persistent chunk attachment.
+     * Value is clamped to [0, maxDustLevel].
      */
     public static void syncDustLevel(ServerLevel level, ChunkPos pos, int newLevel) {
+        int maxDust = COIConfig.MAX_DUST_LEVEL.get();
         if (newLevel < 0) newLevel = 0;
+        if (newLevel > maxDust) newLevel = maxDust;
         dustLevels.put(pos, newLevel);
 
         LevelChunk chunk = level.getChunkSource().getChunkNow(pos.x, pos.z);

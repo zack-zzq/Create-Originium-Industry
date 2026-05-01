@@ -9,13 +9,39 @@
   "item.create_originium_industry.purest_originium": "至纯源石",
   "item.create_originium_industry.originium_dust_sieve": "源石尘滤网",
   "item.create_originium_industry.originium_dust_nozzle": "源石尘分散滤网",
+  "item.create_originium_industry.originium_debug_wand": "源石调试器",
 
   "item.create_originium_industry.molten_originium_bucket": "熔融源石桶",
   "item.create_originium_industry.purest_molten_originium_bucket": "至纯熔融源石桶",
-  "item.create_originium_industry.originium_catalyst_bucket": "源石催化液桶",
+  "item.create_originium_industry.originium_catalyst_bucket": "培养液桶",
   "fluid.create_originium_industry.molten_originium": "熔融源石",
   "fluid.create_originium_industry.purest_molten_originium": "至纯熔融源石",
-  "fluid.create_originium_industry.originium_catalyst": "源石催化液",
+  "fluid.create_originium_industry.originium_catalyst": "培养液",
 
-  "effect.create_originium_industry.ori_dust_sickness": "源石病"
+  "effect.create_originium_industry.ori_dust_sickness": "源石暴露症状",
+
+  "commands.coi_debug.dust.get": "当前区块 [%s, %s] 源石尘浓度: %d",
+  "commands.coi_debug.dust.set": "已将区块 [%s, %s] 源石尘浓度设为: %d",
+  "commands.coi_debug.dust.add": "已向区块 [%s, %s] 增加 %d 源石尘，当前浓度: %d",
+  "commands.coi_debug.dust.clear": "已清空区块 [%s, %s] 源石尘",
+  "commands.coi_debug.dust.scan": "=== 源石尘扫描 (半径 %d) ===",
+  "commands.coi_debug.dust.scan.entry": "  区块 [%s, %s]: %d",
+  "commands.coi_debug.dust.scan.none": "  扫描范围内无源石尘",
+  "commands.coi_debug.exposure.get": "暴露值: %d | 感染值: %d | 当前区块粉尘: %d",
+  "commands.coi_debug.exposure.set": "已将暴露值设为: %d",
+  "commands.coi_debug.infection.set": "已将感染值设为: %d",
+  "commands.coi_debug.reactor.status": "反应炉状态查看（尚未实现，P6 阶段开发）",
+  "commands.coi_debug.reactor.stabilize": "反应炉强制稳定（尚未实现，P6 阶段开发）",
+  "commands.coi_debug.not_available": "该功能尚未实现",
+
+  "item.create_originium_industry.originium_debug_wand.tooltip": "§7右键空气§r - 查看玩家暴露信息",
+  "item.create_originium_industry.originium_debug_wand.tooltip2": "§7Shift+右键方块§r - 查看区块源石尘信息",
+  "item.create_originium_industry.originium_debug_wand.chunk_info": "§6[源石调试器]§r 区块 [%s, %s] 源石尘: §e%d",
+  "item.create_originium_industry.originium_debug_wand.player_info": "§6[源石调试器]§r 暴露值: §e%d§r | 感染值: §c%d§r | 当前区块粉尘: §e%d",
+
+  "dust_level.create_originium_industry.safe": "§a[安全]",
+  "dust_level.create_originium_industry.low": "§e[低风险]",
+  "dust_level.create_originium_industry.medium": "§6[中等风险]",
+  "dust_level.create_originium_industry.high": "§c[高风险]",
+  "dust_level.create_originium_industry.critical": "§4[严重污染]"
 }

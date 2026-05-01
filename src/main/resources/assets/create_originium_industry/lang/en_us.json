@@ -9,6 +9,7 @@
   "item.create_originium_industry.purest_originium": "Purest Originium",
   "item.create_originium_industry.originium_dust_sieve": "Originium Dust Sieve",
   "item.create_originium_industry.originium_dust_nozzle": "Originium Dust Nozzle",
+  "item.create_originium_industry.originium_debug_wand": "Originium Debug Wand",
 
   "item.create_originium_industry.molten_originium_bucket": "Molten Originium Bucket",
   "item.create_originium_industry.purest_molten_originium_bucket": "Purest Molten Originium Bucket",
@@ -17,5 +18,30 @@
   "fluid.create_originium_industry.purest_molten_originium": "Purest Molten Originium",
   "fluid.create_originium_industry.originium_catalyst": "Originium Catalyst",
 
-  "effect.create_originium_industry.ori_dust_sickness": "OriDust Sickness"
+  "effect.create_originium_industry.ori_dust_sickness": "Originium Exposure Sickness",
+
+  "commands.coi_debug.dust.get": "Chunk [%s, %s] dust level: %d",
+  "commands.coi_debug.dust.set": "Set chunk [%s, %s] dust level to: %d",
+  "commands.coi_debug.dust.add": "Added %d dust to chunk [%s, %s], current level: %d",
+  "commands.coi_debug.dust.clear": "Cleared dust in chunk [%s, %s]",
+  "commands.coi_debug.dust.scan": "=== Dust Scan (radius %d) ===",
+  "commands.coi_debug.dust.scan.entry": "  Chunk [%s, %s]: %d",
+  "commands.coi_debug.dust.scan.none": "  No dust found in scan range",
+  "commands.coi_debug.exposure.get": "Exposure: %d | Infection: %d | Current chunk dust: %d",
+  "commands.coi_debug.exposure.set": "Set exposure to: %d",
+  "commands.coi_debug.infection.set": "Set infection to: %d",
+  "commands.coi_debug.reactor.status": "Reactor status view (not yet implemented, Phase 6)",
+  "commands.coi_debug.reactor.stabilize": "Reactor force stabilize (not yet implemented, Phase 6)",
+  "commands.coi_debug.not_available": "This feature is not yet implemented",
+
+  "item.create_originium_industry.originium_debug_wand.tooltip": "§7Right-click air§r - View player exposure info",
+  "item.create_originium_industry.originium_debug_wand.tooltip2": "§7Shift+Right-click block§r - View chunk dust info",
+  "item.create_originium_industry.originium_debug_wand.chunk_info": "§6[Debug Wand]§r Chunk [%s, %s] dust: §e%d",
+  "item.create_originium_industry.originium_debug_wand.player_info": "§6[Debug Wand]§r Exposure: §e%d§r | Infection: §c%d§r | Chunk dust: §e%d",
+
+  "dust_level.create_originium_industry.safe": "§a[Safe]",
+  "dust_level.create_originium_industry.low": "§e[Low Risk]",
+  "dust_level.create_originium_industry.medium": "§6[Medium Risk]",
+  "dust_level.create_originium_industry.high": "§c[High Risk]",
+  "dust_level.create_originium_industry.critical": "§4[Critical]"
 }

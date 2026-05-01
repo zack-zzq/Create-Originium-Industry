@@ -4,5 +4,9 @@
   "priority": 1200,
   "package": "com.mealuet.create_originium_industry.mixin",
   "compatibilityLevel": "JAVA_21",
-  "mixins": []
+  "mixins": [
+    "MillstoneBlockEntityMixin",
+    "BasinOperatingBlockEntityMixin",
+    "CrushingWheelControllerBlockEntityMixin"
+  ]
 }

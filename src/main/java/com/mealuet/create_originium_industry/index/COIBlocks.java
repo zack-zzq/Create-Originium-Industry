@@ -2,6 +2,9 @@ package com.mealuet.create_originium_industry.index;
 
 import com.mealuet.create_originium_industry.CreateOriginiumIndustry;
 import com.mealuet.create_originium_industry.block.DustFilterBlock;
+import com.mealuet.create_originium_industry.block.DustMeterBlock;
+import com.mealuet.create_originium_industry.block.DustNozzleBlock;
+import com.mealuet.create_originium_industry.block.ProcessSieveBlock;
 import com.tterrag.registrate.util.entry.BlockEntry;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -20,6 +23,43 @@ public class COIBlocks {
             )
             .blockstate((ctx, prov) -> prov.horizontalBlock(ctx.getEntry(),
                     prov.models().cubeAll(ctx.getName(), prov.modLoc("block/originium_dust_filter"))))
+            .simpleItem()
+            .register();
+
+    /**
+     * Process sieve attachment. Same registry path as the former placeholder item
+     * so existing stacks stay {@code originium_dust_sieve}.
+     */
+    public static final BlockEntry<ProcessSieveBlock> DUST_SIEVE = CreateOriginiumIndustry.REGISTRATE
+            .block("originium_dust_sieve", ProcessSieveBlock::new)
+            .properties(p -> p
+                    .strength(1.5f)
+                    .sound(SoundType.METAL)
+                    .noOcclusion()
+            )
+            .simpleItem()
+            .register();
+
+    /**
+     * Encased Fan nozzle. Same registry path as the former placeholder item.
+     */
+    public static final BlockEntry<DustNozzleBlock> DUST_NOZZLE = CreateOriginiumIndustry.REGISTRATE
+            .block("originium_dust_nozzle", DustNozzleBlock::new)
+            .properties(p -> p
+                    .strength(1.5f)
+                    .sound(SoundType.METAL)
+                    .noOcclusion()
+            )
+            .simpleItem()
+            .register();
+
+    public static final BlockEntry<DustMeterBlock> DUST_METER = CreateOriginiumIndustry.REGISTRATE
+            .block("originium_dust_meter", DustMeterBlock::new)
+            .properties(p -> p
+                    .strength(3.0f)
+                    .sound(SoundType.METAL)
+                    .noOcclusion()
+            )
             .simpleItem()
             .register();
 

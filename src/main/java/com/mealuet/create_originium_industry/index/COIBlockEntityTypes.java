@@ -2,6 +2,9 @@ package com.mealuet.create_originium_industry.index;
 
 import com.mealuet.create_originium_industry.CreateOriginiumIndustry;
 import com.mealuet.create_originium_industry.block.DustFilterBlockEntity;
+import com.mealuet.create_originium_industry.block.DustMeterBlockEntity;
+import com.mealuet.create_originium_industry.block.DustNozzleBlockEntity;
+import com.mealuet.create_originium_industry.block.ProcessSieveBlockEntity;
 import com.tterrag.registrate.util.entry.BlockEntityEntry;
 
 /**
@@ -12,6 +15,21 @@ public class COIBlockEntityTypes {
     public static final BlockEntityEntry<DustFilterBlockEntity> DUST_FILTER = CreateOriginiumIndustry.REGISTRATE
             .blockEntity("originium_dust_filter", DustFilterBlockEntity::new)
             .validBlock(COIBlocks.DUST_FILTER)
+            .register();
+
+    public static final BlockEntityEntry<ProcessSieveBlockEntity> PROCESS_SIEVE = CreateOriginiumIndustry.REGISTRATE
+            .blockEntity("originium_dust_sieve", ProcessSieveBlockEntity::new)
+            .validBlock(COIBlocks.DUST_SIEVE)
+            .register();
+
+    public static final BlockEntityEntry<DustNozzleBlockEntity> DUST_NOZZLE = CreateOriginiumIndustry.REGISTRATE
+            .blockEntity("originium_dust_nozzle", DustNozzleBlockEntity::new)
+            .validBlock(COIBlocks.DUST_NOZZLE)
+            .register();
+
+    public static final BlockEntityEntry<DustMeterBlockEntity> DUST_METER = CreateOriginiumIndustry.REGISTRATE
+            .blockEntity("originium_dust_meter", DustMeterBlockEntity::new)
+            .validBlock(COIBlocks.DUST_METER)
             .register();
 
     public static void register() {

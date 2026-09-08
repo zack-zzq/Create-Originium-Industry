@@ -80,7 +80,7 @@ public class DustFilterBlock extends KineticBlock implements IBE<DustFilterBlock
         if (!(be instanceof DustFilterBlockEntity filter)) return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 
         // Insert sieve
-        if (!stack.isEmpty() && stack.getItem() == com.mealuet.create_originium_industry.index.COIItems.ORIGINIUM_DUST_SIEVE.get()) {
+        if (!stack.isEmpty() && stack.getItem() == com.mealuet.create_originium_industry.index.COIBlocks.DUST_SIEVE.asItem()) {
             if (!filter.hasSieve()) {
                 filter.insertSieve(stack.copyWithCount(1));
                 if (!player.isCreative()) stack.shrink(1);

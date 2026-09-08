@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "facing=north": { "model": "create_originium_industry:block/originium_dust_sieve" },
+    "facing=south": { "model": "create_originium_industry:block/originium_dust_sieve", "y": 180 },
+    "facing=west": { "model": "create_originium_industry:block/originium_dust_sieve", "y": 270 },
+    "facing=east": { "model": "create_originium_industry:block/originium_dust_sieve", "y": 90 },
+    "facing=up": { "model": "create_originium_industry:block/originium_dust_sieve", "x": 270 },
+    "facing=down": { "model": "create_originium_industry:block/originium_dust_sieve", "x": 90 }
+  }
+}

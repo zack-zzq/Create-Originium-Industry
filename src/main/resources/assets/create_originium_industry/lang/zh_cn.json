@@ -9,6 +9,11 @@
   "item.create_originium_industry.purest_originium": "至纯源石",
   "item.create_originium_industry.originium_dust_sieve": "源石尘滤网",
   "item.create_originium_industry.originium_dust_nozzle": "源石尘分散滤网",
+
+  "block.create_originium_industry.originium_dust_filter": "源石尘滤网机",
+  "block.create_originium_industry.originium_dust_sieve": "源石尘滤网",
+  "block.create_originium_industry.originium_dust_nozzle": "源石尘分散滤网",
+  "block.create_originium_industry.originium_dust_meter": "源石尘计",
   "item.create_originium_industry.originium_debug_wand": "源石调试器",
 
   "item.create_originium_industry.molten_originium_bucket": "熔融源石桶",
@@ -58,6 +63,24 @@
   "block.create_originium_industry.originium_dust_filter.sieve_inserted": "已放入源石尘滤网",
   "block.create_originium_industry.originium_dust_filter.already_has_sieve": "滤网已安装",
   "block.create_originium_industry.originium_dust_filter.sieve_removed": "已取出源石尘滤网",
+
+  "block.create_originium_industry.originium_dust_sieve.status": "加工滤网耐久: %s / %s (%s%%)",
+  "block.create_originium_industry.originium_dust_sieve.capture": "捕获相邻加工排放的 %s%%",
+  "block.create_originium_industry.originium_dust_sieve.goggle.durability": "滤网: %s%%",
+  "block.create_originium_industry.originium_dust_sieve.goggle.detail": "滤网剩余: %s / %s",
+  "block.create_originium_industry.originium_dust_sieve.goggle.capture": "排放捕获: %s%%",
+
+  "block.create_originium_industry.originium_dust_nozzle.no_airflow": "没有鼓风机气流",
+  "block.create_originium_industry.originium_dust_nozzle.status": "气流 %s — 上次向下游转移 %s 粉尘",
+  "block.create_originium_industry.originium_dust_nozzle.goggle.no_airflow": "无气流",
+  "block.create_originium_industry.originium_dust_nozzle.goggle.flow": "导流 %s 粉尘/周期",
+
+  "block.create_originium_industry.originium_dust_meter.status": "区块粉尘: %s  %s",
+  "block.create_originium_industry.originium_dust_meter.protection.none": "附近无防护 — 全额暴露",
+  "block.create_originium_industry.originium_dust_meter.protection.active": "附近防护: 暴露降低 %s%%",
+  "block.create_originium_industry.originium_dust_meter.goggle.dust": "浓度: %s",
+  "block.create_originium_industry.originium_dust_meter.goggle.protection": "防护: 暴露 -%s%%",
+  "block.create_originium_industry.originium_dust_meter.goggle.no_protection": "无防护（全额暴露）",
 
   "dust_level.create_originium_industry.safe": "§a[安全]",
   "dust_level.create_originium_industry.low": "§e[低风险]",

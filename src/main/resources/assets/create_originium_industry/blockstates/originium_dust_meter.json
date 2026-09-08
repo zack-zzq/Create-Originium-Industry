@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "create_originium_industry:block/originium_dust_meter" },
+    "facing=south": { "model": "create_originium_industry:block/originium_dust_meter", "y": 180 },
+    "facing=west": { "model": "create_originium_industry:block/originium_dust_meter", "y": 270 },
+    "facing=east": { "model": "create_originium_industry:block/originium_dust_meter", "y": 90 }
+  }
+}

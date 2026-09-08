@@ -40,8 +40,8 @@ stable unless a migration is documented here first.
 | `originium_dust` | 源石尘 | Originium Dust | Item form; chunk pollution is separate |
 | `originium_alloy_ingot` | 源石合金锭 | Originium Alloy Ingot | Also tagged under `c:ingots` |
 | `purest_originium` | 至纯源石 | Purest Originium | Item exists; no survival recipe yet |
-| `originium_dust_sieve` | 源石尘滤网 | Originium Dust Sieve | Consumable for the filter block |
-| `originium_dust_nozzle` | 源石尘分散滤网 | Originium Dust Nozzle | Placeholder item; not a block yet |
+| `originium_dust_sieve` | 源石尘滤网 | Originium Dust Sieve | Placeable Basin/process attachment; also inserted into the kinetic filter |
+| `originium_dust_nozzle` | 源石尘分散滤网 | Originium Dust Nozzle | Encased Fan attachment (block + BlockItem, same id) |
 | `originium_debug_wand` | 源石调试器 | Originium Debug Wand | Debug-only; do not add survival recipes |
 | `molten_originium_bucket` | 熔融源石桶 | Molten Originium Bucket | Generated with the fluid |
 | `purest_molten_originium_bucket` | 至纯熔融源石桶 | Purest Molten Originium Bucket | Generated with the fluid |
@@ -52,6 +52,9 @@ stable unless a migration is documented here first.
 | Registry id | Notes |
 |---|---|
 | `originium_dust_filter` | Kinetic dust absorber (block + block entity share this path). BE NBT: `HasSieve`, `SieveDurability`, additive `CapturedDust` |
+| `originium_dust_sieve` | Process sieve attachment (block + BE share this path with the item). BE NBT: `SieveDurability`, additive `CapturedDust` |
+| `originium_dust_nozzle` | Encased Fan nozzle (block + BE share this path with the item). BE NBT: `LastMoved`, `HasFlow` |
+| `originium_dust_meter` | Dust gauge. BE NBT: `Dust`, `Risk`, `ProtectionPercent` (client packet snapshot of server chunk dust) |
 
 ### Fluids
 
@@ -94,7 +97,9 @@ Common config spec is `COIConfig.COMMON_SPEC`. Top-level keys:
 - `player_exposure`
 - `feature_toggles`
 - `dust_filter`
-- `protection` *(additive)*
+- `dust_nozzle` *(additive)*
+- `dust_meter` *(additive)*
+- `protection` *(additive; no gear yet)*
 - `reactor` *(additive; M3 stub knobs)*
 - `multiplayer` *(additive; dedicated-server spread policy)*
 - `debug`
@@ -119,6 +124,10 @@ Datapack path is the recipe id (`create_originium_industry:<path>`).
 | `mixing/originium_mixing` | `create:mixing` + superheated | molten originium |
 | `mixing/molten_originium_iron_ingot_mixing` | `create:mixing` | alloy ingot |
 | `mixing/catalyst_mixing` | `create:mixing` + heated | originium catalyst (培养液) |
+| `crafting/originium_dust_sieve` | `minecraft:crafting_shaped` | process sieve (also kinetic-filter consumable) |
+| `crafting/originium_dust_nozzle` | `minecraft:crafting_shaped` | Encased Fan nozzle |
+| `crafting/originium_dust_meter` | `minecraft:crafting_shaped` | dust meter |
+| `crafting/originium_dust_filter` | `minecraft:crafting_shaped` | kinetic filter |
 
 Dust production for frozen recipe ids is keyed in datapack JSON under
 `data/create_originium_industry/coi_dust_emission/` (recipe / item / item_tag +
@@ -161,9 +170,18 @@ JSON files live at `data/<namespace>/coi_dust_emission/*.json`:
 
 Machines submit through `IOridustProducer` (`DustSubmission`). Devices that
 reduce emission or absorb chunk dust implement `IDustPurifier` (the kinetic
-filter does; Basin sieve attachments will too). A spinning filter with a sieve
-on the emit block or a neighbouring face captures a configured fraction and
-converts it to `originium_dust` (remainder stays in `ByproductBuffer`).
+filter and the Basin/process sieve). A spinning filter with a sieve, or a
+placed `originium_dust_sieve` on the emit block / a neighbouring face / a
+Basin beside a mixer, captures a configured fraction and converts it to
+`originium_dust` (remainder stays in `ByproductBuffer`).
+
+`originium_dust_nozzle` attaches to an Encased Fan (`IAirCurrentSource`) and
+redirects chunk dust into the downwind neighbouring chunk (`DustReason.DIFFUSER`).
+It never voids dust.
+
+The dust meter copies server chunk dust onto the block entity (goggles /
+comparator). That is **not** the full client chunk-dust sync reserved under
+`multiplayer.syncDustToClients` (#17).
 
 `create_originium_industry:example/datapack_only` is a shipped mapping (amount
 33) for GameTests / pack authors. It is **not** a real recipe.
@@ -188,7 +206,7 @@ converts it to `originium_dust` (remainder stays in `ByproductBuffer`).
 | `item/dust_producing` | items whose processing emits chunk dust | present (raw, shard, originium, dust, purest) |
 | `item/originium_protection` | protection gear that reduces exposure/infection | **not shipped — no gear yet; tag key exists** |
 | `block/dust_sources` | blocks that emit dust | present (empty; future COI machines) |
-| `block/dust_filters` | blocks that remove/modify dust | present (`originium_dust_filter`) |
+| `block/dust_filters` | blocks that remove/modify dust | present (`originium_dust_filter`, `originium_dust_sieve`, `originium_dust_nozzle`) |
 | `fluid/originium_fluids` | all originium fluids | present |
 
 Do not put `originium_debug_wand` in material tags. Alloy ingot is an ingot,
@@ -223,8 +241,6 @@ New ids are fine. Do not reuse a frozen id for a different object.
 Expected (not frozen until registered):
 
 - Originium ore / worldgen features
-- Dust meter block
-- Encased-fan nozzle block (the item id `originium_dust_nozzle` is already taken)
 - Protection equipment
 - Purification intermediates for the purest line
 - Reactor blocks / block entities

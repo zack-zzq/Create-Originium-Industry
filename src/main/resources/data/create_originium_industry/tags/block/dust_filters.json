@@ -1,5 +1,7 @@
 {
   "values": [
-    "create_originium_industry:originium_dust_filter"
+    "create_originium_industry:originium_dust_filter",
+    "create_originium_industry:originium_dust_sieve",
+    "create_originium_industry:originium_dust_nozzle"
   ]
 }

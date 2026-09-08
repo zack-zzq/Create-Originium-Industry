@@ -8,7 +8,7 @@ import net.minecraft.server.level.ServerLevel;
  * converting captured dust into recoverable {@code originium_dust} byproduct
  * so pollution stays in the main processing loop.
  * <p>
- * Shared by the kinetic filter block and future Basin sieve attachments.
+ * Shared by the kinetic filter block and the Basin / process sieve attachment.
  * Callers should go through {@link DustPurification} rather than invoking
  * capture math themselves.
  */

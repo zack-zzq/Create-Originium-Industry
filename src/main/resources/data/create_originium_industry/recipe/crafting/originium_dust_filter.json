@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": {
+      "item": "create:andesite_casing"
+    },
+    "S": {
+      "item": "create_originium_industry:originium_dust_sieve"
+    },
+    "A": {
+      "item": "create:andesite_alloy"
+    }
+  },
+  "pattern": [
+    " C ",
+    " S ",
+    " A "
+  ],
+  "result": {
+    "count": 1,
+    "id": "create_originium_industry:originium_dust_filter"
+  }
+}

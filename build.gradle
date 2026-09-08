@@ -122,6 +122,12 @@ tasks.configureEach { task ->
             if (worldDir.exists()) {
                 delete worldDir
             }
+            // Stale common.toml from an older checkout keeps old defaults
+            // (e.g. protectionFullSetPieces=4 before PR #29).
+            def configDir = layout.projectDirectory.dir('runs/gameTestServer/config').asFile
+            if (configDir.exists()) {
+                delete configDir
+            }
         }
     }
 }

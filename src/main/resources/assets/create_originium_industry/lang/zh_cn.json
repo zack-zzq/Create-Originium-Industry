@@ -168,5 +168,30 @@
   "advancements.create_originium_industry.dust_purified.title": "滤网起作用了",
   "advancements.create_originium_industry.dust_purified.description": "滤网机或加工滤网把粉尘收成了源石尘。",
   "advancements.create_originium_industry.start_power_core.title": "动力核心启动",
-  "advancements.create_originium_industry.start_power_core.description": "第一次让源石动力核心转起来。外壳、冷却液和冷却室缺一不可。"
+  "advancements.create_originium_industry.start_power_core.description": "第一次让源石动力核心转起来。外壳、冷却液和冷却室缺一不可。",
+
+  "create_originium_industry.ponder.tag.originium_industry": "源石工业",
+  "create_originium_industry.ponder.tag.originium_industry.description": "粉尘、滤网、至纯产线与动力核心。",
+
+  "create_originium_industry.ponder.dust_generation.header": "粉尘产生与扩散",
+  "create_originium_industry.ponder.dust_generation.text_1": "研磨、粉碎或搅拌源石会向区块排放源石尘。",
+  "create_originium_industry.ponder.dust_generation.text_2": "粉尘会扩散到相邻区块并缓慢衰减。尘计可读出浓度。",
+  "create_originium_industry.ponder.dust_generation.text_3": "请佩戴防护面罩和滤毒罐。事故会喷出更多粉尘——但不会爆炸。",
+
+  "create_originium_industry.ponder.dust_filter.header": "滤网回收源石尘",
+  "create_originium_industry.ponder.dust_filter.text_1": "把源石尘滤网插入滤网机。旋转会吸收区块粉尘并产出源石尘物品。",
+  "create_originium_industry.ponder.dust_filter.text_2": "贴在 Basin、磨盘或搅拌器上的加工滤网会捕获相邻排放，而不是让它污染。",
+  "create_originium_industry.ponder.dust_filter.text_3": "合金滤网是更强的升级。鼓风机上的分散滤网把粉尘导向下游。都不会销毁粉尘。",
+
+  "create_originium_industry.ponder.purest_supercooling.header": "超级冷却与至纯产线",
+  "create_originium_industry.ponder.purest_supercooling.text_1": "Basin 上的滤网把熔融源石过滤成过滤熔融源石。",
+  "create_originium_industry.ponder.purest_supercooling.text_2": "用培养液加热过滤流体进行培养。注册名仍是 originium_catalyst。",
+  "create_originium_industry.ponder.purest_supercooling.text_3": "贴上冷却室，加入浮冰，且不可有烈焰热源，即可超级冷却得到至纯源石。",
+  "create_originium_industry.ponder.purest_supercooling.text_4": "过热是事故路线：至纯熔融源石。熔毁只喷尘——不会爆炸。",
+
+  "create_originium_industry.ponder.power_core.header": "动力核心稳定",
+  "create_originium_industry.ponder.power_core.text_1": "在动力核心旁放置反应炉外壳。右键放入至纯源石作为燃料。没有管理界面。",
+  "create_originium_industry.ponder.power_core.text_2": "稳定值 S = C × M − H。冷却液提高 C；冷却室提高 M；燃料提高 H。",
+  "create_originium_industry.ponder.power_core.text_3": "S 大于等于零时，流体会转向冷却液。S 为负时，流体会变成热水并泄漏粉尘。",
+  "create_originium_industry.ponder.power_core.text_4": "熔毁会喷出粉尘并耗尽剩余燃料。不会爆炸，也不会生成 TNT。"
 }

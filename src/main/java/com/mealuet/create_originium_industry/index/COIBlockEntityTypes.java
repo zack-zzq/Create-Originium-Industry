@@ -20,7 +20,7 @@ public class COIBlockEntityTypes {
 
     public static final BlockEntityEntry<ProcessSieveBlockEntity> PROCESS_SIEVE = CreateOriginiumIndustry.REGISTRATE
             .blockEntity("originium_dust_sieve", ProcessSieveBlockEntity::new)
-            .validBlock(COIBlocks.DUST_SIEVE)
+            .validBlocks(COIBlocks.DUST_SIEVE, COIBlocks.ALLOY_SIEVE)
             .register();
 
     public static final BlockEntityEntry<DustNozzleBlockEntity> DUST_NOZZLE = CreateOriginiumIndustry.REGISTRATE

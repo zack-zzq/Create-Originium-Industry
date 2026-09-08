@@ -10,7 +10,8 @@ import net.neoforged.neoforge.common.ModConfigSpec;
  * {@code dust_production}, {@code player_exposure}, {@code feature_toggles},
  * {@code dust_filter}, {@code debug}. Additive sections: {@code protection},
  * {@code infection}, {@code reactor}, {@code multiplayer}, {@code dust_nozzle},
- * {@code dust_meter}, {@code worldgen}, {@code purest_line}. New keys are additive only.
+ * {@code dust_meter}, {@code worldgen}, {@code purest_line}, {@code alloy_parts}.
+ * New keys are additive only.
  * <p>
  * Client spec is registered as {@link net.neoforged.fml.config.ModConfig.Type#CLIENT}
  * and is <em>not</em> loaded on a dedicated server — read it through
@@ -134,6 +135,15 @@ public class COIConfig {
     public static final ModConfigSpec.BooleanValue SYNC_DUST_TO_CLIENTS;
     public static final ModConfigSpec.IntValue DUST_SYNC_INTERVAL;
     public static final ModConfigSpec.IntValue DUST_SYNC_RADIUS;
+
+    // --- Alloy parts (M2 housing / filter upgrade / sealed protection) ---
+    public static final ModConfigSpec.DoubleValue CASING_HOUSING_REDUCTION_PER_FACE;
+    public static final ModConfigSpec.DoubleValue CORE_HOUSING_REDUCTION_PER_FACE;
+    public static final ModConfigSpec.DoubleValue HOUSING_MAX_REDUCTION;
+    public static final ModConfigSpec.IntValue ALLOY_SIEVE_DURABILITY;
+    public static final ModConfigSpec.DoubleValue ALLOY_PROCESS_SIEVE_EMISSION_CAPTURE;
+    public static final ModConfigSpec.DoubleValue ALLOY_FILTER_EMISSION_CAPTURE;
+    public static final ModConfigSpec.DoubleValue SEALED_PROTECTION_BONUS;
 
     // --- Purest line ---
     public static final ModConfigSpec.IntValue COOLING_CHAMBER_DURABILITY;
@@ -535,6 +545,36 @@ public class COIConfig {
 
         builder.pop();
 
+        // ==================== Alloy parts ====================
+        builder.comment(
+                "M2 alloy uses: pollution-resistant casings, alloy sieve upgrades, sealed canisters.",
+                "Housing reduces neighbouring machine emission before purifiers. Additive section."
+        ).push("alloy_parts");
+
+        CASING_HOUSING_REDUCTION_PER_FACE = builder
+                .comment("Fraction of process emission removed per adjacent originium alloy casing")
+                .defineInRange("casingHousingReductionPerFace", 0.10, 0.0, 1.0);
+        CORE_HOUSING_REDUCTION_PER_FACE = builder
+                .comment("Fraction of process emission removed per adjacent originium core housing (M3 shell)")
+                .defineInRange("coreHousingReductionPerFace", 0.20, 0.0, 1.0);
+        HOUSING_MAX_REDUCTION = builder
+                .comment("Cap on combined housing emission reduction (0.5 = at most half the leak is sealed)")
+                .defineInRange("housingMaxReduction", 0.50, 0.0, 1.0);
+        ALLOY_SIEVE_DURABILITY = builder
+                .comment("Absorption cycles an originium_alloy_sieve survives (kinetic insert or placed attachment)")
+                .defineInRange("alloySieveDurability", 1500, 50, 10000);
+        ALLOY_PROCESS_SIEVE_EMISSION_CAPTURE = builder
+                .comment("Placed alloy sieve capture fraction (passive Basin/process attachment)")
+                .defineInRange("alloyProcessSieveEmissionCapture", 0.70, 0.0, 1.0);
+        ALLOY_FILTER_EMISSION_CAPTURE = builder
+                .comment("Kinetic filter capture fraction when an alloy sieve is inserted")
+                .defineInRange("alloyFilterEmissionCapture", 0.75, 0.0, 1.0);
+        SEALED_PROTECTION_BONUS = builder
+                .comment("Extra fraction of remaining exposure/infection gain removed when wearing originium_reinforced_protection")
+                .defineInRange("sealedProtectionBonus", 0.10, 0.0, 1.0);
+
+        builder.pop();
+
         // ==================== Debug ====================
         builder.comment("Debug settings").push("debug");
 
@@ -642,6 +682,10 @@ public class COIConfig {
 
     public static int processSieveDurability() {
         return COMMON_SPEC.isLoaded() ? FILTER_SIEVE_DURABILITY.get() : 500;
+    }
+
+    public static int alloySieveDurability() {
+        return COMMON_SPEC.isLoaded() ? ALLOY_SIEVE_DURABILITY.get() : 1500;
     }
 
     public static int coolingChamberDurability() {

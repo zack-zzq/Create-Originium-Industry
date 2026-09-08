@@ -44,6 +44,50 @@ public class COIBlocks {
             .register();
 
     /**
+     * Alloy filter upgrade. New id — not a rename of {@link #DUST_SIEVE}.
+     * Same attachment behaviour; higher durability and capture.
+     */
+    public static final BlockEntry<ProcessSieveBlock> ALLOY_SIEVE = CreateOriginiumIndustry.REGISTRATE
+            .block("originium_alloy_sieve", ProcessSieveBlock::new)
+            .properties(p -> p
+                    .strength(2.0f)
+                    .sound(SoundType.METAL)
+                    .noOcclusion()
+            )
+            .simpleItem()
+            .register();
+
+    /**
+     * Pollution-resistant Create-style casing. Adjacent faces seal process
+     * emission ({@code pollution_resistant} / {@code reactor_housing}).
+     */
+    public static final BlockEntry<Block> ALLOY_CASING = CreateOriginiumIndustry.REGISTRATE
+            .block("originium_alloy_casing", Block::new)
+            .properties(p -> p
+                    .mapColor(MapColor.COLOR_BLACK)
+                    .strength(3.0f, 6.0f)
+                    .sound(SoundType.METAL)
+                    .requiresCorrectToolForDrops()
+            )
+            .simpleItem()
+            .register();
+
+    /**
+     * M3 reactor shell precursor. Denser housing than the casing; crafted from
+     * casings plus a cooling chamber.
+     */
+    public static final BlockEntry<Block> CORE_HOUSING = CreateOriginiumIndustry.REGISTRATE
+            .block("originium_core_housing", Block::new)
+            .properties(p -> p
+                    .mapColor(MapColor.COLOR_BLACK)
+                    .strength(4.0f, 8.0f)
+                    .sound(SoundType.METAL)
+                    .requiresCorrectToolForDrops()
+            )
+            .simpleItem()
+            .register();
+
+    /**
      * Encased Fan nozzle. Same registry path as the former placeholder item.
      */
     public static final BlockEntry<DustNozzleBlock> DUST_NOZZLE = CreateOriginiumIndustry.REGISTRATE

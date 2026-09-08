@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": {
+      "item": "create_originium_industry:originium_alloy_casing"
+    },
+    "H": {
+      "item": "create_originium_industry:originium_cooling_chamber"
+    }
+  },
+  "pattern": [
+    " C ",
+    "CHC",
+    " C "
+  ],
+  "result": {
+    "count": 1,
+    "id": "create_originium_industry:originium_core_housing"
+  }
+}

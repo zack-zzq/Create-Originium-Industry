@@ -27,6 +27,10 @@ public class COIItems {
             CreateOriginiumIndustry.REGISTRATE.item("originium_filter_canister",
                             p -> new OriginiumProtectionItem(p, net.minecraft.world.entity.EquipmentSlot.CHEST))
                     .register();
+    public static final ItemEntry<OriginiumProtectionItem> ORIGINIUM_SEALED_CANISTER =
+            CreateOriginiumIndustry.REGISTRATE.item("originium_sealed_canister",
+                            OriginiumProtectionItem::sealedCanister)
+                    .register();
 
     public static void register() {}
 }

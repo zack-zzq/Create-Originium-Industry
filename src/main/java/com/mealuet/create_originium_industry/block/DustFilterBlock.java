@@ -1,5 +1,6 @@
 package com.mealuet.create_originium_industry.block;
 
+import com.mealuet.create_originium_industry.core.oridust.SieveKind;
 import com.mealuet.create_originium_industry.index.COIBlockEntityTypes;
 import com.simibubi.create.content.kinetics.base.KineticBlock;
 import com.simibubi.create.foundation.block.IBE;
@@ -79,8 +80,8 @@ public class DustFilterBlock extends KineticBlock implements IBE<DustFilterBlock
         BlockEntity be = level.getBlockEntity(pos);
         if (!(be instanceof DustFilterBlockEntity filter)) return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 
-        // Insert sieve
-        if (!stack.isEmpty() && stack.getItem() == com.mealuet.create_originium_industry.index.COIBlocks.DUST_SIEVE.asItem()) {
+        // Insert sieve (iron or alloy upgrade)
+        if (SieveKind.isSieveItem(stack)) {
             if (!filter.hasSieve()) {
                 filter.insertSieve(stack.copyWithCount(1));
                 if (!player.isCreative()) stack.shrink(1);

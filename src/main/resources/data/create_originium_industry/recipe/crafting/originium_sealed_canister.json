@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "C": {
+      "item": "create_originium_industry:originium_alloy_casing"
+    },
+    "S": {
+      "item": "create_originium_industry:originium_filter_canister"
+    },
+    "A": {
+      "item": "create_originium_industry:originium_alloy_ingot"
+    }
+  },
+  "pattern": [
+    " C ",
+    " S ",
+    " A "
+  ],
+  "result": {
+    "count": 1,
+    "id": "create_originium_industry:originium_sealed_canister"
+  }
+}

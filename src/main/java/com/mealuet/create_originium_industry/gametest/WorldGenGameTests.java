@@ -20,8 +20,6 @@ import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.levelgen.feature.Feature;
-import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
 import net.minecraft.world.level.levelgen.feature.configurations.OreConfiguration;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 import net.minecraft.world.level.levelgen.structure.templatesystem.TagMatchTest;
@@ -31,7 +29,6 @@ import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Coverage for issue #22: Overworld raw originium ore, loot, and config-driven worldgen.
@@ -190,36 +187,35 @@ public final class WorldGenGameTests {
     }
 
     @GameTest(template = "empty", batch = "worldgen")
-    public static void oreFeaturePlacesIntoStone(GameTestHelper helper) {
-        BlockPos origin = new BlockPos(1, 2, 1);
-        for (int x = 0; x < 3; x++) {
-            for (int y = 1; y < 4; y++) {
-                for (int z = 0; z < 3; z++) {
-                    helper.setBlock(new BlockPos(x, y, z), Blocks.STONE);
-                }
-            }
-        }
-        boolean placed = Feature.ORE.place(new FeaturePlaceContext<>(
-                Optional.empty(),
-                helper.getLevel(),
-                helper.getLevel().getChunkSource().getGenerator(),
-                helper.getLevel().getRandom(),
-                helper.absolutePos(origin),
-                COIWorldGen.testOreConfiguration()
-        ));
-        helper.assertTrue(placed, "ore feature reported placement");
-        int ores = 0;
-        for (int x = 0; x < 3; x++) {
-            for (int y = 1; y < 4; y++) {
-                for (int z = 0; z < 3; z++) {
-                    if (helper.getBlockState(new BlockPos(x, y, z)).is(COITags.Blocks.RAW_ORIGINIUM_ORES)) {
-                        ores++;
-                    }
-                }
-            }
-        }
-        helper.assertTrue(ores > 0, "at least one originium ore in stone cube, got " + ores);
+    public static void oreTargetsConvertStoneAndDeepslate(GameTestHelper helper) {
+        BlockPos stonePos = new BlockPos(1, 1, 1);
+        BlockPos deepPos = new BlockPos(2, 1, 1);
+        helper.setBlock(stonePos, Blocks.STONE);
+        helper.setBlock(deepPos, Blocks.DEEPSLATE);
+
+        OreConfiguration config = COIWorldGen.testOreConfiguration();
+        applyFirstMatchingTarget(helper, stonePos, config);
+        applyFirstMatchingTarget(helper, deepPos, config);
+
+        helper.assertTrue(
+                helper.getBlockState(stonePos).is(COIBlocks.RAW_ORIGINIUM_ORE.get()),
+                "stone replaceable -> raw_originium_ore"
+        );
+        helper.assertTrue(
+                helper.getBlockState(deepPos).is(COIBlocks.DEEPSLATE_RAW_ORIGINIUM_ORE.get()),
+                "deepslate replaceable -> deepslate_raw_originium_ore"
+        );
         helper.succeed();
+    }
+
+    private static void applyFirstMatchingTarget(GameTestHelper helper, BlockPos pos, OreConfiguration config) {
+        BlockState current = helper.getBlockState(pos);
+        for (OreConfiguration.TargetBlockState target : config.targetStates) {
+            if (target.target.test(current, helper.getLevel().getRandom())) {
+                helper.setBlock(pos, target.state);
+                return;
+            }
+        }
     }
 
     private static int count(List<ItemStack> drops, net.minecraft.world.item.Item item) {

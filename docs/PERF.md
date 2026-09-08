@@ -127,7 +127,7 @@ CI guard: every median above must stay **&lt; 50 ms**.
 
 ## Verdict and follow-ups
 
-`aligned_extra` median **0.469 ms** is under the **2 ms** design budget in this isolated GameTest (~4× headroom). Do not rewrite dust or reactor systems for speed on this load.
+A second `./gradlew build` on the same VM measured `aligned_extra` at **1.081 ms** (still under 2 ms). Treat **0.5–1.1 ms** as the GameTest band on this host; do not chase sub-millisecond noise.
 
 Keep the follow-ups below as optional work when factories grow past 100 machines, when Spark shows Create kinetic networks dominating, or when a dedicated server enables `AGGRESSIVE` spread (larger active set than this baseline).
 

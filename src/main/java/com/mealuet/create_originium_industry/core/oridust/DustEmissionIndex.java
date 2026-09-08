@@ -104,6 +104,27 @@ public final class DustEmissionIndex extends SimpleJsonResourceReloadListener {
         return stack != null && !stack.isEmpty() && stack.is(COITags.Items.DUST_PRODUCING);
     }
 
+    /**
+     * Datapack recipe-id mappings for recipe-viewer plugins. Immutable after reload.
+     */
+    public static Map<ResourceLocation, Integer> recipeAmounts() {
+        return INSTANCE.recipeAmounts;
+    }
+
+    /**
+     * Datapack item-id mappings for recipe-viewer plugins. Immutable after reload.
+     */
+    public static Map<ResourceLocation, Integer> itemAmounts() {
+        return INSTANCE.itemAmounts;
+    }
+
+    /**
+     * Datapack item-tag mappings for recipe-viewer plugins. Immutable after reload.
+     */
+    public static Map<ResourceLocation, Integer> itemTagAmounts() {
+        return INSTANCE.itemTagAmounts;
+    }
+
     @Override
     protected void apply(Map<ResourceLocation, JsonElement> object, ResourceManager resourceManager, ProfilerFiller profiler) {
         Map<ResourceLocation, Integer> recipes = new HashMap<>();

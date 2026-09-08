@@ -54,3 +54,12 @@ issueTrackerURL="https://github.com/zack-zzq/Create-Originium-Industry/issues"
     versionRange="[0.0.0,)"
     ordering="NONE"
     side="BOTH"
+
+# Optional JEI recipe viewer. The game loads without it; @JeiPlugin is only
+# instantiated when JEI is installed.
+[[dependencies.${mod_id}]]
+    modId="jei"
+    type="optional"
+    versionRange="[19.8.0,)"
+    ordering="NONE"
+    side="CLIENT"

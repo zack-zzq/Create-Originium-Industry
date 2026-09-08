@@ -47,6 +47,13 @@ public final class BasinProcessIndex extends SimpleJsonResourceReloadListener {
         return INSTANCE.specs.getOrDefault(recipeId, BasinProcessSpec.NONE);
     }
 
+    /**
+     * Datapack mappings for recipe-viewer plugins. The map is immutable after reload.
+     */
+    public static Map<ResourceLocation, BasinProcessSpec> entries() {
+        return INSTANCE.specs;
+    }
+
     @Override
     protected void apply(Map<ResourceLocation, JsonElement> object, ResourceManager resourceManager, ProfilerFiller profiler) {
         Map<ResourceLocation, BasinProcessSpec> loaded = new HashMap<>();

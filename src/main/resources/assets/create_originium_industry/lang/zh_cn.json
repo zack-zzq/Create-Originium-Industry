@@ -212,5 +212,25 @@
   "subtitles.create_originium_industry.filter_work": "滤网吸附运转",
   "subtitles.create_originium_industry.high_dust": "高浓度源石尘环境",
   "subtitles.create_originium_industry.reactor_steady": "动力核心稳态运转",
-  "subtitles.create_originium_industry.reactor_alarm": "动力核心告警"
+  "subtitles.create_originium_industry.reactor_alarm": "动力核心告警",
+
+  "jei.create_originium_industry.basin_process": "Basin 工艺门槛",
+  "jei.create_originium_industry.basin_process.require_sieve": "需要在 Basin 上安装加工滤网",
+  "jei.create_originium_industry.basin_process.require_cooling_chamber": "需要冷却室",
+  "jei.create_originium_industry.basin_process.reject_heat": "不可有烈焰热源——仅超级冷却",
+  "jei.create_originium_industry.dust_emission": "源石尘排放",
+  "jei.create_originium_industry.dust_emission.amount": "向区块排放 %s 源石尘",
+  "jei.create_originium_industry.dust_emission.none": "明确不排放（该步骤不产尘）",
+  "jei.create_originium_industry.reactor": "源石动力核心",
+  "jei.create_originium_industry.reactor.fuel": "反应炉燃料",
+  "jei.create_originium_industry.reactor.fuel.body": "对动力核心右键放入至纯源石。每件燃烧 %s 刻。没有管理界面。",
+  "jei.create_originium_industry.reactor.cooling": "冷却液转换",
+  "jei.create_originium_industry.reactor.cooling.body": "S = C × M − H。S ≥ 0 时流体转向冷却液；S < 0 时变成热水。",
+  "jei.create_originium_industry.reactor.structure": "外壳与冷却",
+  "jei.create_originium_industry.reactor.structure.body": "运行需要相邻的反应炉外壳。冷却室提高 M。熔毁会喷尘并泄漏至纯熔融——不会爆炸。",
+  "jei.create_originium_industry.info.power_core": "后期动能发生器。需要相邻反应炉外壳、冷却液和冷却室。右键放入至纯源石作为燃料。熔毁喷尘并泄漏至纯熔融，绝不爆炸。",
+  "jei.create_originium_industry.info.purest_originium": "动力核心燃料。至纯产线：滤网过滤熔融源石，用培养液培养，再在冷却室、无烈焰热源下超级冷却。",
+  "jei.create_originium_industry.info.originium_coolant": "反应炉热容流体（C）。用水、培养液（originium_catalyst）和浮冰搅拌。核心不稳时会转向水和热水。",
+  "jei.create_originium_industry.info.dust_sieve": "Basin 附件，解锁过滤熔融搅拌，并把相邻加工排放捕获为源石尘。",
+  "jei.create_originium_industry.info.originium_dust": "区块污染副产物。研磨、粉碎或搅拌源石会排放粉尘。滤网机和加工滤网可把它回收成此物品。"
 }

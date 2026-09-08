@@ -1,6 +1,7 @@
 package com.mealuet.create_originium_industry.core.oridust;
 
 import com.mealuet.create_originium_industry.CreateOriginiumIndustry;
+import com.mealuet.create_originium_industry.compat.WorldSpace;
 import com.mealuet.create_originium_industry.config.COIConfig;
 import com.mealuet.create_originium_industry.index.COIAttachments;
 import net.minecraft.server.level.ServerLevel;
@@ -35,7 +36,7 @@ public class PlayerDeathDustHandler {
         double scale = Math.min(2.0, (exposure + infection) / 1000.0);
         int scaledBurst = Math.max(1, (int) (burstAmount * scale));
 
-        ChunkPos chunkPos = serverPlayer.chunkPosition();
+        ChunkPos chunkPos = WorldSpace.toDustChunk(serverPlayer);
         OriginiumDustManager.addDust(serverLevel, chunkPos, scaledBurst, DustReason.DEATH_BURST);
 
         if (COIConfig.ENABLE_DEBUG_LOGGING.get()) {

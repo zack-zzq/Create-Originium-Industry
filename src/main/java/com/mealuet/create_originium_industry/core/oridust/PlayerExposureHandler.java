@@ -1,10 +1,10 @@
 package com.mealuet.create_originium_industry.core.oridust;
 
 import com.mealuet.create_originium_industry.CreateOriginiumIndustry;
+import com.mealuet.create_originium_industry.compat.WorldSpace;
 import com.mealuet.create_originium_industry.config.COIConfig;
 import com.mealuet.create_originium_industry.index.COIAttachments;
 import com.mealuet.create_originium_industry.index.COIEffects;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.level.ChunkPos;
@@ -40,8 +40,8 @@ public class PlayerExposureHandler {
         if (serverPlayer.tickCount % checkInterval != 0) return;
 
         PlayerExposureData data = COIAttachments.getPlayerExposure(serverPlayer);
-        ChunkPos chunkPos = serverPlayer.chunkPosition();
-        int dustLevel = OriginiumDustManager.getDust(chunkPos);
+        ChunkPos chunkPos = WorldSpace.toDustChunk(serverPlayer);
+        int dustLevel = OriginiumDustManager.getDust(serverPlayer.serverLevel(), chunkPos);
         int threshold = COIConfig.DUST_EFFECT_THRESHOLD.get();
 
         // --- Update Exposure ---

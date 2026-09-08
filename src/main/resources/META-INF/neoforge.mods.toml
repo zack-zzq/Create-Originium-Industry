@@ -38,3 +38,19 @@ issueTrackerURL="https://github.com/kressety/Create-Originium-Industry/issues"
     versionRange="${minecraft_version_range}"
     ordering="NONE"
     side="BOTH"
+
+# Optional Create: Aeronautics / Sable spatial remap for originium dust.
+# The game loads without these mods; WorldSpace falls back to identity.
+[[dependencies.${mod_id}]]
+    modId="sable"
+    type="optional"
+    versionRange="[1.0.0,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.${mod_id}]]
+    modId="aeronautics"
+    type="optional"
+    versionRange="[0.0.0,)"
+    ordering="NONE"
+    side="BOTH"

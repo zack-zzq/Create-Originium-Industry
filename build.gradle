@@ -23,6 +23,18 @@ repositories {
     maven { url = "https://maven.createmod.net" } // Create, Ponder, Flywheel
     maven { url = "https://mvn.devos.one/snapshots" } // Registrate
     maven { url = "https://raw.githubusercontent.com/Fuzss/modresources/main/maven/" }
+    exclusiveContent { // Optional Sable Companion API (compileOnly — not required at runtime)
+        forRepository {
+            maven {
+                url = "https://maven.ryanhcode.dev/releases"
+                name = "RyanHCode Maven"
+            }
+        }
+        filter {
+            includeGroup("dev.ryanhcode.sable")
+            includeGroup("dev.ryanhcode.sable-companion")
+        }
+    }
 }
 
 base {
@@ -106,6 +118,18 @@ dependencies {
     compileOnly("dev.engine-room.flywheel:flywheel-neoforge-api-${minecraft_version}:${flywheel_version}")
     runtimeOnly("dev.engine-room.flywheel:flywheel-neoforge-${minecraft_version}:${flywheel_version}")
     implementation("com.tterrag.registrate:Registrate:${registrate_version}")
+
+    // Optional Create: Aeronautics / Sable compat.
+    // compileOnly: present on the compile classpath so SableWorldSpace can call the
+    // Companion API, but NOT packaged and NOT required to run. At runtime the
+    // classes come from Sable's own Jar-in-Jar when (and only when) Sable is installed.
+    // Set enable_sable_compat_compile=false if maven.ryanhcode.dev is unreachable;
+    // SableWorldSpace will then fail to compile until the artifact is restored.
+    if (project.findProperty('enable_sable_compat_compile') != 'false') {
+        compileOnly("dev.ryanhcode.sable-companion:sable-companion-common-${minecraft_version}:${sable_companion_version}") {
+            transitive = false
+        }
+    }
 
     // Example optional mod dependency with JEI
     // The JEI API is declared for compile time use, while the full JEI artifact is used at runtime

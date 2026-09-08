@@ -11,6 +11,11 @@ public class OriDustData implements INBTSerializable<CompoundTag> {
     private int dustLevel = 0;
     private static final String NBT_KEY = "DustLevel";
 
+    /**
+     * Legacy per-chunk attachment payload. Dust is now stored in
+     * {@link OriDustSavedData}; this type remains registered so old worlds can
+     * be migrated on chunk load, after which the attachment is zeroed.
+     */
     public OriDustData() {}
 
     public int getDustLevel() {

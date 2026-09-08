@@ -2,7 +2,7 @@ package com.mealuet.create_originium_industry.block;
 
 import com.mealuet.create_originium_industry.index.COIBlockEntityTypes;
 import com.simibubi.create.content.kinetics.base.KineticBlock;
-import com.simibubi.create.content.kinetics.simpleRelays.ICogWheel;
+import com.simibubi.create.foundation.block.IBE;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
@@ -31,7 +31,7 @@ import net.minecraft.world.phys.BlockHitResult;
  * <p>
  * Right-click with sieve to insert; right-click empty-hand to view status.
  */
-public class DustFilterBlock extends KineticBlock {
+public class DustFilterBlock extends KineticBlock implements IBE<DustFilterBlockEntity> {
 
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
 
@@ -58,6 +58,11 @@ public class DustFilterBlock extends KineticBlock {
     @Override
     public boolean hasShaftTowards(LevelReader world, BlockPos pos, BlockState state, Direction face) {
         return face.getAxis() == state.getValue(FACING).getAxis();
+    }
+
+    @Override
+    public Class<DustFilterBlockEntity> getBlockEntityClass() {
+        return DustFilterBlockEntity.class;
     }
 
     @Override

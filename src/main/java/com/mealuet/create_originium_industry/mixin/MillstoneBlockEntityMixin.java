@@ -12,8 +12,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
  * Mixin into {@link MillstoneBlockEntity} to emit originium dust
- * when milling originium recipes complete. Amounts come from
- * {@link DustProductionHelper} and are submitted through {@link com.mealuet.create_originium_industry.core.oridust.IOridustProducer}.
+ * when milling originium recipes complete.
+ * <p>
+ * Passes the live {@link MillingRecipe} so {@link DustProductionHelper} can
+ * resolve {@code RecipeHolder.id()} — Create 6 stores {@code create:milling}
+ * on {@code ProcessingRecipe.id}, not the datapack path.
  */
 @Mixin(value = MillstoneBlockEntity.class, remap = false)
 public abstract class MillstoneBlockEntityMixin {
@@ -27,9 +30,6 @@ public abstract class MillstoneBlockEntityMixin {
         if (!(self.getLevel() instanceof ServerLevel serverLevel)) return;
         if (lastRecipe == null) return;
 
-        // ProcessingRecipe has a public `id` field (ResourceLocation)
-        if (lastRecipe.id != null) {
-            DustProductionHelper.emitDustFromRecipe(serverLevel, self.getBlockPos(), lastRecipe.id);
-        }
+        DustProductionHelper.emitDustFromRecipe(serverLevel, self.getBlockPos(), lastRecipe);
     }
 }

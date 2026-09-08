@@ -134,6 +134,7 @@ public final class DustApiGameTests {
                 COIConfig.DUST_FROM_MILLING.get(),
                 "config override for frozen milling id"
         );
+        helper.assertValueEqual(DustEmissionIndex.getRecipeAmount(catalyst), 0, "catalyst datapack amount 0");
         helper.assertValueEqual(DustProductionHelper.getDustForRecipe(catalyst), 0, "catalyst is not a dust recipe");
         helper.assertValueEqual(DustProductionHelper.getDustForRecipe(datapackOnly), 33, "datapack-only recipe id");
 

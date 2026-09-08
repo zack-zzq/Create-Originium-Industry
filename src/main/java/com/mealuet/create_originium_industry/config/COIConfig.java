@@ -171,7 +171,7 @@ public class COIConfig {
         builder.comment("Dust production from Create machine processing").push("dust_production");
 
         ENABLE_DUST_PRODUCTION = builder
-                .comment("Whether Create machines produce originium dust when processing originium recipes")
+                .comment("Whether Create machines produce originium dust when processing originium recipes (mill, crush, mix including heated/superheated). catalyst_mixing is excluded via datapack amount 0.")
                 .define("enableDustProduction", true);
         DUST_FROM_MILLING = builder
                 .comment("Dust emitted when milling raw originium")
@@ -180,13 +180,13 @@ public class COIConfig {
                 .comment("Dust emitted when crushing raw originium")
                 .defineInRange("dustFromCrushing", 100, 0, 1000);
         DUST_FROM_SHARD_MIXING = builder
-                .comment("Dust emitted when mixing originium shards into originium")
+                .comment("Dust emitted when mixing originium shards into originium (heated mixing). Also the heat-aware fallback for unmapped heated originium recipes.")
                 .defineInRange("dustFromShardMixing", 120, 0, 1000);
         DUST_FROM_ORIGINIUM_MELTING = builder
-                .comment("Dust emitted when melting originium into molten originium (superheated mixing)")
+                .comment("Dust emitted when melting originium into molten originium (superheated mixing). Also the heat-aware fallback for unmapped superheated originium recipes.")
                 .defineInRange("dustFromOriginiumMelting", 200, 0, 1000);
         DUST_FROM_ALLOY_MIXING = builder
-                .comment("Dust emitted when mixing molten originium with iron to create alloy")
+                .comment("Dust emitted when mixing molten originium with iron to create alloy (unheated). Also the fallback for unmapped recipes with originium fluid inputs.")
                 .defineInRange("dustFromAlloyMixing", 60, 0, 1000);
         DUST_FROM_TAGGED_ITEM = builder
                 .comment("Fallback dust when processing an item in create_originium_industry:dust_producing with no datapack item/item_tag amount")

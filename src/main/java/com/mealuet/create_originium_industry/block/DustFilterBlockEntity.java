@@ -42,6 +42,10 @@ public class DustFilterBlockEntity extends KineticBlockEntity implements IDustPu
     private boolean hasSieve = false;
     private int sieveDurability = 0;
     private final ByproductBuffer byproduct = new ByproductBuffer();
+    /**
+     * GameTest-only: stay "spinning" without a kinetic network. Not serialized.
+     */
+    private boolean testSpinning = false;
 
     public DustFilterBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
@@ -69,7 +73,7 @@ public class DustFilterBlockEntity extends KineticBlockEntity implements IDustPu
 
     @Override
     public boolean isPurifierActive() {
-        return hasSieve && sieveDurability > 0 && Math.abs(getSpeed()) > 0;
+        return hasSieve && sieveDurability > 0 && (testSpinning || Math.abs(getSpeed()) > 0);
     }
 
     @Override
@@ -137,6 +141,26 @@ public class DustFilterBlockEntity extends KineticBlockEntity implements IDustPu
 
     public boolean hasSieve() {
         return hasSieve;
+    }
+
+    /**
+     * Remainder dust stored toward the next {@code originium_dust} item.
+     */
+    public int byproductStored() {
+        return byproduct.stored();
+    }
+
+    /**
+     * GameTest helper: insert a sieve if needed and treat the filter as spinning
+     * without requiring a Create kinetic network.
+     */
+    public void activatePurifierForGameTest() {
+        if (!hasSieve) {
+            insertSieve(new ItemStack(COIItems.ORIGINIUM_DUST_SIEVE.get()));
+        }
+        testSpinning = true;
+        setSpeed(64f);
+        setChanged();
     }
 
     public void insertSieve(ItemStack sieveStack) {

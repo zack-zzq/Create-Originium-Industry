@@ -70,9 +70,9 @@ redstone + sugar + lapis + water (heated mix) → originium catalyst (培养液)
 ### Systems (in progress)
 
 - Per-chunk originium dust, diffusion, and decay (overworld)
-- Create mill / crush / mix hooks that emit dust via `IOridustProducer` (datapack `coi_dust_emission` JSON; config overrides frozen recipe ids)
+- Create mill / crush / mix hooks that emit dust via `IOridustProducer` (datapack `coi_dust_emission` JSON; config overrides frozen recipe ids). Heated shard mix and superheated melt emit more than cold milling; `catalyst_mixing` is heated but ships amount 0 (no originium feedstock). No furnace/fan recipes.
 - Player exposure, infection, and Originium Exposure Sickness
-- Kinetic dust filter implements shared `IDustPurifier` (chunk absorb, nearby emission capture, optional `originium_dust` byproduct)
+- Kinetic dust filter implements shared `IDustPurifier` (chunk absorb, nearby emission capture, `originium_dust` byproduct with remainder buffer — no dup/void)
 - Common + client config (`create_originium_industry-common.toml` / `-client.toml`): dust, exposure, filter, protection hooks, reactor stubs, dedicated-server spread policy, accessibility
 - `/coi_debug` and the debug wand for inspection
 

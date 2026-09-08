@@ -12,7 +12,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
  * Mixin into {@link MillstoneBlockEntity} to emit originium dust
- * when milling originium recipes complete.
+ * when milling originium recipes complete. Amounts come from
+ * {@link DustProductionHelper} and are submitted through {@link com.mealuet.create_originium_industry.core.oridust.IOridustProducer}.
  */
 @Mixin(value = MillstoneBlockEntity.class, remap = false)
 public abstract class MillstoneBlockEntityMixin {

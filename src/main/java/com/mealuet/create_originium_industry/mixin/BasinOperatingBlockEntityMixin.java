@@ -15,6 +15,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 /**
  * Mixin into {@link BasinOperatingBlockEntity} to emit originium dust
  * when basin recipes (mixing, compacting) involving originium complete.
+ * Amounts come from {@link DustProductionHelper} and are submitted through
+ * {@link com.mealuet.create_originium_industry.core.oridust.IOridustProducer} so a neighbouring
+ * {@link com.mealuet.create_originium_industry.core.oridust.IDustPurifier} can capture.
  */
 @Mixin(value = BasinOperatingBlockEntity.class, remap = false)
 public abstract class BasinOperatingBlockEntityMixin {

@@ -16,7 +16,8 @@ import java.util.Optional;
 
 /**
  * Mixin into {@link CrushingWheelControllerBlockEntity} to emit originium dust
- * when crushing originium recipes complete.
+ * when crushing originium recipes complete. Amounts come from
+ * {@link DustProductionHelper} and are submitted through {@link com.mealuet.create_originium_industry.core.oridust.IOridustProducer}.
  */
 @Mixin(value = CrushingWheelControllerBlockEntity.class, remap = false)
 public abstract class CrushingWheelControllerBlockEntityMixin {

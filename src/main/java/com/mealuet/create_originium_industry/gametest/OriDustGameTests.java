@@ -79,8 +79,9 @@ public final class OriDustGameTests {
     }
 
     /**
-     * Mill/crush production helper deposits dust (same path as the mixins)
-     * and that value round-trips through SavedData.
+     * Mill/crush production helper deposits dust through
+     * {@link com.mealuet.create_originium_industry.core.oridust.IOridustProducer}
+     * (same path as the mixins) and that value round-trips through SavedData.
      */
     @GameTest(template = "empty", batch = "oridust")
     public static void millAndCrushEmitAndPersist(GameTestHelper helper) {

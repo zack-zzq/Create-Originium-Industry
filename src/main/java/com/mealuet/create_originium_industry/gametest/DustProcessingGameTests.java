@@ -62,6 +62,11 @@ public final class DustProcessingGameTests {
                 "mill holder id"
         );
         helper.assertValueEqual(
+                DustProductionHelper.resolveRecipeId(level, milling),
+                id("milling/raw_originium_milling"),
+                "second resolve uses cached mill id"
+        );
+        helper.assertValueEqual(
                 DustProductionHelper.resolveRecipeId(level, heated),
                 id("mixing/originium_shard_mixing"),
                 "heated mix holder id"

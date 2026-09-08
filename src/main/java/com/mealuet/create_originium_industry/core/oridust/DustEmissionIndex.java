@@ -148,6 +148,7 @@ public final class DustEmissionIndex extends SimpleJsonResourceReloadListener {
         this.recipeAmounts = Map.copyOf(recipes);
         this.itemAmounts = Map.copyOf(items);
         this.itemTagAmounts = Map.copyOf(tags);
+        DustProductionHelper.clearRecipeIdCache();
         CreateOriginiumIndustry.LOGGER.debug(
                 "[OriDust] Loaded dust emission entries: {} recipes, {} items, {} tags",
                 recipes.size(), items.size(), tags.size()

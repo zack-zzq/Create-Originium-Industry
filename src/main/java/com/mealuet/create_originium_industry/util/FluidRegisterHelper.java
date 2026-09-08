@@ -32,6 +32,9 @@ public class FluidRegisterHelper {
                         .slopeFindDistance(slopeFindDistance)
                         .explosionResistance(explosionResistance))
                 .source(BaseFlowingFluid.Flowing.Source::new);
+        // FluidBuilder.create() already calls defaultBlock() — a LiquidBlock with
+        // level=0..15 is registered on fluidBuilder.register(). Client assets live
+        // under assets/create_originium_industry/blockstates|models/block/.
 
         fluidBuilder
                 .bucket()

@@ -3,6 +3,8 @@ package com.mealuet.create_originium_industry.index;
 import com.tterrag.registrate.util.entry.FluidEntry;
 import net.neoforged.neoforge.fluids.BaseFlowingFluid;
 
+import java.util.List;
+
 import static com.mealuet.create_originium_industry.util.FluidRegisterHelper.createDensityFluid;
 import static com.mealuet.create_originium_industry.util.FluidRegisterHelper.createLightFluid;
 
@@ -14,6 +16,20 @@ public class COIFluids {
     public static final FluidEntry<BaseFlowingFluid.Flowing> ORIGINIUM_CATALYST = createLightFluid("originium_catalyst");
     public static final FluidEntry<BaseFlowingFluid.Flowing> ORIGINIUM_COOLANT = createLightFluid("originium_coolant");
     public static final FluidEntry<BaseFlowingFluid.Flowing> HOT_WATER = createLightFluid("hot_water");
+
+    /**
+     * Every COI world fluid. Registrate {@code defaultBlock()} already registers a
+     * {@code LiquidBlock} ({@code level=0..15}); client assets must exist for each id.
+     */
+    public static final List<FluidEntry<BaseFlowingFluid.Flowing>> ALL = List.of(
+            MOLTEN_ORIGINIUM,
+            FILTERED_MOLTEN_ORIGINIUM,
+            CULTURED_ORIGINIUM,
+            PUREST_MOLTEN_ORIGINIUM,
+            ORIGINIUM_CATALYST,
+            ORIGINIUM_COOLANT,
+            HOT_WATER
+    );
 
     public static void register() {}
 }

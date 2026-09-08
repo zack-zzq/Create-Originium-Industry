@@ -1,0 +1,52 @@
+{
+  "variants": {
+    "level=0": {
+      "model": "create_originium_industry:block/cultured_originium"
+    },
+    "level=1": {
+      "model": "create_originium_industry:block/cultured_originium"
+    },
+    "level=2": {
+      "model": "create_originium_industry:block/cultured_originium"
+    },
+    "level=3": {
+      "model": "create_originium_industry:block/cultured_originium"
+    },
+    "level=4": {
+      "model": "create_originium_industry:block/cultured_originium"
+    },
+    "level=5": {
+      "model": "create_originium_industry:block/cultured_originium"
+    },
+    "level=6": {
+      "model": "create_originium_industry:block/cultured_originium"
+    },
+    "level=7": {
+      "model": "create_originium_industry:block/cultured_originium"
+    },
+    "level=8": {
+      "model": "create_originium_industry:block/cultured_originium"
+    },
+    "level=9": {
+      "model": "create_originium_industry:block/cultured_originium"
+    },
+    "level=10": {
+      "model": "create_originium_industry:block/cultured_originium"
+    },
+    "level=11": {
+      "model": "create_originium_industry:block/cultured_originium"
+    },
+    "level=12": {
+      "model": "create_originium_industry:block/cultured_originium"
+    },
+    "level=13": {
+      "model": "create_originium_industry:block/cultured_originium"
+    },
+    "level=14": {
+      "model": "create_originium_industry:block/cultured_originium"
+    },
+    "level=15": {
+      "model": "create_originium_industry:block/cultured_originium"
+    }
+  }
+}

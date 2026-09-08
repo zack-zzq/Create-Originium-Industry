@@ -1,0 +1,31 @@
+{
+  "parent": "create_originium_industry:dust_exposure",
+  "display": {
+    "icon": {
+      "id": "create_originium_industry:originium_respirator"
+    },
+    "title": {
+      "translate": "advancements.create_originium_industry.obtain_protection.title"
+    },
+    "description": {
+      "translate": "advancements.create_originium_industry.obtain_protection.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "has_protection": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "#create_originium_industry:originium_protection"
+          }
+        ]
+      }
+    }
+  },
+  "sends_telemetry_event": false
+}

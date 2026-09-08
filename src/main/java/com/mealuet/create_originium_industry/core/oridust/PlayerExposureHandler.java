@@ -77,6 +77,8 @@ public class PlayerExposureHandler {
             }
         }
 
+        COIAdvancements.maybeInfectionStage(serverPlayer, beforeInfection, data.getInfection());
+
         // --- Apply Effects ---
         int effectiveExposure = data.getExposure();
 

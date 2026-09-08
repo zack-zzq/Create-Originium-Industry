@@ -1,0 +1,24 @@
+{
+  "parent": "create_originium_industry:start_power_core",
+  "display": {
+    "icon": {
+      "id": "create_originium_industry:purest_molten_originium_bucket"
+    },
+    "title": {
+      "translate": "advancements.create_originium_industry.power_core_meltdown.title"
+    },
+    "description": {
+      "translate": "advancements.create_originium_industry.power_core_meltdown.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "melted": {
+      "trigger": "create_originium_industry:power_core_meltdown"
+    }
+  },
+  "sends_telemetry_event": false
+}

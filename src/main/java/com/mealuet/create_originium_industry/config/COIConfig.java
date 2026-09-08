@@ -63,7 +63,7 @@ public class COIConfig {
                 .comment("Ticks between diffusion updates (20 = 1 second)")
                 .defineInRange("diffusionInterval", 20, 1, 200);
         INIT_CHUNK_RADIUS = builder
-                .comment("Radius around players for initial cache population on server start")
+                .comment("Logical chunk radius around players for the dust diffusion/decay active set (and startup migration). Far pollution outside this set plus recently written keys is left frozen until a player approaches.")
                 .defineInRange("initChunkRadius", 8, 1, 32);
         DIFFUSION_RATE = builder
                 .comment("Diffusion speed multiplier (higher = faster spread)")

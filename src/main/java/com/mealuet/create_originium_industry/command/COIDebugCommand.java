@@ -1,6 +1,7 @@
 package com.mealuet.create_originium_industry.command;
 
 import com.mealuet.create_originium_industry.config.COIConfig;
+import com.mealuet.create_originium_industry.compat.WorldSpace;
 import com.mealuet.create_originium_industry.core.oridust.*;
 import com.mealuet.create_originium_industry.index.COIAttachments;
 import com.mojang.brigadier.CommandDispatcher;
@@ -79,8 +80,8 @@ public class COIDebugCommand {
         ServerPlayer player = ctx.getSource().getPlayer();
         if (player == null) return 0;
 
-        ChunkPos chunkPos = player.chunkPosition();
-        int dust = OriginiumDustManager.getDust(chunkPos);
+        ChunkPos chunkPos = WorldSpace.toDustChunk(player);
+        int dust = OriginiumDustManager.getDust(player.serverLevel(), chunkPos);
         DustLevel level = DustLevel.fromDust(dust);
 
         ctx.getSource().sendSuccess(() -> Component.translatable(
@@ -97,7 +98,7 @@ public class COIDebugCommand {
 
         int amount = IntegerArgumentType.getInteger(ctx, "amount");
         ServerLevel level = player.serverLevel();
-        ChunkPos chunkPos = player.chunkPosition();
+        ChunkPos chunkPos = WorldSpace.toDustChunk(player);
 
         OriginiumDustManager.setDust(level, chunkPos, amount, DustReason.DEBUG);
 
@@ -114,10 +115,10 @@ public class COIDebugCommand {
 
         int amount = IntegerArgumentType.getInteger(ctx, "amount");
         ServerLevel level = player.serverLevel();
-        ChunkPos chunkPos = player.chunkPosition();
+        ChunkPos chunkPos = WorldSpace.toDustChunk(player);
 
         OriginiumDustManager.addDust(level, chunkPos, amount, DustReason.DEBUG);
-        int newLevel = OriginiumDustManager.getDust(chunkPos);
+        int newLevel = OriginiumDustManager.getDust(level, chunkPos);
 
         ctx.getSource().sendSuccess(() -> Component.translatable(
                 "commands.coi_debug.dust.add",
@@ -131,7 +132,7 @@ public class COIDebugCommand {
         if (player == null) return 0;
 
         ServerLevel level = player.serverLevel();
-        ChunkPos chunkPos = player.chunkPosition();
+        ChunkPos chunkPos = WorldSpace.toDustChunk(player);
 
         OriginiumDustManager.clearDust(level, chunkPos, DustReason.DEBUG);
 
@@ -147,7 +148,8 @@ public class COIDebugCommand {
         if (player == null) return 0;
 
         int radius = IntegerArgumentType.getInteger(ctx, "radius");
-        ChunkPos center = player.chunkPosition();
+        ChunkPos center = WorldSpace.toDustChunk(player);
+        ServerLevel level = player.serverLevel();
 
         ctx.getSource().sendSuccess(() -> Component.translatable(
                 "commands.coi_debug.dust.scan", radius
@@ -157,7 +159,7 @@ public class COIDebugCommand {
         for (int dx = -radius; dx <= radius; dx++) {
             for (int dz = -radius; dz <= radius; dz++) {
                 ChunkPos pos = new ChunkPos(center.x + dx, center.z + dz);
-                int dust = OriginiumDustManager.getDust(pos);
+                int dust = OriginiumDustManager.getDust(level, pos);
                 if (dust > 0) {
                     found = true;
                     DustLevel dustLevel = DustLevel.fromDust(dust);
@@ -190,8 +192,8 @@ public class COIDebugCommand {
         if (player == null) return 0;
 
         PlayerExposureData data = COIAttachments.getPlayerExposure(player);
-        ChunkPos chunkPos = player.chunkPosition();
-        int dust = OriginiumDustManager.getDust(chunkPos);
+        ChunkPos chunkPos = WorldSpace.toDustChunk(player);
+        int dust = OriginiumDustManager.getDust(player.serverLevel(), chunkPos);
         int exposure = data.getExposure();
         int infection = data.getInfection();
 

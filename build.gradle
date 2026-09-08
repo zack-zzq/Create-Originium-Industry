@@ -23,6 +23,34 @@ repositories {
     maven { url = "https://maven.createmod.net" } // Create, Ponder, Flywheel
     maven { url = "https://mvn.devos.one/snapshots" } // Registrate
     maven { url = "https://raw.githubusercontent.com/Fuzss/modresources/main/maven/" }
+    // Prefer NeoForge's copy of Parchment; parchmentmc.org currently times out on GHA.
+    exclusiveContent {
+        forRepositories(
+                maven {
+                    name = 'NeoForged'
+                    url = 'https://maven.neoforged.net/releases'
+                },
+                maven {
+                    name = 'ParchmentMC'
+                    url = 'https://maven.parchmentmc.org'
+                }
+        )
+        filter {
+            includeGroup('org.parchmentmc.data')
+        }
+    }
+    exclusiveContent { // Optional Sable Companion API (compileOnly — not required at runtime)
+        forRepository {
+            maven {
+                url = "https://maven.ryanhcode.dev/releases"
+                name = "RyanHCode Maven"
+            }
+        }
+        filter {
+            includeGroup("dev.ryanhcode.sable")
+            includeGroup("dev.ryanhcode.sable-companion")
+        }
+    }
 }
 
 base {
@@ -52,6 +80,10 @@ runs {
         // Please read: https://stackoverflow.com/questions/2031163/when-to-use-the-different-log-levels
         systemProperty 'forge.logging.console.level', 'debug'
 
+        // NeoForge 1.21.1 GameTestHooks reads neoforge.* (the MDK still sets forge.*)
+        systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+        systemProperty 'neoforge.enableGameTest', 'true'
+
         modSource project.sourceSets.main
     }
 
@@ -66,10 +98,10 @@ runs {
     }
 
     // This run config launches GameTestServer and runs all registered gametests, then exits.
-    // By default, the server will crash when no gametests are provided.
-    // The gametest system is also enabled by default for other run configs under the /test command.
     gameTestServer {
         systemProperty 'forge.enabledGameTestNamespaces', project.mod_id
+        systemProperty 'neoforge.gameTestServer', 'true'
+        argument '--nogui'
     }
 
     data {
@@ -78,6 +110,19 @@ runs {
 
         // Specify the modid for data generation, where to output the resulting resource, and where to look for existing resources.
         arguments.addAll '--mod', project.mod_id, '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
+    }
+}
+
+tasks.configureEach { task ->
+    if (task.name == 'runGameTestServer') {
+        // GameTestServer persists the Overworld SavedData under runs/; wipe it so
+        // MigratedChunks from a previous local run cannot skip merge assertions.
+        task.doFirst {
+            def worldDir = layout.projectDirectory.dir('runs/gameTestServer/world').asFile
+            if (worldDir.exists()) {
+                delete worldDir
+            }
+        }
     }
 }
 
@@ -106,6 +151,18 @@ dependencies {
     compileOnly("dev.engine-room.flywheel:flywheel-neoforge-api-${minecraft_version}:${flywheel_version}")
     runtimeOnly("dev.engine-room.flywheel:flywheel-neoforge-${minecraft_version}:${flywheel_version}")
     implementation("com.tterrag.registrate:Registrate:${registrate_version}")
+
+    // Optional Create: Aeronautics / Sable compat.
+    // compileOnly: present on the compile classpath so SableWorldSpace can call the
+    // Companion API, but NOT packaged and NOT required to run. At runtime the
+    // classes come from Sable's own Jar-in-Jar when (and only when) Sable is installed.
+    // Set enable_sable_compat_compile=false if maven.ryanhcode.dev is unreachable;
+    // SableWorldSpace will then fail to compile until the artifact is restored.
+    if (project.findProperty('enable_sable_compat_compile') != 'false') {
+        compileOnly("dev.ryanhcode.sable-companion:sable-companion-common-${minecraft_version}:${sable_companion_version}") {
+            transitive = false
+        }
+    }
 
     // Example optional mod dependency with JEI
     // The JEI API is declared for compile time use, while the full JEI artifact is used at runtime
@@ -176,6 +233,51 @@ publishing {
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
+}
+
+tasks.named('jar').configure {
+    // GameTests stay on the main compile classpath for runGameTestServer, but
+    // are not shipped in the published artifact.
+    exclude 'com/mealuet/create_originium_industry/gametest/**'
+}
+
+tasks.register('assertNoSableInJar') {
+    group = 'verification'
+    description = 'Fails if the published jar packages Sable or Sable Companion classes.'
+    dependsOn tasks.named('jar')
+    doLast {
+        def jarFile = tasks.named('jar').get().archiveFile.get().asFile
+        def zf = new java.util.zip.ZipFile(jarFile)
+        try {
+            def hits = []
+            zf.entries().each { entry ->
+                def n = entry.name.replace('\\', '/')
+                if (n.startsWith('dev/ryanhcode/sable/') || n.contains('sable-companion')) {
+                    hits << n
+                }
+            }
+            if (!hits.isEmpty()) {
+                throw new GradleException("Published jar packages Sable classes: ${hits}")
+            }
+            def hasWorldSpace = zf.getEntry('com/mealuet/create_originium_industry/compat/WorldSpace.class') != null
+            def hasBridge = zf.getEntry('com/mealuet/create_originium_industry/compat/SableWorldSpace.class') != null
+            def leakedTests = zf.getEntry('com/mealuet/create_originium_industry/gametest/OriDustGameTests.class') != null
+            if (!hasWorldSpace || !hasBridge) {
+                throw new GradleException("Published jar is missing WorldSpace bridge classes")
+            }
+            if (leakedTests) {
+                throw new GradleException("Published jar should not contain GameTest classes")
+            }
+            logger.lifecycle("Verified ${jarFile.name} does not package Sable/Companion (WorldSpace bridge present, GameTests excluded).")
+        } finally {
+            zf.close()
+        }
+    }
+}
+
+tasks.named('check').configure {
+    dependsOn 'assertNoSableInJar'
+    dependsOn 'runGameTestServer'
 }
 
 // IDEA no longer automatically downloads sources/javadoc jars for dependencies, so we need to explicitly enable the behavior.

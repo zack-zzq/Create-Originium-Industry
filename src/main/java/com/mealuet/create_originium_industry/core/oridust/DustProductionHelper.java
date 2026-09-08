@@ -2,6 +2,7 @@ package com.mealuet.create_originium_industry.core.oridust;
 
 import com.mealuet.create_originium_industry.CreateOriginiumIndustry;
 import com.mealuet.create_originium_industry.config.COIConfig;
+import com.mealuet.create_originium_industry.compat.WorldSpace;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -49,7 +50,7 @@ public final class DustProductionHelper {
         int dustAmount = getDustForRecipe(recipeId);
         if (dustAmount <= 0) return;
 
-        ChunkPos chunkPos = new ChunkPos(pos);
+        ChunkPos chunkPos = WorldSpace.toDustChunk(level, pos);
         OriginiumDustManager.addDust(level, chunkPos, dustAmount, DustReason.MACHINE_PROCESSING);
 
         if (COIConfig.ENABLE_DEBUG_LOGGING.get()) {

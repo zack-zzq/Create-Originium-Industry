@@ -15,6 +15,11 @@ import java.util.function.Supplier;
 public class COIAttachments {
     public static final DeferredRegister<AttachmentType<?>> ATTACHMENT_TYPES = DeferredRegister.create(NeoForgeRegistries.ATTACHMENT_TYPES, CreateOriginiumIndustry.MODID);
 
+    /**
+     * Legacy chunk attachment. Kept so old saves deserialize; {@link com.mealuet.create_originium_industry.core.oridust.DustCacheManager}
+     * migrates values into {@link com.mealuet.create_originium_industry.core.oridust.OriDustSavedData} and zeros the attachment.
+     * New dust writes do not use this store.
+     */
     public static final Supplier<AttachmentType<OriDustData>> CHUNK_DUST_TYPE = ATTACHMENT_TYPES.register(
             "chunk_oridust_data",
             () -> AttachmentType.serializable(OriDustData::new).build()

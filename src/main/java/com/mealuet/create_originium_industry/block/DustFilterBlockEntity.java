@@ -1,5 +1,6 @@
 package com.mealuet.create_originium_industry.block;
 
+import com.mealuet.create_originium_industry.compat.WorldSpace;
 import com.mealuet.create_originium_industry.config.COIConfig;
 import com.mealuet.create_originium_industry.core.oridust.DustReason;
 import com.mealuet.create_originium_industry.core.oridust.OriginiumDustManager;
@@ -57,8 +58,8 @@ public class DustFilterBlockEntity extends KineticBlockEntity {
         int baseRate = COIConfig.FILTER_ABSORPTION_RATE.get();
         int absorption = Math.max(1, (int) (baseRate * speedMultiplier));
 
-        ChunkPos chunkPos = new ChunkPos(worldPosition);
-        int currentDust = OriginiumDustManager.getDust(chunkPos);
+        ChunkPos chunkPos = WorldSpace.toDustChunk(serverLevel, worldPosition);
+        int currentDust = OriginiumDustManager.getDust(serverLevel, chunkPos);
 
         if (currentDust > 0) {
             int actualAbsorption = Math.min(absorption, currentDust);

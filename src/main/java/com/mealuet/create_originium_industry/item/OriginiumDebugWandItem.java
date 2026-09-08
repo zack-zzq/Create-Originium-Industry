@@ -3,6 +3,7 @@ package com.mealuet.create_originium_industry.item;
 import com.mealuet.create_originium_industry.core.oridust.DustLevel;
 import com.mealuet.create_originium_industry.core.oridust.OriginiumDustManager;
 import com.mealuet.create_originium_industry.core.oridust.PlayerExposureData;
+import com.mealuet.create_originium_industry.compat.WorldSpace;
 import com.mealuet.create_originium_industry.index.COIAttachments;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -40,8 +41,8 @@ public class OriginiumDebugWandItem extends Item {
         }
 
         // Right-click air: show player exposure info
-        ChunkPos chunkPos = serverPlayer.chunkPosition();
-        int dust = OriginiumDustManager.getDust(chunkPos);
+        ChunkPos chunkPos = WorldSpace.toDustChunk(serverPlayer);
+        int dust = OriginiumDustManager.getDust(serverPlayer.serverLevel(), chunkPos);
         DustLevel dustLevel = DustLevel.fromDust(dust);
 
         PlayerExposureData data = COIAttachments.getPlayerExposure(serverPlayer);
@@ -67,8 +68,8 @@ public class OriginiumDebugWandItem extends Item {
 
         if (player.isShiftKeyDown()) {
             // Shift + Right-click block: show block's chunk dust info
-            ChunkPos chunkPos = new ChunkPos(context.getClickedPos());
-            int dust = OriginiumDustManager.getDust(chunkPos);
+            ChunkPos chunkPos = WorldSpace.toDustChunk(level, context.getClickedPos());
+            int dust = OriginiumDustManager.getDust(serverPlayer.serverLevel(), chunkPos);
             DustLevel dustLevel = DustLevel.fromDust(dust);
 
             serverPlayer.sendSystemMessage(Component.translatable(

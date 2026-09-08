@@ -2,7 +2,6 @@ package com.mealuet.create_originium_industry.block;
 
 import com.mealuet.create_originium_industry.index.COIBlockEntityTypes;
 import com.simibubi.create.content.kinetics.base.KineticBlock;
-import com.simibubi.create.content.kinetics.simpleRelays.ICogWheel;
 import com.simibubi.create.foundation.block.IBE;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;

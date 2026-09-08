@@ -11,20 +11,32 @@ import net.neoforged.neoforge.event.tick.LevelTickEvent;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
- * Handles periodic dust diffusion and natural decay for loaded chunks.
+ * Handles periodic dust diffusion and natural decay for the <em>active set</em>.
  * <p>
- * Diffusion algorithm:
+ * SavedData can hold dust for unloaded / far-away logical chunks. Walking every
+ * key every tick would be unbounded, so this engine only considers the active
+ * set built by {@link DustCacheManager}:
+ * <ul>
+ *   <li>logical chunks within {@link COIConfig#INIT_CHUNK_RADIUS} of a player</li>
+ *   <li>recently written keys plus their 4-neighbors</li>
+ * </ul>
+ * Diffusion only runs between neighbors that are both in that set.
+ * <p>
+ * Decay uses the same active set. Far pollution is left frozen until a player
+ * comes near or the chunk is written again (machines, filters, death burst).
+ *
+ * <h3>Diffusion algorithm (unchanged):</h3>
  * <ol>
- *   <li>For each chunk with dust > 0, calculate pressure difference with each loaded neighbor</li>
+ *   <li>For each active chunk with dust &gt; 0, calculate pressure difference
+ *       with each active neighbor</li>
  *   <li>Transfer a fraction of the difference (controlled by {@code diffusionRate})</li>
- *   <li>Apply a diffusion decay factor: neighbor only receives 80% of what source loses
- *       (20% is lost to simulate environmental absorption)</li>
- *   <li>After diffusion, apply natural decay to all chunks with dust > 0</li>
+ *   <li>Apply a diffusion decay factor: neighbor only receives 80% of what
+ *       source loses (20% is lost to simulate environmental absorption)</li>
+ *   <li>After diffusion, apply natural decay to active chunks with dust &gt; 0</li>
  * </ol>
- * <p>
- * All calculations are server-side only. Only processes in the Overworld.
  */
 public class DustDiffusionEngine {
 
@@ -38,19 +50,18 @@ public class DustDiffusionEngine {
         if (!COIConfig.ENABLE_DUST_DIFFUSION.get()) return;
         if (serverLevel.getGameTime() % COIConfig.DIFFUSION_INTERVAL.get() != 0) return;
 
-        handleDustDiffusion(serverLevel);
-        handleDustDecay(serverLevel);
+        Map<ChunkPos, Integer> snapshot = DustCacheManager.snapshotActive(serverLevel);
+        handleDustDiffusion(serverLevel, snapshot);
+        handleDustDecay(serverLevel, snapshot.keySet());
     }
 
     /**
-     * Performs one tick of dust diffusion between loaded chunks.
+     * Performs one tick of dust diffusion between active-set neighbors.
      * Uses a snapshot-then-apply pattern to avoid concurrent modification.
      */
-    private static void handleDustDiffusion(ServerLevel level) {
-        if (DustCacheManager.isEmpty()) return;
+    private static void handleDustDiffusion(ServerLevel level, Map<ChunkPos, Integer> snapshot) {
+        if (snapshot.isEmpty()) return;
 
-        Map<ChunkPos, Integer> snapshot = DustCacheManager.getSnapshot();
-        // Accumulates net dust changes: positive = gaining, negative = losing
         Map<ChunkPos, Integer> deltas = new HashMap<>();
 
         double diffusionRate = COIConfig.DIFFUSION_RATE.get();
@@ -61,7 +72,7 @@ public class DustDiffusionEngine {
 
             for (Direction dir : Direction.Plane.HORIZONTAL) {
                 ChunkPos neighborPos = new ChunkPos(pos.x + dir.getStepX(), pos.z + dir.getStepZ());
-                if (!DustCacheManager.isChunkLoaded(neighborPos)) continue;
+                if (!snapshot.containsKey(neighborPos)) continue;
 
                 int neighborDust = snapshot.getOrDefault(neighborPos, 0);
                 int difference = currentDust - neighborDust;
@@ -88,13 +99,12 @@ public class DustDiffusionEngine {
             }
         });
 
-        // Apply all deltas via the manager (handles clamping and persistence)
         int maxDust = COIConfig.MAX_DUST_LEVEL.get();
         deltas.forEach((pos, delta) -> {
-            int current = DustCacheManager.getDustLevel(pos);
+            int current = OriDustSavedData.get(level).get(pos);
             int newLevel = Math.max(0, Math.min(maxDust, current + delta));
             if (newLevel != current) {
-                DustCacheManager.syncDustLevel(level, pos, newLevel);
+                OriginiumDustManager.applySimulated(level, pos, newLevel);
             }
         });
 
@@ -104,22 +114,23 @@ public class DustDiffusionEngine {
     }
 
     /**
-     * Applies natural dust decay to all cached chunks.
-     * Decay rate is controlled by {@link COIConfig#DUST_DECAY_RATE}.
-     * Decay is applied after diffusion each cycle.
+     * Applies natural dust decay to the active set only.
+     * Inactive (far) pollution does not decay until it becomes active.
+     * Re-reads SavedData so decay sees post-diffusion values.
      */
-    private static void handleDustDecay(ServerLevel level) {
+    private static void handleDustDecay(ServerLevel level, Set<ChunkPos> active) {
         int decayRate = COIConfig.DUST_DECAY_RATE.get();
         if (decayRate <= 0) return;
 
-        Map<ChunkPos, Integer> snapshot = DustCacheManager.getSnapshot();
-        snapshot.forEach((pos, dust) -> {
+        OriDustSavedData data = OriDustSavedData.get(level);
+        for (ChunkPos pos : active) {
+            int dust = data.get(pos);
             if (dust > 0) {
                 int newLevel = Math.max(0, dust - decayRate);
                 if (newLevel != dust) {
-                    DustCacheManager.syncDustLevel(level, pos, newLevel);
+                    OriginiumDustManager.applySimulated(level, pos, newLevel);
                 }
             }
-        });
+        }
     }
 }

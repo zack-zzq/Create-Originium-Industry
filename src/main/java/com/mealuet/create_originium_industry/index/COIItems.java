@@ -2,6 +2,7 @@ package com.mealuet.create_originium_industry.index;
 
 import com.mealuet.create_originium_industry.CreateOriginiumIndustry;
 import com.mealuet.create_originium_industry.item.*;
+import com.tterrag.registrate.util.entry.ItemEntry;
 import net.minecraft.world.item.Item;
 
 public class COIItems {

@@ -82,6 +82,13 @@
   "commands.coi_debug.reactor.stabilize": "已强制稳定瞄准的动力核心",
   "commands.coi_debug.reactor.live": "S=%s  H=%s  C=%s  M=%s  失稳=%s  燃料=%s  停机=%s",
   "commands.coi_debug.reactor.none": "请先看向源石动力核心",
+  "commands.coi_debug.perf.header": "COI 性能基线：%s 台相关机器，设计目标每 tick 额外 %s ms",
+  "commands.coi_debug.perf.dust": "粉尘周期：上次活跃集=%s 快照=%s 近期写入=%s 耗时=%s",
+  "commands.coi_debug.perf.machines": "本 tick：反应炉=%s（%s） 滤网=%s（%s） 同步=%s",
+  "commands.coi_debug.perf.aligned": "对齐额外开销（粉尘+反应炉+滤网+同步）=%s  目标=%s ms",
+  "commands.coi_debug.perf.run": "已强制跑一轮粉尘周期（活跃集=%s，%s）并刷新客户端同步（%s）",
+  "commands.coi_debug.perf.seed": "已写入 %s 个产尘区块（10×10 网格，中心 [%s, %s]）",
+  "commands.coi_debug.perf.clear": "已清除 [%s, %s] 周围 10×10 网格的种子粉尘",
   "commands.coi_debug.not_available": "该功能尚未实现",
 
   "item.create_originium_industry.originium_debug_wand.tooltip": "§7右键空气§r - 查看玩家暴露信息",

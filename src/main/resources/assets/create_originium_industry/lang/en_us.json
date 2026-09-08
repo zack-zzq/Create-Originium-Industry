@@ -82,6 +82,13 @@
   "commands.coi_debug.reactor.stabilize": "Forced the targeted power core to stabilize",
   "commands.coi_debug.reactor.live": "S=%s  H=%s  C=%s  M=%s  instability=%s  fuel=%s  shutdown=%s",
   "commands.coi_debug.reactor.none": "Look at an originium power core first",
+  "commands.coi_debug.perf.header": "COI perf baseline: %s machines, design target %s ms/tick extra",
+  "commands.coi_debug.perf.dust": "Dust cycle: last active=%s snapshot=%s recentWrites=%s cost=%s",
+  "commands.coi_debug.perf.machines": "This tick: reactors=%s (%s)  filters=%s (%s)  sync=%s",
+  "commands.coi_debug.perf.aligned": "Aligned extra (dust+reactors+filters+sync)=%s  target=%s ms",
+  "commands.coi_debug.perf.run": "Forced dust cycle (active=%s, %s) and client sync flush (%s)",
+  "commands.coi_debug.perf.seed": "Seeded %s dusty machine chunks in a 10×10 grid around [%s, %s]",
+  "commands.coi_debug.perf.clear": "Cleared the seeded 10×10 dust grid around [%s, %s]",
   "commands.coi_debug.not_available": "This feature is not yet implemented",
 
   "item.create_originium_industry.originium_debug_wand.tooltip": "§7Right-click air§r - View player exposure info",

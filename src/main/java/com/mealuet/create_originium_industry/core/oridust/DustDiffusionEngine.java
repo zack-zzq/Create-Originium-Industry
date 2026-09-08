@@ -2,6 +2,7 @@ package com.mealuet.create_originium_industry.core.oridust;
 
 import com.mealuet.create_originium_industry.CreateOriginiumIndustry;
 import com.mealuet.create_originium_industry.config.COIConfig;
+import com.mealuet.create_originium_industry.core.perf.PerfProbe;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.ChunkPos;
@@ -47,9 +48,22 @@ public class DustDiffusionEngine {
         if (!COIConfig.ENABLE_DUST_DIFFUSION.get()) return;
         if (serverLevel.getGameTime() % COIConfig.DIFFUSION_INTERVAL.get() != 0) return;
 
-        Map<ChunkPos, Integer> snapshot = DustCacheManager.snapshotActive(serverLevel);
-        handleDustDiffusion(serverLevel, snapshot);
-        handleDustDecay(serverLevel, snapshot.keySet());
+        runActiveSetCycle(serverLevel);
+    }
+
+    /**
+     * One diffusion + decay pass over the current active set. Used by the
+     * world tick, GameTests, and {@code /coi_debug perf}.
+     *
+     * @return active-set size after the snapshot
+     */
+    public static int runActiveSetCycle(ServerLevel level) {
+        long start = System.nanoTime();
+        Map<ChunkPos, Integer> snapshot = DustCacheManager.snapshotActive(level);
+        handleDustDiffusion(level, snapshot);
+        handleDustDecay(level, snapshot.keySet());
+        PerfProbe.recordDustCycle(snapshot.size(), System.nanoTime() - start);
+        return snapshot.size();
     }
 
     /**

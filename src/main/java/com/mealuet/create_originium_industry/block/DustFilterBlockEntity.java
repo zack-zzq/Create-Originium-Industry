@@ -11,6 +11,7 @@ import com.mealuet.create_originium_industry.core.oridust.DustReason;
 import com.mealuet.create_originium_industry.core.oridust.IDustPurifier;
 import com.mealuet.create_originium_industry.core.oridust.OriginiumDustManager;
 import com.mealuet.create_originium_industry.core.oridust.SieveKind;
+import com.mealuet.create_originium_industry.core.perf.PerfProbe;
 import com.mealuet.create_originium_industry.index.COIBlocks;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntity;
 import net.minecraft.core.BlockPos;
@@ -98,6 +99,17 @@ public class DustFilterBlockEntity extends KineticBlockEntity implements IDustPu
 
     @Override
     public int absorbAmbient(ServerLevel level, BlockPos purifierPos, int requested) {
+        long start = System.nanoTime();
+        try {
+            return absorbAmbientInner(level, purifierPos, requested);
+        } finally {
+            if (level != null) {
+                PerfProbe.addFilter(level.getGameTime(), System.nanoTime() - start);
+            }
+        }
+    }
+
+    private int absorbAmbientInner(ServerLevel level, BlockPos purifierPos, int requested) {
         if (level == null || !isPurifierActive() || requested <= 0) {
             return 0;
         }

@@ -1,8 +1,8 @@
 # Registry, lang keys, and save compatibility
 
-This document freezes identifiers for Create: Originium Industry so later features
-(dust refactor, purification, reactor) do not break existing worlds, recipes, or
-translations.
+This document freezes identifiers for Create: Originium Industry so later
+changes do not break existing worlds, recipes, or translations. The v1 loop
+(dust, purification, reactor) is shipped in `0.0.10-dev`; new ids stay additive.
 
 **Rule:** registry ids are compatibility contracts. Display names are not.
 
@@ -24,9 +24,10 @@ registry ids, recipe paths, or NBT keys.
 6. **Common tags (`c:`)** already published stay. Conventional aliases may be
    added beside them.
 
-The dust / pollution simulation is being refactored separately. Treat
-`core/oridust` as unstable **implementation**, but keep the ids in this file
-stable unless a migration is documented here first.
+Treat `core/oridust` as unstable **implementation** (helpers and class names
+may still move). Keep the ids in this file stable unless a migration is
+documented here first. Gameplay contracts — chunk dust, `IOridustProducer` /
+`IDustPurifier`, and the published datapack shapes — stay.
 
 ## Frozen registry ids
 
@@ -89,8 +90,17 @@ stable unless a migration is documented here first.
 | `originium_coolant` | 源石冷却液 | Originium Coolant | Reactor heat-capacity fluid (C). Mix water + 培养液 + packed ice |
 | `hot_water` | 热水 | Hot Water | Unstable conversion / meltdown heat dump. Not an originium fluid |
 
-Still / flowing textures live at `textures/fluid/<id>_still.png` and
-`textures/fluid/<id>_flow.png`.
+Client fluid assets (required for each id in `COIFluids.ALL`):
+
+- Still / flowing textures: `textures/fluid/<id>_still.png` and
+  `textures/fluid/<id>_flow.png`
+- LiquidBlock blockstates: `blockstates/<id>.json` with `level=0..15` (Registrate
+  `defaultBlock()` registers the block)
+- Particle models: `models/block/<id>.json`
+- Atlas: `assets/minecraft/atlases/blocks.json` lists every still/flow sprite
+
+Without those files, world leaks (including meltdown `purest_molten_originium`)
+and placed fluid blocks show the missing-model texture.
 
 ### Effect
 
@@ -129,7 +139,7 @@ Common config spec is `COIConfig.COMMON_SPEC`. Top-level keys:
 - `worldgen` *(additive; raw originium ore frequency / height)*
 - `protection` *(additive; respirator + canister)*
 - `infection` *(additive; stage thresholds)*
-- `reactor` *(additive; M3 power-core knobs. Frozen keys keep names; coolant/chamber/RPM keys added beside them. Additive `meltdownMoltenSources` caps the world leak of `purest_molten_originium`.)*
+- `reactor` *(additive; power-core knobs. Frozen keys keep names; coolant/chamber/RPM keys added beside them. Additive `meltdownMoltenSources` caps the world leak of `purest_molten_originium`. Meltdown never explodes.)*
 - `multiplayer` *(additive; dedicated-server spread policy + nearby client dust sync)*
 - `purest_line` *(additive; cooling-chamber durability)*
 - `alloy_parts` *(additive; housing seal, alloy sieve, sealed canister bonus)*
@@ -418,20 +428,27 @@ None at the moment. Filter / goggle / HUD / debug tooltip strings live in
 `en_us.json` and `zh_cn.json`. If you add a `Component.translatable` call,
 add both language keys in the same change.
 
-## Allowed to add later
+## Additive ids (do not rename once shipped)
 
 New ids are fine. Do not reuse a frozen id for a different object.
 
-JEI category and info keys (additive; optional JEI / EMI-style viewers):
+### Optional compat
+
+| Mod | `mods.toml` | Behaviour |
+|---|---|---|
+| JEI (`jei`, 19.8+) | `optional`, client | Loads `compat.jei.COIJeiPlugin` when present. Categories: basin process gates, dust emission, reactor info, plus ingredient info pages. `compileOnly` API; the published jar does **not** package JEI. |
+| Create: Aeronautics / Sable (`aeronautics`, `sable`) | `optional`, both | `compat.WorldSpace` remaps plot-grid positions to the sublevel `logicalPose()` so dust is keyed by logical overworld chunks and does not travel with the ship. Identity mapping if Sable is absent or the bridge fails. Neither Sable nor Sable Companion is packaged in this jar. |
+
+There is **no EMI plugin**. `compat.recipeviewer` is a JEI-free data layer (GameTests + JEI format against the same records).
+
+JEI category and info keys (additive):
 
 | Key | Role |
 |---|---|
 | `jei.create_originium_industry.basin_process` | Basin sieve / cooling-chamber / no-heat gates |
 | `jei.create_originium_industry.dust_emission` | `coi_dust_emission` recipe / item / tag amounts |
 | `jei.create_originium_industry.reactor` | Power-core fuel, coolant conversion, housing |
-| `jei.create_originium_industry.info.*` | JEI ingredient info pages |
-
-JEI is an optional dependency (`compileOnly` API, `mods.toml` type=`optional`). The published jar ships `compat.jei.COIJeiPlugin` but does not package JEI itself.
+| `jei.create_originium_industry.info.*` | JEI ingredient info pages (`power_core`, `purest_originium`, `originium_coolant`, `dust_sieve`, `originium_dust`) |
 
 Ponder scene ids (additive; do not rename once shipped):
 

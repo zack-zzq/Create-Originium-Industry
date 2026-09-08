@@ -14,7 +14,7 @@ A [Create](https://github.com/Creators-of-Create/Create) addon about a new indus
 
 v1 is a closed loop, not a pile of extra materials: **dust pollution → purification → reactor**.
 
-⚠ Still **WIP**. Survival processing includes the purest-originium line; the reactor Alpha (power core + cooling + stability) is in.
+Pre-release **`0.0.10-dev`**. The loop is playable: Overworld ore, the dust factory, protection gear, the purest / alloy lines, and the power-core reactor (meltdown dumps dust and leaks `purest_molten_originium` — **no TNT / explosion**). Balance and the internal `core/oridust` API may still change; **registry ids stay frozen**.
 
 ## Requirements
 
@@ -22,16 +22,21 @@ v1 is a closed loop, not a pile of extra materials: **dust pollution → purific
 - NeoForge **21.1.x**
 - Create **6.0.4+**
 
+Optional (the game loads without them):
+
+- **JEI** 19.8+ — extra pages for basin gates, dust emission, and the power core
+- **Create: Aeronautics / Sable** — remaps originium dust to logical overworld chunks on moving ships; identity coordinates if absent
+
 ## v1 pillar
 
-Players mine and process Originium with Create machines. Processing pollutes the surrounding chunks with originium dust. Dust spreads, makes players sick, and can become lasting infection. Filters and (later) protection make factories livable. A cleaner, more expensive **purest** line feeds a late-game **reactor** that is powerful and unstable.
+Players mine and process Originium with Create machines. Processing pollutes the surrounding chunks with originium dust. Dust spreads, makes players sick, and can become lasting infection. Filters, sieves, and protection gear make factories livable. A cleaner, more expensive **purest** line feeds a late-game **reactor** that is powerful and unstable.
 
 Two industrial routes:
 
 1. **Alloy route** — molten originium + iron → originium alloy ingot (safer structural material).
 2. **Purest route** — basin sieve filters molten originium, heated mix with culture solution (培养液) produces cultured originium, then a cooling-chamber attachment + packed ice (no blaze heat) supercools it to purest originium. Superheating the culture by accident (or remelting the item) yields `purest_molten_originium` — a late intermediate / accident fluid, not the clean-route output. Meltdown will dump dust and that fluid; it does not explode.
 
-## What's in this version (`0.0.8-dev`)
+## What's in this version (`0.0.10-dev`)
 
 ### Items
 
@@ -112,7 +117,7 @@ cooling chamber + snow blocks + pumpkin + packed ice → originium super cooling
 water + 培养液 + packed ice → originium coolant
 ```
 
-### Systems (in progress)
+### Systems
 
 - Per-chunk originium dust, diffusion, and decay (overworld)
 - Uncommon Overworld raw originium ore (`raw_originium_ore` / `deepslate_raw_originium_ore`, config `worldgen.*`)
@@ -129,24 +134,27 @@ water + 培养液 + packed ice → originium coolant
 - Originium alloy casing / core housing placed beside a processing machine cut process emission (10% / 20% per face, cap 50%) before filters run. Both are tagged `reactor_housing` for the power core.
 - Nearby chunk dust and local-player exposure/infection sync to clients at low frequency (dirty set / on-demand window — not the full map)
 - Ponder scenes (hold W on the relevant item): dust generation & diffusion, kinetic filter / sieve recovery, supercooling the purest line, power-core stability `S = C × M − H`. No GUI; copy is `Component.translatable`.
-- Common + client config (`create_originium_industry-common.toml` / `-client.toml`): dust, exposure, infection stages, filter, worldgen, protection gear, alloy parts, reactor stubs, dedicated-server spread policy, accessibility, industrial SFX
+- Optional JEI (`compat.jei.COIJeiPlugin`, `mods.toml` type=`optional`): basin-process gates, `coi_dust_emission` amounts, reactor info, and ingredient info pages. The published jar does not package JEI. There is no EMI plugin; `compat.recipeviewer` is a JEI-free data layer used by GameTests and the JEI plugin.
+- Optional Create: Aeronautics / Sable (`compat.WorldSpace`): when `sable` is loaded, plot-grid positions remap to the ship's logical overworld chunk so dust does not travel with the ship. Without Sable the mapping is identity. Neither Sable nor Aeronautics is packaged in this jar.
+- Fluid world blocks ship `level=0..15` blockstates, particle models, still/flow textures, and `assets/minecraft/atlases/blocks.json` entries so leaked / piped fluids render.
+- Common + client config (`create_originium_industry-common.toml` / `-client.toml`): dust, exposure, infection stages, filter, worldgen, protection gear, alloy parts, reactor (heat / cooling / stability / meltdown), dedicated-server spread policy, accessibility, industrial SFX
 - `/coi_debug` and the debug wand for inspection
-- Backbone advancements: obtain raw originium → first dust exposure → first filter/sieve capture → first power-core start. Side milestones: first alloy, first protection gear, first infection stage, first power-core meltdown.
+- Advancements: obtain raw originium → first dust exposure → first filter/sieve capture → first power-core start. Side milestones: first alloy, first protection gear, first infection stage, first power-core meltdown.
 - Industrial SFX (`sounds.json`): filter work, high-dust ambience, reactor steady / alarm. Subtitles in `en_us` / `zh_cn`. Client `enableIndustrialSounds` / `soundDensity` plus `reduceFlicker` / particle knobs.
 
-Dust and pollution are being reworked. Treat `core/oridust` as unstable; **do not rename registry ids** — see [docs/REGISTRY.md](docs/REGISTRY.md).
+Treat `core/oridust` as an **unstable implementation** (class names and helpers may move). **Do not rename registry ids** — see [docs/REGISTRY.md](docs/REGISTRY.md).
 
 ## Roadmap
 
 | Phase | Name | Status |
 |---|---|---|
 | **M0** | Tech cleanup: freeze ids, docs, metadata, config skeleton | Done |
-| **M1** | Dust loop MVP: data-driven emission, filters, dust meter, survival source | In progress (simulation refactor) |
-| **M2** | Purest / alloy expansion: filter + 培养液 + supercooling | Survival path in (`purest_originium`); alloy housing / sieve / sealed canister in |
-| **M3** | Reactor: heat, cooling, instability / meltdown | Alpha in (power core + chambers + S; meltdown = dust + molten leak, not explosion) |
-| **M4** | Ponder, GameTests, optional compat (e.g. Create: Aeronautics) | Ponder scenes + advancement backbone + industrial SFX + dust/reactor perf baseline in |
+| **M1** | Dust loop: data-driven emission, filters, dust meter, survival ore | Shipped (playable). `core/oridust` internals remain unstable |
+| **M2** | Purest / alloy: filter + 培养液 + supercooling, housing / sieve / sealed canister | Shipped |
+| **M3** | Reactor: heat, cooling, instability / meltdown | Shipped (power core + chambers + `S`; meltdown = dust + purest molten leak, not explosion) |
+| **M4** | Ponder, GameTests, optional compat | Shipped for this pillar: Ponder, JEI pages, Aeronautics/Sable soft-dep, advancement tree, industrial SFX, dust/reactor perf baseline |
 
-M1 must be playable before M3. The reactor depends on dust APIs and the purest fuel chain. Ponder scenes cover dust, filters, supercooling, and the power core.
+The reactor depends on the dust APIs and the purest fuel chain. Ponder scenes cover dust, filters, supercooling, and the power core.
 
 ## Documentation for contributors
 

@@ -25,6 +25,12 @@ public final class COICriteria {
     public static final DeferredHolder<CriterionTrigger<?>, SimplePlayerTrigger> POWER_CORE_STARTED =
             TRIGGERS.register("power_core_started", SimplePlayerTrigger::new);
 
+    public static final DeferredHolder<CriterionTrigger<?>, SimplePlayerTrigger> INFECTION_STAGE =
+            TRIGGERS.register("infection_stage", SimplePlayerTrigger::new);
+
+    public static final DeferredHolder<CriterionTrigger<?>, SimplePlayerTrigger> POWER_CORE_MELTDOWN =
+            TRIGGERS.register("power_core_meltdown", SimplePlayerTrigger::new);
+
     private COICriteria() {}
 
     public static void register(IEventBus modEventBus) {

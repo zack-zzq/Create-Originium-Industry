@@ -131,7 +131,7 @@ water + 培养液 + packed ice → originium coolant
 - Ponder scenes (hold W on the relevant item): dust generation & diffusion, kinetic filter / sieve recovery, supercooling the purest line, power-core stability `S = C × M − H`. No GUI; copy is `Component.translatable`.
 - Common + client config (`create_originium_industry-common.toml` / `-client.toml`): dust, exposure, infection stages, filter, worldgen, protection gear, alloy parts, reactor stubs, dedicated-server spread policy, accessibility, industrial SFX
 - `/coi_debug` and the debug wand for inspection
-- Backbone advancements: obtain raw originium → first dust exposure → first filter/sieve capture → first power-core start
+- Backbone advancements: obtain raw originium → first dust exposure → first filter/sieve capture → first power-core start. Side milestones: first alloy, first protection gear, first infection stage, first power-core meltdown.
 - Industrial SFX (`sounds.json`): filter work, high-dust ambience, reactor steady / alarm. Subtitles in `en_us` / `zh_cn`. Client `enableIndustrialSounds` / `soundDensity` plus `reduceFlicker` / particle knobs.
 
 Dust and pollution are being reworked. Treat `core/oridust` as unstable; **do not rename registry ids** — see [docs/REGISTRY.md](docs/REGISTRY.md).

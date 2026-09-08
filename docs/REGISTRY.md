@@ -466,8 +466,12 @@ Datapack path is the advancement id (`create_originium_industry:<path>`).
 | `dust_exposure` | `create_originium_industry:dust_exposure` | First dust-fog exposure gain |
 | `dust_purified` | `create_originium_industry:dust_purified` | Kinetic filter ambient absorb or nearby sieve/filter capture |
 | `start_power_core` | `create_originium_industry:power_core_started` | Power core begins generating |
+| `obtain_alloy` | `minecraft:inventory_changed` | First `originium_alloy_ingot` |
+| `obtain_protection` | `minecraft:inventory_changed` | Any item tagged `originium_protection` |
+| `infection_stage` | `create_originium_industry:infection_stage` | First symptomatic infection stage (weakness+) |
+| `power_core_meltdown` | `create_originium_industry:power_core_meltdown` | Nearby players when a core actually melts down |
 
-Criterion trigger ids (`dust_exposure`, `dust_purified`, `power_core_started`) are additive registry ids. Do not rename them.
+Criterion trigger ids (`dust_exposure`, `dust_purified`, `power_core_started`, `infection_stage`, `power_core_meltdown`) are additive registry ids. Do not rename them.
 
 ### Sound events (additive)
 

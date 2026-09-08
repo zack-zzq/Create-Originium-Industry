@@ -1,0 +1,31 @@
+{
+  "parent": "create_originium_industry:obtain_raw_originium",
+  "display": {
+    "icon": {
+      "id": "create_originium_industry:originium_alloy_ingot"
+    },
+    "title": {
+      "translate": "advancements.create_originium_industry.obtain_alloy.title"
+    },
+    "description": {
+      "translate": "advancements.create_originium_industry.obtain_alloy.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "has_alloy": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "create_originium_industry:originium_alloy_ingot"
+          }
+        ]
+      }
+    }
+  },
+  "sends_telemetry_event": false
+}

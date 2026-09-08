@@ -252,8 +252,10 @@ public class COIDebugCommand {
 
         int amount = IntegerArgumentType.getInteger(ctx, "amount");
         PlayerExposureData data = COIAttachments.getPlayerExposure(player);
+        int before = data.getInfection();
         data.setInfection(amount);
         DustSyncTracker.markExposureDirty(player);
+        COIAdvancements.maybeInfectionStage(player, before, data.getInfection());
 
         ctx.getSource().sendSuccess(() -> Component.translatable(
                 "commands.coi_debug.infection.set", amount

@@ -340,6 +340,7 @@ public class PowerCoreBlockEntity extends GeneratingKineticBlockEntity {
         refreshRotation();
         setChanged();
         notifyUpdate();
+        COIAdvancements.powerCoreMeltdown(serverLevel, worldPosition);
     }
 
     private void applyAmounts(ReactorFluids.Amounts amounts) {

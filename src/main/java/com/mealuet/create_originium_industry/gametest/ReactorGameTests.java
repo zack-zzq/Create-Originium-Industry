@@ -17,6 +17,7 @@ import com.mealuet.create_originium_industry.index.COIBlocks;
 import com.mealuet.create_originium_industry.index.COIFluids;
 import com.mealuet.create_originium_industry.index.COIItems;
 import com.mealuet.create_originium_industry.index.COITags;
+import com.simibubi.create.api.stress.BlockStressValues;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.gametest.framework.GameTest;
@@ -238,6 +239,43 @@ public final class ReactorGameTests {
         helper.succeed();
     }
 
+    @GameTest(template = "empty", batch = "reactor_rpm")
+    public static void generatedSpeedFollowsReactorConfig(GameTestHelper helper) {
+        PowerCoreBlockEntity core = placeCore(helper, true);
+        helper.assertValueEqual(core.getGeneratedSpeed(), 0f, "idle core generates 0");
+        core.configureForGameTest(1, 4000, 0, 0, 0.0);
+        helper.assertTrue(core.isGenerating(), "housing + fuel + chamber generates");
+        helper.assertValueEqual(core.getGeneratedSpeed(), COIConfig.reactorGeneratedRpm(), "runtime uses config");
+        helper.assertValueEqual(core.getGeneratedSpeed(), (float) COIConfig.DEFAULT_REACTOR_GENERATED_RPM, "default 32");
+        helper.succeed();
+    }
+
+    @GameTest(template = "empty", batch = "reactor_rpm")
+    public static void stressDisplayAndRuntimeShareConfig(GameTestHelper helper) {
+        PowerCoreBlockEntity core = placeCore(helper, true);
+        core.configureForGameTest(1, 4000, 0, 0, 0.0);
+        int previous = COIConfig.reactorGeneratedRpmInt();
+        try {
+            helper.assertValueEqual(previous, COIConfig.DEFAULT_REACTOR_GENERATED_RPM, "start at default");
+            assertRpmWiring(helper, previous, "default wiring");
+            helper.assertValueEqual(core.getGeneratedSpeed(), (float) previous, "default runtime");
+
+            int mutated = 48;
+            COIConfig.REACTOR_GENERATED_RPM.set(mutated);
+            COIBlocks.invalidatePowerCoreRpmDisplay();
+            helper.assertValueEqual(COIConfig.reactorGeneratedRpmInt(), mutated, "config helper follows set");
+            assertRpmWiring(helper, mutated, "mutated wiring");
+            helper.assertValueEqual(core.getGeneratedSpeed(), (float) mutated, "mutated runtime");
+        } finally {
+            COIConfig.REACTOR_GENERATED_RPM.set(previous);
+            COIBlocks.invalidatePowerCoreRpmDisplay();
+        }
+
+        helper.assertValueEqual(core.getGeneratedSpeed(), (float) previous, "restored runtime");
+        assertRpmWiring(helper, previous, "restored display");
+        helper.succeed();
+    }
+
     @GameTest(template = "empty", batch = "reactor")
     public static void chamberAttachesToPowerCore(GameTestHelper helper) {
         helper.setBlock(new BlockPos(1, 1, 1), COIBlocks.POWER_CORE.getDefaultState());
@@ -273,6 +311,15 @@ public final class ReactorGameTests {
     private static boolean hasPurestMoltenSource(GameTestHelper helper, BlockPos rel) {
         var state = helper.getLevel().getFluidState(helper.absolutePos(rel));
         return state.isSource() && state.getType().isSame(COIFluids.PUREST_MOLTEN_ORIGINIUM.getSource());
+    }
+
+    private static void assertRpmWiring(GameTestHelper helper, int expected, String label) {
+        var display = BlockStressValues.RPM.get(COIBlocks.POWER_CORE.get());
+        helper.assertTrue(display != null, label + ": BlockStressValues.RPM registered");
+        helper.assertValueEqual(display.value(), expected, label + ": display RPM");
+        helper.assertValueEqual(COIBlocks.powerCoreGeneratedRpm().value(), expected, label + ": snapshot helper");
+        helper.assertValueEqual(BlockStressValues.getCapacity(COIBlocks.POWER_CORE.get()),
+                COIConfig.reactorStressCapacity(), label + ": capacity supplier");
     }
 
     private static PowerCoreBlockEntity placeCore(GameTestHelper helper, boolean withChamber) {

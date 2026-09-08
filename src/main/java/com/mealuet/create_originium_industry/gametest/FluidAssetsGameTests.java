@@ -24,7 +24,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -42,15 +41,14 @@ public final class FluidAssetsGameTests {
         helper.assertValueEqual(COIFluids.ALL.size(), 7, "seven world fluids");
         for (FluidEntry<BaseFlowingFluid.Flowing> fluid : COIFluids.ALL) {
             String id = blockId(fluid);
-            Optional<Block> block = fluid.getBlock();
-            helper.assertTrue(block.isPresent(), id + " LiquidBlock");
-            helper.assertTrue(block.get() instanceof LiquidBlock, id + " is LiquidBlock");
+            Block block = liquidBlock(fluid);
+            helper.assertTrue(block instanceof LiquidBlock, id + " is LiquidBlock");
             helper.assertTrue(
                     BuiltInRegistries.BLOCK.containsKey(id(id)),
                     "block registry " + id
             );
             helper.assertTrue(
-                    block.get().defaultBlockState().hasProperty(LiquidBlock.LEVEL),
+                    block.defaultBlockState().hasProperty(LiquidBlock.LEVEL),
                     id + " has level"
             );
             helper.assertValueEqual(
@@ -66,7 +64,7 @@ public final class FluidAssetsGameTests {
     public static void fluidBlocksPlaceEveryLevel(GameTestHelper helper) {
         BlockPos pos = new BlockPos(1, 2, 1);
         for (FluidEntry<BaseFlowingFluid.Flowing> fluid : COIFluids.ALL) {
-            LiquidBlock block = (LiquidBlock) fluid.getBlock().orElseThrow();
+            LiquidBlock block = (LiquidBlock) liquidBlock(fluid);
             String id = blockId(fluid);
             for (int level = 0; level <= 15; level++) {
                 BlockState state = block.defaultBlockState().setValue(LiquidBlock.LEVEL, level);
@@ -148,9 +146,25 @@ public final class FluidAssetsGameTests {
         helper.succeed();
     }
 
+    /**
+     * Registrate registers the flowing fluid as {@code flowing_<id>} and the
+     * {@link LiquidBlock} under the source id. {@link FluidEntry#getBlock()}
+     * looks up a sibling named after the flowing fluid and is empty.
+     */
+    private static Block liquidBlock(FluidEntry<BaseFlowingFluid.Flowing> fluid) {
+        ResourceLocation sourceId = BuiltInRegistries.FLUID.getKey(fluid.getSource());
+        if (sourceId == null || !BuiltInRegistries.BLOCK.containsKey(sourceId)) {
+            throw new IllegalStateException("no LiquidBlock for fluid " + sourceId);
+        }
+        Block block = BuiltInRegistries.BLOCK.get(sourceId);
+        if (block.defaultBlockState().isAir()) {
+            throw new IllegalStateException("air instead of LiquidBlock for " + sourceId);
+        }
+        return block;
+    }
+
     private static String blockId(FluidEntry<BaseFlowingFluid.Flowing> fluid) {
-        Block block = fluid.getBlock().orElseThrow();
-        return BuiltInRegistries.BLOCK.getKey(block).getPath();
+        return BuiltInRegistries.BLOCK.getKey(liquidBlock(fluid)).getPath();
     }
 
     private static void assertPng(GameTestHelper helper, String resource) {

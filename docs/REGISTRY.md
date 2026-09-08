@@ -51,7 +51,7 @@ stable unless a migration is documented here first.
 
 | Registry id | Notes |
 |---|---|
-| `originium_dust_filter` | Kinetic dust absorber (block + block entity share this path) |
+| `originium_dust_filter` | Kinetic dust absorber (block + block entity share this path). BE NBT: `HasSieve`, `SieveDurability`, additive `CapturedDust` |
 
 ### Fluids
 
@@ -120,8 +120,26 @@ Datapack path is the recipe id (`create_originium_industry:<path>`).
 | `mixing/molten_originium_iron_ingot_mixing` | `create:mixing` | alloy ingot |
 | `mixing/catalyst_mixing` | `create:mixing` + heated | originium catalyst (培养液) |
 
-Dust production currently keys off these paths in Java. If that mapping moves
-to tags or recipe JSON, **keep these ids working** (or data-gen aliases).
+Dust production for frozen recipe ids is keyed in datapack JSON under
+`data/create_originium_industry/coi_dust_emission/` (recipe / item / item_tag +
+`amount`). `COIConfig` `dust_production.*` values **override** those five frozen
+ids so existing server.toml knobs keep working. Other recipe ids use the
+datapack amount only. **Keep these ids working** (or data-gen aliases).
+
+JSON files live at `data/<namespace>/coi_dust_emission/*.json`:
+
+```json
+{ "recipe": "create_originium_industry:milling/raw_originium_milling", "amount": 80 }
+{ "item": "modid:some_item", "amount": 40 }
+{ "item_tag": "create_originium_industry:dust_producing", "amount": 40 }
+```
+
+Machines submit through `IOridustProducer` (`DustSubmission`). Devices that
+reduce emission or absorb chunk dust implement `IDustPurifier` (the kinetic
+filter does; Basin sieve attachments will too).
+
+`create_originium_industry:example/datapack_only` is a shipped mapping (amount
+33) for GameTests / pack authors. It is **not** a real recipe.
 
 ## Tags
 
@@ -140,10 +158,10 @@ to tags or recipe JSON, **keep these ids working** (or data-gen aliases).
 | Tag | Purpose | JSON |
 |---|---|---|
 | `item/originium_materials` | raw, shard, originium, dust, purest | present |
-| `item/dust_producing` | items whose processing emits chunk dust | **not shipped — dust API work** |
+| `item/dust_producing` | items whose processing emits chunk dust | present (raw, shard, originium, dust, purest) |
 | `item/originium_protection` | protection gear that reduces exposure/infection | **not shipped — no gear yet; tag key exists** |
-| `block/dust_sources` | blocks that emit dust | **not shipped — dust API work** |
-| `block/dust_filters` | blocks that remove/modify dust | **not shipped — dust API work** |
+| `block/dust_sources` | blocks that emit dust | present (empty; future COI machines) |
+| `block/dust_filters` | blocks that remove/modify dust | present (`originium_dust_filter`) |
 | `fluid/originium_fluids` | all originium fluids | present |
 
 Do not put `originium_debug_wand` in material tags. Alloy ingot is an ingot,

@@ -4,6 +4,7 @@ import com.mealuet.create_originium_industry.command.COICommands;
 import com.mealuet.create_originium_industry.config.COIConfig;
 import com.mealuet.create_originium_industry.core.oridust.DustCacheManager;
 import com.mealuet.create_originium_industry.core.oridust.DustDiffusionEngine;
+import com.mealuet.create_originium_industry.core.oridust.DustEmissionIndex;
 import com.mealuet.create_originium_industry.core.oridust.PlayerDeathDustHandler;
 import com.mealuet.create_originium_industry.core.oridust.PlayerExposureHandler;
 import com.mealuet.create_originium_industry.index.*;
@@ -57,6 +58,7 @@ public class CreateOriginiumIndustry
         // --- Game Event Handlers ---
         NeoForge.EVENT_BUS.register(DustCacheManager.class);
         NeoForge.EVENT_BUS.register(DustDiffusionEngine.class);
+        NeoForge.EVENT_BUS.register(DustEmissionIndex.class);
         NeoForge.EVENT_BUS.register(PlayerExposureHandler.class);
         NeoForge.EVENT_BUS.register(PlayerDeathDustHandler.class);
         NeoForge.EVENT_BUS.register(COICommands.class);

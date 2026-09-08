@@ -42,6 +42,7 @@ public class COIConfig {
     public static final ModConfigSpec.IntValue DUST_FROM_SHARD_MIXING;
     public static final ModConfigSpec.IntValue DUST_FROM_ORIGINIUM_MELTING;
     public static final ModConfigSpec.IntValue DUST_FROM_ALLOY_MIXING;
+    public static final ModConfigSpec.IntValue DUST_FROM_TAGGED_ITEM;
 
     // --- Player Exposure ---
     public static final ModConfigSpec.IntValue EFFECT_CHECK_INTERVAL;
@@ -73,6 +74,8 @@ public class COIConfig {
     public static final ModConfigSpec.IntValue FILTER_SIEVE_DURABILITY;
     public static final ModConfigSpec.DoubleValue FILTER_MAX_SPEED_MULTIPLIER;
     public static final ModConfigSpec.DoubleValue FILTER_SPEED_REFERENCE;
+    public static final ModConfigSpec.DoubleValue FILTER_EMISSION_CAPTURE;
+    public static final ModConfigSpec.IntValue FILTER_BYPRODUCT_DUST_PER_ITEM;
 
     // --- Protection (hooks; no gear registered yet) ---
     public static final ModConfigSpec.BooleanValue ENABLE_PROTECTION;
@@ -185,6 +188,9 @@ public class COIConfig {
         DUST_FROM_ALLOY_MIXING = builder
                 .comment("Dust emitted when mixing molten originium with iron to create alloy")
                 .defineInRange("dustFromAlloyMixing", 60, 0, 1000);
+        DUST_FROM_TAGGED_ITEM = builder
+                .comment("Fallback dust when processing an item in create_originium_industry:dust_producing with no datapack item/item_tag amount")
+                .defineInRange("dustFromTaggedItem", 40, 0, 1000);
 
         builder.pop();
 
@@ -278,6 +284,12 @@ public class COIConfig {
         FILTER_SPEED_REFERENCE = builder
                 .comment("RPM at which the speed multiplier reaches 1x before clamping (Create speed / this)")
                 .defineInRange("filterSpeedReference", 64.0, 1.0, 256.0);
+        FILTER_EMISSION_CAPTURE = builder
+                .comment("Fraction of a neighbouring machine's emission an active filter captures (0 = ambient absorb only, 1 = capture all)")
+                .defineInRange("filterEmissionCapture", 0.5, 0.0, 1.0);
+        FILTER_BYPRODUCT_DUST_PER_ITEM = builder
+                .comment("Captured dust units per originium_dust item (0 = no byproduct; remainder is stored on the filter, never duplicated)")
+                .defineInRange("filterByproductDustPerItem", 100, 0, 10000);
 
         builder.pop();
 

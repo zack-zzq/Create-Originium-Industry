@@ -4,7 +4,9 @@ import com.mealuet.create_originium_industry.compat.WorldSpace;
 import com.mealuet.create_originium_industry.config.COIClientOptions;
 import com.mealuet.create_originium_industry.config.COIConfig;
 import com.mealuet.create_originium_industry.config.UiDetailLevel;
+import com.mealuet.create_originium_industry.core.oridust.ByproductBuffer;
 import com.mealuet.create_originium_industry.core.oridust.DustReason;
+import com.mealuet.create_originium_industry.core.oridust.IDustPurifier;
 import com.mealuet.create_originium_industry.core.oridust.OriginiumDustManager;
 import com.mealuet.create_originium_industry.index.COIItems;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntity;
@@ -14,6 +16,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.Containers;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -25,17 +28,20 @@ import java.util.List;
  * Block entity for the Originium Dust Filter.
  * <p>
  * When powered by rotation and loaded with a sieve, absorbs originium dust
- * from the chunk. Sieve has limited durability and is consumed after N cycles.
+ * from the chunk and can capture a neighbouring machine's emission
+ * ({@link IDustPurifier}). Sieve has limited durability and is consumed after
+ * N cycles. Captured dust may convert into {@code originium_dust} byproduct.
  * <p>
  * Higher rotational speed = faster absorption (speed multiplier up to 4x).
  */
-public class DustFilterBlockEntity extends KineticBlockEntity {
+public class DustFilterBlockEntity extends KineticBlockEntity implements IDustPurifier {
 
     private static final String NBT_HAS_SIEVE = "HasSieve";
     private static final String NBT_SIEVE_DURABILITY = "SieveDurability";
 
     private boolean hasSieve = false;
     private int sieveDurability = 0;
+    private final ByproductBuffer byproduct = new ByproductBuffer();
 
     public DustFilterBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
@@ -56,21 +62,74 @@ public class DustFilterBlockEntity extends KineticBlockEntity {
         if (level.getGameTime() % interval != 0) return;
 
         int absorption = Math.max(1, (int) (COIConfig.FILTER_ABSORPTION_RATE.get() * speedMultiplier(speed)));
+        absorbAmbient(serverLevel, worldPosition, absorption);
+    }
 
-        ChunkPos chunkPos = WorldSpace.toDustChunk(serverLevel, worldPosition);
-        int currentDust = OriginiumDustManager.getDust(serverLevel, chunkPos);
+    // ==================== IDustPurifier ====================
 
-        if (currentDust > 0) {
-            int actualAbsorption = Math.min(absorption, currentDust);
-            OriginiumDustManager.addDust(serverLevel, chunkPos, -actualAbsorption, DustReason.FILTER);
+    @Override
+    public boolean isPurifierActive() {
+        return hasSieve && sieveDurability > 0 && Math.abs(getSpeed()) > 0;
+    }
 
-            // Consume sieve durability
-            sieveDurability--;
-            if (sieveDurability <= 0) {
-                hasSieve = false;
-                sieveDurability = 0;
-            }
-            setChanged();
+    @Override
+    public double emissionCaptureFactor() {
+        return isPurifierActive() ? COIConfig.FILTER_EMISSION_CAPTURE.get() : 0.0;
+    }
+
+    @Override
+    public int acceptCapturedDust(int captured) {
+        if (captured <= 0) {
+            return 0;
+        }
+        consumeSieveCycle();
+        int items = byproduct.add(captured, COIConfig.FILTER_BYPRODUCT_DUST_PER_ITEM.get());
+        dropByproduct(items);
+        setChanged();
+        return items;
+    }
+
+    @Override
+    public int absorbAmbient(ServerLevel level, BlockPos purifierPos, int requested) {
+        if (level == null || !isPurifierActive() || requested <= 0) {
+            return 0;
+        }
+        ChunkPos chunkPos = WorldSpace.toDustChunk(level, purifierPos);
+        int currentDust = OriginiumDustManager.getDust(level, chunkPos);
+        int actual = Math.min(requested, currentDust);
+        if (actual <= 0) {
+            return 0;
+        }
+        OriginiumDustManager.addDust(level, chunkPos, -actual, DustReason.FILTER);
+        acceptCapturedDust(actual);
+        return actual;
+    }
+
+    private void consumeSieveCycle() {
+        if (!hasSieve || sieveDurability <= 0) {
+            return;
+        }
+        sieveDurability--;
+        if (sieveDurability <= 0) {
+            hasSieve = false;
+            sieveDurability = 0;
+        }
+    }
+
+    private void dropByproduct(int items) {
+        if (items <= 0 || level == null || level.isClientSide) {
+            return;
+        }
+        int remaining = items;
+        int max = COIItems.ORIGINIUM_DUST.get().getDefaultMaxStackSize();
+        while (remaining > 0) {
+            int n = Math.min(max, remaining);
+            Containers.dropItemStack(level,
+                    worldPosition.getX() + 0.5,
+                    worldPosition.getY() + 0.5,
+                    worldPosition.getZ() + 0.5,
+                    new ItemStack(COIItems.ORIGINIUM_DUST.get(), n));
+            remaining -= n;
         }
     }
 
@@ -189,6 +248,7 @@ public class DustFilterBlockEntity extends KineticBlockEntity {
         super.write(compound, registries, clientPacket);
         compound.putBoolean(NBT_HAS_SIEVE, hasSieve);
         compound.putInt(NBT_SIEVE_DURABILITY, sieveDurability);
+        byproduct.save(compound);
     }
 
     @Override
@@ -196,5 +256,6 @@ public class DustFilterBlockEntity extends KineticBlockEntity {
         super.read(compound, registries, clientPacket);
         hasSieve = compound.getBoolean(NBT_HAS_SIEVE);
         sieveDurability = compound.getInt(NBT_SIEVE_DURABILITY);
+        byproduct.load(compound);
     }
 }

@@ -39,6 +39,14 @@ repositories {
             includeGroup('org.parchmentmc.data')
         }
     }
+    maven {
+        name = "BlameJared"
+        url = "https://maven.blamejared.com/"
+    }
+    maven {
+        name = "ModMaven"
+        url = "https://modmaven.dev"
+    }
     exclusiveContent { // Optional Sable Companion API (compileOnly — not required at runtime)
         forRepository {
             maven {
@@ -170,12 +178,14 @@ dependencies {
         }
     }
 
-    // Example optional mod dependency with JEI
-    // The JEI API is declared for compile time use, while the full JEI artifact is used at runtime
-    // compileOnly "mezz.jei:jei-${mc_version}-common-api:${jei_version}"
-    // compileOnly "mezz.jei:jei-${mc_version}-neoforge-api:${jei_version}"
-    // We add the full version to localRuntime, not runtimeOnly, so that we do not publish a dependency on it
-    // localRuntime "mezz.jei:jei-${mc_version}-neoforge:${jei_version}"
+    // Optional JEI. compileOnly API so the published jar does not require JEI;
+    // localRuntime so runClient can open the viewer. Set
+    // enable_jei_local_runtime=false to prove GameTest boots without JEI.
+    compileOnly "mezz.jei:jei-${minecraft_version}-common-api:${jei_version}"
+    compileOnly "mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}"
+    if (project.findProperty('enable_jei_local_runtime') != 'false') {
+        localRuntime "mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}"
+    }
 
     // Example mod dependency using a mod jar from ./libs with a flat dir repository
     // This maps to ./libs/coolmod-${mc_version}-${coolmod_version}.jar
@@ -267,14 +277,28 @@ tasks.register('assertNoSableInJar') {
             }
             def hasWorldSpace = zf.getEntry('com/mealuet/create_originium_industry/compat/WorldSpace.class') != null
             def hasBridge = zf.getEntry('com/mealuet/create_originium_industry/compat/SableWorldSpace.class') != null
+            def hasJeiPlugin = zf.getEntry('com/mealuet/create_originium_industry/compat/jei/COIJeiPlugin.class') != null
             def leakedTests = zf.getEntry('com/mealuet/create_originium_industry/gametest/OriDustGameTests.class') != null
+            def leakedJei = []
+            zf.entries().each { entry ->
+                def n = entry.name.replace('\\', '/')
+                if (n.startsWith('mezz/jei/')) {
+                    leakedJei << n
+                }
+            }
             if (!hasWorldSpace || !hasBridge) {
                 throw new GradleException("Published jar is missing WorldSpace bridge classes")
+            }
+            if (!hasJeiPlugin) {
+                throw new GradleException("Published jar is missing optional JEI plugin classes")
             }
             if (leakedTests) {
                 throw new GradleException("Published jar should not contain GameTest classes")
             }
-            logger.lifecycle("Verified ${jarFile.name} does not package Sable/Companion (WorldSpace bridge present, GameTests excluded).")
+            if (!leakedJei.isEmpty()) {
+                throw new GradleException("Published jar packages JEI classes: ${leakedJei}")
+            }
+            logger.lifecycle("Verified ${jarFile.name} does not package Sable/Companion/JEI (WorldSpace + JEI plugin present, GameTests excluded).")
         } finally {
             zf.close()
         }

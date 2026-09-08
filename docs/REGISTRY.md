@@ -406,6 +406,7 @@ Pattern: `<category>.create_originium_industry.<path>`
 | `advancements` | `advancements.create_originium_industry.obtain_raw_originium.title` |
 | `ponder` | `create_originium_industry.ponder.<sceneId>.header` / `.text_N` and `.ponder.tag.<id>` |
 | `subtitles` | `subtitles.create_originium_industry.filter_work` |
+| `jei` | `jei.create_originium_industry.basin_process` / `.dust_emission` / `.reactor` / `.info.*` |
 
 Ponder copy is registered through `Component.translatable`. Keep `en_us` and `zh_cn` in lockstep; do not rename scene ids once shipped.
 
@@ -421,9 +422,16 @@ add both language keys in the same change.
 
 New ids are fine. Do not reuse a frozen id for a different object.
 
-Expected (not frozen until registered):
+JEI category and info keys (additive; optional JEI / EMI-style viewers):
 
-- JEI lang keys
+| Key | Role |
+|---|---|
+| `jei.create_originium_industry.basin_process` | Basin sieve / cooling-chamber / no-heat gates |
+| `jei.create_originium_industry.dust_emission` | `coi_dust_emission` recipe / item / tag amounts |
+| `jei.create_originium_industry.reactor` | Power-core fuel, coolant conversion, housing |
+| `jei.create_originium_industry.info.*` | JEI ingredient info pages |
+
+JEI is an optional dependency (`compileOnly` API, `mods.toml` type=`optional`). The published jar ships `compat.jei.COIJeiPlugin` but does not package JEI itself.
 
 Ponder scene ids (additive; do not rename once shipped):
 

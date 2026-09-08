@@ -212,5 +212,25 @@
   "subtitles.create_originium_industry.filter_work": "Filter mesh working",
   "subtitles.create_originium_industry.high_dust": "Originium dust in the air",
   "subtitles.create_originium_industry.reactor_steady": "Power core humming",
-  "subtitles.create_originium_industry.reactor_alarm": "Power core alarm"
+  "subtitles.create_originium_industry.reactor_alarm": "Power core alarm",
+
+  "jei.create_originium_industry.basin_process": "Basin Process Gates",
+  "jei.create_originium_industry.basin_process.require_sieve": "Requires a process sieve on the Basin",
+  "jei.create_originium_industry.basin_process.require_cooling_chamber": "Requires a cooling chamber",
+  "jei.create_originium_industry.basin_process.reject_heat": "No blaze heat — supercooling only",
+  "jei.create_originium_industry.dust_emission": "Originium Dust Emission",
+  "jei.create_originium_industry.dust_emission.amount": "Emits %s originium dust into the chunk",
+  "jei.create_originium_industry.dust_emission.none": "Explicit non-emitter (no process dust)",
+  "jei.create_originium_industry.reactor": "Originium Power Core",
+  "jei.create_originium_industry.reactor.fuel": "Reactor fuel",
+  "jei.create_originium_industry.reactor.fuel.body": "Right-click purest originium into the power core. Each item burns for %s ticks. No GUI.",
+  "jei.create_originium_industry.reactor.cooling": "Coolant conversion",
+  "jei.create_originium_industry.reactor.cooling.body": "S = C × M − H. When S ≥ 0, fluids convert toward coolant; when S < 0 they become hot water.",
+  "jei.create_originium_industry.reactor.structure": "Housing and cooling",
+  "jei.create_originium_industry.reactor.structure.body": "Adjacent reactor housing is required to run. Cooling chambers raise M. Meltdown dumps dust and leaks purest molten — it does not explode.",
+  "jei.create_originium_industry.info.power_core": "Late-game kinetic generator. Needs adjacent reactor housing, coolant, and a cooling chamber. Right-click purest originium to fuel it. Meltdown dumps dust and leaks purest molten — never an explosion.",
+  "jei.create_originium_industry.info.purest_originium": "Power-core fuel. Made on the purest line: sieve-filter molten originium, culture it with 培养液, then supercool with a cooling chamber and no blaze heat.",
+  "jei.create_originium_industry.info.originium_coolant": "Reactor heat-capacity fluid (C). Mix water, 培养液 (originium catalyst), and packed ice. Converts toward water and hot water when the core is unstable.",
+  "jei.create_originium_industry.info.dust_sieve": "Basin attachment that unlocks filtered-molten mixing and captures neighbouring process emission as originium dust.",
+  "jei.create_originium_industry.info.originium_dust": "Chunk pollution byproduct. Milling, crushing, and mixing originium emit dust. Kinetic filters and process sieves capture it back into this item."
 }

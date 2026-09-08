@@ -184,6 +184,7 @@ public class DustCacheManager {
             OriDustSavedData saved = OriDustSavedData.get(level);
             saved.mergeLegacyAttachment(chunk.getPos(), legacy);
             markWritten(level, chunk.getPos());
+            DustSyncTracker.markDustDirty(chunk.getPos());
             data.setDustLevel(0);
             chunk.setUnsaved(true);
             if (COIConfig.ENABLE_DEBUG_LOGGING.get()) {

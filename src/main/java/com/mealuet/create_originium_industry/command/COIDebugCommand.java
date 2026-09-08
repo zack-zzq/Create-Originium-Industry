@@ -214,6 +214,7 @@ public class COIDebugCommand {
         int amount = IntegerArgumentType.getInteger(ctx, "amount");
         PlayerExposureData data = COIAttachments.getPlayerExposure(player);
         data.setExposure(amount);
+        DustSyncTracker.markExposureDirty(player);
 
         ctx.getSource().sendSuccess(() -> Component.translatable(
                 "commands.coi_debug.exposure.set", amount
@@ -230,6 +231,7 @@ public class COIDebugCommand {
         int amount = IntegerArgumentType.getInteger(ctx, "amount");
         PlayerExposureData data = COIAttachments.getPlayerExposure(player);
         data.setInfection(amount);
+        DustSyncTracker.markExposureDirty(player);
 
         ctx.getSource().sendSuccess(() -> Component.translatable(
                 "commands.coi_debug.infection.set", amount

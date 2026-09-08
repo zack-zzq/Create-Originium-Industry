@@ -19,9 +19,9 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.phys.BlockHitResult;
 
 /**
- * Originium dust meter. Reads server chunk dust (synced onto the block entity
- * for goggles) and shows concentration, risk tier, and a protection hint.
- * Comparator output scales with concentration. No GUI.
+ * Originium dust meter. Comparator uses the server BE snapshot; goggles
+ * share {@link com.mealuet.create_originium_industry.core.oridust.VisibleDust}
+ * with HUD and debug. No GUI.
  */
 public class DustMeterBlock extends HorizontalDirectionalBlock implements IBE<DustMeterBlockEntity> {
 

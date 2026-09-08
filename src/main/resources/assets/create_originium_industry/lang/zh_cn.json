@@ -28,7 +28,7 @@
   "item.create_originium_industry.originium_alloy_sieve.tooltip.summary": "合金_滤网升级_。可贴 Basin，也可插入滤网机。",
   "item.create_originium_industry.originium_core_housing.tooltip.summary": "致密_反应炉外壳_。贴在动力核心旁；带 `reactor_housing` 标签。",
   "item.create_originium_industry.originium_super_cooling_chamber.tooltip.summary": "雪傀儡_超级冷却室_。贴在动力核心上提供更强冷却。",
-  "item.create_originium_industry.originium_power_core.tooltip.summary": "后期_动能发生器_。需要外壳、冷却液和冷却室。熔毁喷尘，不爆炸。",
+  "item.create_originium_industry.originium_power_core.tooltip.summary": "后期_动能发生器_。需要外壳、冷却液和冷却室。熔毁喷尘并泄漏_至纯熔融_，不爆炸。",
 
   "block.create_originium_industry.originium_dust_filter": "源石尘滤网机",
   "block.create_originium_industry.originium_dust_sieve": "源石尘滤网",
@@ -44,7 +44,7 @@
   "block.create_originium_industry.originium_alloy_sieve.tooltip.summary": "合金_滤网升级_。可贴 Basin，也可插入滤网机。",
   "block.create_originium_industry.originium_core_housing.tooltip.summary": "致密_反应炉外壳_。贴在动力核心旁；带 `reactor_housing` 标签。",
   "block.create_originium_industry.originium_super_cooling_chamber.tooltip.summary": "雪傀儡_超级冷却室_。贴在动力核心上提供更强冷却。",
-  "block.create_originium_industry.originium_power_core.tooltip.summary": "后期_动能发生器_。需要外壳、冷却液和冷却室。熔毁喷尘，不爆炸。",
+  "block.create_originium_industry.originium_power_core.tooltip.summary": "后期_动能发生器_。需要外壳、冷却液和冷却室。熔毁喷尘并泄漏_至纯熔融_，不爆炸。",
   "block.create_originium_industry.raw_originium_ore": "粗制源石矿",
   "block.create_originium_industry.deepslate_raw_originium_ore": "深板岩粗制源石矿",
   "item.create_originium_industry.originium_debug_wand": "源石调试器",
@@ -201,13 +201,13 @@
   "create_originium_industry.ponder.purest_supercooling.text_1": "Basin 上的滤网把熔融源石过滤成过滤熔融源石。",
   "create_originium_industry.ponder.purest_supercooling.text_2": "用培养液加热过滤流体进行培养。注册名仍是 originium_catalyst。",
   "create_originium_industry.ponder.purest_supercooling.text_3": "贴上冷却室，加入浮冰，且不可有烈焰热源，即可超级冷却得到至纯源石。",
-  "create_originium_industry.ponder.purest_supercooling.text_4": "过热是事故路线：至纯熔融源石。熔毁只喷尘——不会爆炸。",
+  "create_originium_industry.ponder.purest_supercooling.text_4": "过热是事故路线：至纯熔融源石。熔毁会喷尘并泄漏该流体——不会爆炸。",
 
   "create_originium_industry.ponder.power_core.header": "动力核心稳定",
   "create_originium_industry.ponder.power_core.text_1": "在动力核心旁放置反应炉外壳。右键放入至纯源石作为燃料。没有管理界面。",
   "create_originium_industry.ponder.power_core.text_2": "稳定值 S = C × M − H。冷却液提高 C；冷却室提高 M；燃料提高 H。",
   "create_originium_industry.ponder.power_core.text_3": "S 大于等于零时，流体会转向冷却液。S 为负时，流体会变成热水并泄漏粉尘。",
-  "create_originium_industry.ponder.power_core.text_4": "熔毁会喷出粉尘并耗尽剩余燃料。不会爆炸，也不会生成 TNT。",
+  "create_originium_industry.ponder.power_core.text_4": "熔毁会喷出粉尘，并把剩余燃料泄漏为至纯熔融源石。不会爆炸，也不会生成 TNT。",
 
   "subtitles.create_originium_industry.filter_work": "滤网吸附运转",
   "subtitles.create_originium_industry.high_dust": "高浓度源石尘环境",

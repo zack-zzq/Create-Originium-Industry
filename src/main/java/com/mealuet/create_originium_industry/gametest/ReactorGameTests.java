@@ -14,6 +14,7 @@ import com.mealuet.create_originium_industry.core.reactor.CoolingKind;
 import com.mealuet.create_originium_industry.core.reactor.ReactorFluids;
 import com.mealuet.create_originium_industry.core.reactor.StabilityMath;
 import com.mealuet.create_originium_industry.index.COIBlocks;
+import com.mealuet.create_originium_industry.index.COIFluids;
 import com.mealuet.create_originium_industry.index.COIItems;
 import com.mealuet.create_originium_industry.index.COITags;
 import net.minecraft.core.BlockPos;
@@ -27,6 +28,8 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.gametest.GameTestHolder;
 import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
@@ -35,7 +38,8 @@ import java.util.Optional;
 
 /**
  * Coverage for issue #18: power core, snow-golem cooling chambers,
- * H/C/M/S stability, coolant↔water↔hot water, and non-explosive meltdown.
+ * H/C/M/S stability, coolant↔water↔hot water, dust dump, molten leak, and
+ * non-explosive meltdown.
  */
 @GameTestHolder(CreateOriginiumIndustry.MODID)
 @PrefixGameTestTemplate(false)
@@ -121,29 +125,73 @@ public final class ReactorGameTests {
     }
 
     @GameTest(template = "empty", batch = "reactor")
+    public static void dumpHeatConvertsTanksWithoutVoidBeyondCap(GameTestHelper helper) {
+        var dumped = ReactorFluids.dumpHeat(new ReactorFluids.Amounts(1000, 500, 0), 4000);
+        helper.assertValueEqual(dumped.coolant(), 0, "coolant gone");
+        helper.assertValueEqual(dumped.water(), 0, "water gone");
+        helper.assertValueEqual(dumped.hotWater(), 1500, "all heat in hot water");
+        helper.assertValueEqual(dumped.total(), 1500, "no void under cap");
+
+        var capped = ReactorFluids.dumpHeat(new ReactorFluids.Amounts(3000, 2000, 0), 4000);
+        helper.assertValueEqual(capped.hotWater(), 4000, "cap, not TNT");
+        helper.assertValueEqual(capped.coolant(), 0, "capped coolant empty");
+        helper.succeed();
+    }
+
+    @GameTest(template = "empty", batch = "reactor")
     public static void meltdownDumpsDustWithoutExplosion(GameTestHelper helper) {
         ServerLevel level = helper.getLevel();
         PowerCoreBlockEntity core = placeCore(helper, false);
-        core.configureForGameTest(2, 1000, 500, 0, COIConfig.reactorMeltdownThreshold());
-        BlockPos abs = helper.absolutePos(new BlockPos(2, 1, 1));
+        int fuel = 2;
+        core.configureForGameTest(fuel, 1000, 500, 0, COIConfig.reactorMeltdownThreshold());
+        BlockPos coreRel = new BlockPos(2, 1, 1);
+        BlockPos abs = helper.absolutePos(coreRel);
         ChunkPos chunk = WorldSpace.toDustChunk(level, abs);
         OriginiumDustManager.clearDust(level, chunk, DustReason.DEBUG);
 
         helper.assertFalse(MeltdownPolicy.explodesBlocks(), "policy: no block explosion");
         helper.assertFalse(MeltdownPolicy.spawnsTnt(), "policy: no TNT");
+        helper.assertValueEqual(MeltdownPolicy.moltenSourceCount(fuel), 2, "two remaining fuel → two sources");
 
         core.tickReactor(level);
 
         helper.assertTrue(core.shutdown(), "meltdown shuts down");
         helper.assertValueEqual(core.fuelCount(), 0, "purest fuel consumed");
+        helper.assertTrue(helper.getBlockState(coreRel).is(COIBlocks.POWER_CORE.get()), "core survives");
+        helper.assertTrue(helper.getBlockState(new BlockPos(1, 1, 1)).is(COIBlocks.CORE_HOUSING.get()), "housing survives");
         // Meltdown dump is the dust event for this tick; unstable leak is skipped.
         helper.assertValueEqual(OriginiumDustManager.getDust(level, chunk), 5000, "dust pressure");
         helper.assertValueEqual(core.coolantTank().getFluidAmount(), 0, "coolant dumped to heat");
         helper.assertValueEqual(core.waterTank().getFluidAmount(), 0, "water dumped to heat");
         helper.assertTrue(core.hotWaterTank().getFluidAmount() > 0, "hot water remains");
+        helper.assertValueEqual(countPurestMolten(helper, coreRel, 3), 2, "remaining fuel leaked as molten");
+        helper.assertTrue(hasPurestMoltenSource(helper, coreRel.above()), "leak prefers the open face above");
         helper.assertTrue(
                 level.getEntitiesOfClass(PrimedTnt.class, new AABB(abs).inflate(8)).isEmpty(),
                 "no primed TNT"
+        );
+        helper.succeed();
+    }
+
+    @GameTest(template = "empty", batch = "reactor")
+    public static void meltdownPolicyLeaksMoltenWithoutExplosion(GameTestHelper helper) {
+        BlockPos originRel = new BlockPos(2, 1, 1);
+        helper.setBlock(originRel, Blocks.STONE);
+        ServerLevel level = helper.getLevel();
+        BlockPos origin = helper.absolutePos(originRel);
+
+        helper.assertFalse(MeltdownPolicy.explodesBlocks(), "policy: no block explosion");
+        helper.assertFalse(MeltdownPolicy.spawnsTnt(), "policy: no TNT");
+        helper.assertValueEqual(MeltdownPolicy.moltenSourceCount(3), 3, "three sources requested");
+
+        int placed = MeltdownPolicy.leakMolten(level, origin, 3);
+        helper.assertValueEqual(placed, 3, "three replaceable neighbours filled");
+        helper.assertTrue(helper.getBlockState(originRel).is(Blocks.STONE), "origin block not replaced");
+        helper.assertValueEqual(countPurestMolten(helper, originRel, 2), 3, "world leak is purest molten");
+        helper.assertTrue(hasPurestMoltenSource(helper, originRel.above()), "first source goes up");
+        helper.assertTrue(
+                level.getEntitiesOfClass(PrimedTnt.class, new AABB(origin).inflate(8)).isEmpty(),
+                "leak does not spawn TNT"
         );
         helper.succeed();
     }
@@ -204,6 +252,27 @@ public final class ReactorGameTests {
         helper.assertTrue(chamber.getBlockState().canSurvive(helper.getLevel(), helper.absolutePos(new BlockPos(2, 1, 1))),
                 "chamber survives on core");
         helper.succeed();
+    }
+
+    private static int countPurestMolten(GameTestHelper helper, BlockPos centerRel, int radius) {
+        Fluid molten = COIFluids.PUREST_MOLTEN_ORIGINIUM.getSource();
+        int count = 0;
+        for (int dx = -radius; dx <= radius; dx++) {
+            for (int dy = -radius; dy <= radius; dy++) {
+                for (int dz = -radius; dz <= radius; dz++) {
+                    BlockPos rel = centerRel.offset(dx, dy, dz);
+                    if (helper.getLevel().getFluidState(helper.absolutePos(rel)).getType().isSame(molten)) {
+                        count++;
+                    }
+                }
+            }
+        }
+        return count;
+    }
+
+    private static boolean hasPurestMoltenSource(GameTestHelper helper, BlockPos rel) {
+        var state = helper.getLevel().getFluidState(helper.absolutePos(rel));
+        return state.isSource() && state.getType().isSame(COIFluids.PUREST_MOLTEN_ORIGINIUM.getSource());
     }
 
     private static PowerCoreBlockEntity placeCore(GameTestHelper helper, boolean withChamber) {

@@ -28,7 +28,7 @@
   "item.create_originium_industry.originium_alloy_sieve.tooltip.summary": "Alloy _filter upgrade_. Attach to a Basin or insert into the kinetic filter.",
   "item.create_originium_industry.originium_core_housing.tooltip.summary": "Dense _reactor shell_. Place beside the power core — tagged `reactor_housing`.",
   "item.create_originium_industry.originium_super_cooling_chamber.tooltip.summary": "Snow-golem _super chamber_. Attach to a power core for much stronger cooling.",
-  "item.create_originium_industry.originium_power_core.tooltip.summary": "Late-game _kinetic generator_. Needs housing, coolant, and a cooling chamber. Meltdown dumps dust — no explosion.",
+  "item.create_originium_industry.originium_power_core.tooltip.summary": "Late-game _kinetic generator_. Needs housing, coolant, and a cooling chamber. Meltdown dumps dust and leaks _purest molten_ — no explosion.",
 
   "block.create_originium_industry.originium_dust_filter": "Originium Dust Filter",
   "block.create_originium_industry.originium_dust_sieve": "Originium Dust Sieve",
@@ -44,7 +44,7 @@
   "block.create_originium_industry.originium_alloy_sieve.tooltip.summary": "Alloy _filter upgrade_. Attach to a Basin or insert into the kinetic filter.",
   "block.create_originium_industry.originium_core_housing.tooltip.summary": "Dense _reactor shell_. Place beside the power core — tagged `reactor_housing`.",
   "block.create_originium_industry.originium_super_cooling_chamber.tooltip.summary": "Snow-golem _super chamber_. Attach to a power core for much stronger cooling.",
-  "block.create_originium_industry.originium_power_core.tooltip.summary": "Late-game _kinetic generator_. Needs housing, coolant, and a cooling chamber. Meltdown dumps dust — no explosion.",
+  "block.create_originium_industry.originium_power_core.tooltip.summary": "Late-game _kinetic generator_. Needs housing, coolant, and a cooling chamber. Meltdown dumps dust and leaks _purest molten_ — no explosion.",
   "block.create_originium_industry.raw_originium_ore": "Raw Originium Ore",
   "block.create_originium_industry.deepslate_raw_originium_ore": "Deepslate Raw Originium Ore",
   "item.create_originium_industry.originium_debug_wand": "Originium Debug Wand",
@@ -201,13 +201,13 @@
   "create_originium_industry.ponder.purest_supercooling.text_1": "A Basin sieve filters molten originium into filtered molten originium.",
   "create_originium_industry.ponder.purest_supercooling.text_2": "Heat the filtered fluid with culture solution (培养液). The registry id stays originium_catalyst.",
   "create_originium_industry.ponder.purest_supercooling.text_3": "Attach a cooling chamber and mix packed ice with no blaze heat to supercool into purest originium.",
-  "create_originium_industry.ponder.purest_supercooling.text_4": "Superheating is the accident path: purest molten. Meltdown dumps dust — it never explodes.",
+  "create_originium_industry.ponder.purest_supercooling.text_4": "Superheating is the accident path: purest molten. Meltdown dumps dust and leaks that fluid — it never explodes.",
 
   "create_originium_industry.ponder.power_core.header": "Power core stability",
   "create_originium_industry.ponder.power_core.text_1": "Place reactor housing beside the power core. Right-click purest originium to fuel it. There is no GUI.",
   "create_originium_industry.ponder.power_core.text_2": "Stability is S = C × M − H. Coolant raises C; cooling chambers raise M; fuel raises H.",
   "create_originium_industry.ponder.power_core.text_3": "When S is at least zero, fluids convert toward coolant. When S is negative, they convert to hot water and dust leaks.",
-  "create_originium_industry.ponder.power_core.text_4": "Meltdown dumps a dust burst and consumes remaining fuel. It does not explode or spawn TNT.",
+  "create_originium_industry.ponder.power_core.text_4": "Meltdown dumps a dust burst and leaks remaining fuel as purest molten. It does not explode or spawn TNT.",
 
   "subtitles.create_originium_industry.filter_work": "Filter mesh working",
   "subtitles.create_originium_industry.high_dust": "Originium dust in the air",

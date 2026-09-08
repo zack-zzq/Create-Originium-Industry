@@ -125,7 +125,7 @@ water + 培养液 + packed ice → originium coolant
 - Encased Fan nozzle (`originium_dust_nozzle`) redirects chunk dust downwind without voiding it
 - Dust meter (`originium_dust_meter`) shows chunk concentration, risk tier, and a protection hint (goggles / right-click / comparator)
 - Basin cooling chamber (`originium_cooling_chamber`) attaches to a Basin (supercooling recipes, no blaze heat) **or** a power core (stability M). Super snow-golem chamber (`originium_super_cooling_chamber`) is the higher-M tier.
-- Originium power core (`originium_power_core`) is a Create kinetic generator. Adjacent `reactor_housing` is required. Right-click purest originium to fuel; buckets / pipes move coolant, water, and hot water. Stability `S = C * M - H`. `S>=0` converts toward coolant; `S<0` converts toward hot water and leaks dust. Meltdown dumps chunk dust and consumes remaining fuel — **no explosion / TNT**.
+- Originium power core (`originium_power_core`) is a Create kinetic generator. Adjacent `reactor_housing` is required. Right-click purest originium to fuel; buckets / pipes move coolant, water, and hot water. Stability `S = C * M - H`. `S>=0` converts toward coolant; `S<0` converts toward hot water and leaks dust. Meltdown dumps chunk dust, remelts remaining fuel into a world leak of `purest_molten_originium`, and converts leftover tanks to hot water — **no explosion / TNT**.
 - Originium alloy casing / core housing placed beside a processing machine cut process emission (10% / 20% per face, cap 50%) before filters run. Both are tagged `reactor_housing` for the power core.
 - Nearby chunk dust and local-player exposure/infection sync to clients at low frequency (dirty set / on-demand window — not the full map)
 - Ponder scenes (hold W on the relevant item): dust generation & diffusion, kinetic filter / sieve recovery, supercooling the purest line, power-core stability `S = C × M − H`. No GUI; copy is `Component.translatable`.
@@ -143,7 +143,7 @@ Dust and pollution are being reworked. Treat `core/oridust` as unstable; **do no
 | **M0** | Tech cleanup: freeze ids, docs, metadata, config skeleton | Done |
 | **M1** | Dust loop MVP: data-driven emission, filters, dust meter, survival source | In progress (simulation refactor) |
 | **M2** | Purest / alloy expansion: filter + 培养液 + supercooling | Survival path in (`purest_originium`); alloy housing / sieve / sealed canister in |
-| **M3** | Reactor: heat, cooling, instability / meltdown | Alpha in (power core + chambers + S; meltdown = dust, not explosion) |
+| **M3** | Reactor: heat, cooling, instability / meltdown | Alpha in (power core + chambers + S; meltdown = dust + molten leak, not explosion) |
 | **M4** | Ponder, GameTests, optional compat (e.g. Create: Aeronautics) | Ponder scenes + advancement backbone + industrial SFX + dust/reactor perf baseline in |
 
 M1 must be playable before M3. The reactor depends on dust APIs and the purest fuel chain. Ponder scenes cover dust, filters, supercooling, and the power core.

@@ -130,6 +130,7 @@ public class COIConfig {
     public static final ModConfigSpec.DoubleValue REACTOR_INSTABILITY_WARNING;
     public static final ModConfigSpec.DoubleValue REACTOR_MELTDOWN_THRESHOLD;
     public static final ModConfigSpec.IntValue REACTOR_MELTDOWN_DUST_BURST;
+    public static final ModConfigSpec.IntValue REACTOR_MELTDOWN_MOLTEN_SOURCES;
     public static final ModConfigSpec.IntValue REACTOR_COOLANT_MIN_FLOW;
     public static final ModConfigSpec.DoubleValue REACTOR_COOLANT_HEAT_PER_MB;
     public static final ModConfigSpec.DoubleValue REACTOR_WATER_HEAT_PER_MB;
@@ -488,7 +489,7 @@ public class COIConfig {
         builder.comment(
                 "M3 originium power core. Frozen keys keep their names; new keys are additive.",
                 "Stability S = C * M - H. enableReactorMeltdown lives under feature_toggles.",
-                "Meltdown dumps chunk dust and consumes remaining purest fuel — it does not explode."
+                "Meltdown dumps chunk dust, leaks remaining fuel as world purest molten, and converts tanks to hot water — it does not explode."
         ).push("reactor");
 
         REACTOR_CORE_HEAT = builder
@@ -518,6 +519,9 @@ public class COIConfig {
         REACTOR_MELTDOWN_DUST_BURST = builder
                 .comment("Chunk dust released on meltdown (no explosion)")
                 .defineInRange("meltdownDustBurst", 5000, 0, 100000);
+        REACTOR_MELTDOWN_MOLTEN_SOURCES = builder
+                .comment("Max world source blocks of purest_molten_originium leaked on meltdown (remaining fuel remelts into this spray; 0 = no world leak)")
+                .defineInRange("meltdownMoltenSources", 6, 0, 64);
         REACTOR_COOLANT_MIN_FLOW = builder
                 .comment("Fluid conversion budget (mB/t) along coolant ↔ water ↔ hot water")
                 .defineInRange("coolantMinimumFlow", 10, 0, 10000);
@@ -790,6 +794,10 @@ public class COIConfig {
 
     public static int reactorMeltdownDustBurst() {
         return COMMON_SPEC.isLoaded() ? REACTOR_MELTDOWN_DUST_BURST.get() : 5000;
+    }
+
+    public static int reactorMeltdownMoltenSources() {
+        return COMMON_SPEC.isLoaded() ? REACTOR_MELTDOWN_MOLTEN_SOURCES.get() : 6;
     }
 
     public static int reactorCoolantMinimumFlow() {

@@ -1,6 +1,8 @@
 package com.mealuet.create_originium_industry.core.oridust;
 
+import com.mealuet.create_originium_industry.CreateOriginiumIndustry;
 import com.mealuet.create_originium_industry.config.COIConfig;
+import com.mealuet.create_originium_industry.core.PersistSchema;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Mth;
@@ -21,8 +23,15 @@ import org.jetbrains.annotations.NotNull;
  */
 public class PlayerExposureData implements INBTSerializable<CompoundTag> {
 
-    private static final String NBT_EXPOSURE = "Exposure";
-    private static final String NBT_INFECTION = "Infection";
+    /**
+     * Current {@code player_exposure_data} schema. Missing {@code version} is
+     * {@link PersistSchema#UNVERSIONED}; v0 and v1 both use {@code Exposure}
+     * and {@code Infection}.
+     */
+    public static final int SCHEMA_VERSION = 1;
+    public static final String NBT_VERSION = "version";
+    public static final String NBT_EXPOSURE = "Exposure";
+    public static final String NBT_INFECTION = "Infection";
 
     private int exposure = 0;
     private int infection = 0;
@@ -93,6 +102,7 @@ public class PlayerExposureData implements INBTSerializable<CompoundTag> {
     @Override
     public CompoundTag serializeNBT(HolderLookup.@NotNull Provider provider) {
         CompoundTag tag = new CompoundTag();
+        PersistSchema.write(tag, NBT_VERSION, SCHEMA_VERSION);
         tag.putInt(NBT_EXPOSURE, this.exposure);
         tag.putInt(NBT_INFECTION, this.infection);
         return tag;
@@ -100,12 +110,42 @@ public class PlayerExposureData implements INBTSerializable<CompoundTag> {
 
     @Override
     public void deserializeNBT(HolderLookup.@NotNull Provider provider, CompoundTag nbt) {
-        if (nbt.contains(NBT_EXPOSURE, CompoundTag.TAG_INT)) {
-            this.exposure = nbt.getInt(NBT_EXPOSURE);
+        CompoundTag payload = migrate(nbt, PersistSchema.read(nbt, NBT_VERSION));
+        if (payload.contains(NBT_EXPOSURE, CompoundTag.TAG_INT)) {
+            this.exposure = payload.getInt(NBT_EXPOSURE);
         }
-        if (nbt.contains(NBT_INFECTION, CompoundTag.TAG_INT)) {
-            this.infection = nbt.getInt(NBT_INFECTION);
+        if (payload.contains(NBT_INFECTION, CompoundTag.TAG_INT)) {
+            this.infection = payload.getInt(NBT_INFECTION);
         }
+    }
+
+    /**
+     * Upgrade hook for player exposure/infection. {@code 0} is the unversioned
+     * {@code Exposure}/{@code Infection} payload. v0→v1 is identity.
+     */
+    public static CompoundTag migrate(CompoundTag nbt, int fromVersion) {
+        int version = Math.max(fromVersion, PersistSchema.UNVERSIONED);
+        if (version > SCHEMA_VERSION) {
+            CreateOriginiumIndustry.LOGGER.warn(
+                    "player_exposure_data version {} is newer than supported {}; reading known fields.",
+                    version, SCHEMA_VERSION);
+            return nbt;
+        }
+        while (version < SCHEMA_VERSION) {
+            version = upgrade(nbt, version);
+        }
+        return nbt;
+    }
+
+    private static int upgrade(CompoundTag nbt, int fromVersion) {
+        return switch (fromVersion) {
+            case PersistSchema.UNVERSIONED -> {
+                PersistSchema.write(nbt, NBT_VERSION, 1);
+                yield 1;
+            }
+            default -> throw new IllegalStateException(
+                    "No player_exposure_data upgrade from version " + fromVersion);
+        };
     }
 
     public PlayerExposureData copy() {

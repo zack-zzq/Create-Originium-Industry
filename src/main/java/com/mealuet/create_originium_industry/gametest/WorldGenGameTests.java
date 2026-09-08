@@ -144,7 +144,7 @@ public final class WorldGenGameTests {
         helper.assertTrue(
                 helper.getLevel().registryAccess()
                         .lookupOrThrow(NeoForgeRegistries.Keys.BIOME_MODIFIERS)
-                        .get(COIWorldGen.BIOME_MODIFIER_ID)
+                        .get(COIWorldGen.BIOME_MODIFIER)
                         .isPresent(),
                 "biome modifier registered"
         );

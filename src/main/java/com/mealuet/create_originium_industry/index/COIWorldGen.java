@@ -18,8 +18,10 @@ import net.minecraft.world.level.levelgen.placement.PlacementModifierType;
 import net.minecraft.world.level.levelgen.structure.templatesystem.RuleTest;
 import net.minecraft.world.level.levelgen.structure.templatesystem.TagMatchTest;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.common.world.BiomeModifier;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 import java.util.List;
 
@@ -42,8 +44,10 @@ public final class COIWorldGen {
             ResourceLocation.fromNamespaceAndPath(CreateOriginiumIndustry.MODID, FEATURE_PATH)
     );
 
-    public static final ResourceLocation BIOME_MODIFIER_ID = ResourceLocation.fromNamespaceAndPath(
-            CreateOriginiumIndustry.MODID, "add_raw_originium_ore");
+    public static final ResourceKey<BiomeModifier> BIOME_MODIFIER = ResourceKey.create(
+            NeoForgeRegistries.Keys.BIOME_MODIFIERS,
+            ResourceLocation.fromNamespaceAndPath(CreateOriginiumIndustry.MODID, "add_raw_originium_ore")
+    );
 
     public static final DeferredRegister<Feature<?>> FEATURES =
             DeferredRegister.create(Registries.FEATURE, CreateOriginiumIndustry.MODID);

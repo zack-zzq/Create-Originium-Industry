@@ -18,6 +18,12 @@ public class COITags {
         public static final TagKey<Item> ORIGINIUM_MATERIALS = tag("originium_materials");
         /** Items that produce dust when processed by Create machines */
         public static final TagKey<Item> DUST_PRODUCING = tag("dust_producing");
+        /**
+         * Protection equipment that reduces exposure/infection gain.
+         * JSON is not shipped yet; the tag exists so packs and future gear can
+         * opt in without a registry rename.
+         */
+        public static final TagKey<Item> ORIGINIUM_PROTECTION = tag("originium_protection");
 
         private static TagKey<Item> tag(String name) {
             return TagKey.create(Registries.ITEM,

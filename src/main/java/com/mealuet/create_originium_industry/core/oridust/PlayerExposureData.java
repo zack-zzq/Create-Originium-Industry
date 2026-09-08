@@ -1,5 +1,6 @@
 package com.mealuet.create_originium_industry.core.oridust;
 
+import com.mealuet.create_originium_industry.config.COIConfig;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Mth;
@@ -35,7 +36,7 @@ public class PlayerExposureData implements INBTSerializable<CompoundTag> {
     }
 
     public void setExposure(int value) {
-        this.exposure = Mth.clamp(value, 0, 10000);
+        this.exposure = Mth.clamp(value, 0, COIConfig.maxExposure());
     }
 
     public void addExposure(int amount) {
@@ -49,7 +50,7 @@ public class PlayerExposureData implements INBTSerializable<CompoundTag> {
     }
 
     public void setInfection(int value) {
-        this.infection = Mth.clamp(value, 0, 10000);
+        this.infection = Mth.clamp(value, 0, COIConfig.maxInfection());
     }
 
     public void addInfection(int amount) {

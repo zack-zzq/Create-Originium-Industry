@@ -42,6 +42,7 @@ public class CreateOriginiumIndustry
     public CreateOriginiumIndustry(IEventBus modEventBus, ModContainer modContainer) {
         // --- Config ---
         modContainer.registerConfig(ModConfig.Type.COMMON, COIConfig.COMMON_SPEC);
+        modContainer.registerConfig(ModConfig.Type.CLIENT, COIConfig.CLIENT_SPEC);
 
         // --- Registrate & Deferred Registers ---
         REGISTRATE.registerEventListeners(modEventBus);

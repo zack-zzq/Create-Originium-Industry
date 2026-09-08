@@ -73,6 +73,7 @@ redstone + sugar + lapis + water (heated mix) → originium catalyst (培养液)
 - Create mill / crush / mix hooks that emit dust
 - Player exposure, infection, and Originium Exposure Sickness
 - Kinetic dust filter that absorbs chunk dust using a sieve
+- Common + client config (`create_originium_industry-common.toml` / `-client.toml`): dust, exposure, filter, protection hooks, reactor stubs, dedicated-server spread policy, accessibility
 - `/coi_debug` and the debug wand for inspection
 
 Dust and pollution are being reworked. Treat `core/oridust` as unstable; **do not rename registry ids** — see [docs/REGISTRY.md](docs/REGISTRY.md).
@@ -81,7 +82,7 @@ Dust and pollution are being reworked. Treat `core/oridust` as unstable; **do no
 
 | Phase | Name | Status |
 |---|---|---|
-| **M0** | Tech cleanup: freeze ids, docs, metadata, config skeleton | In progress |
+| **M0** | Tech cleanup: freeze ids, docs, metadata, config skeleton | Done |
 | **M1** | Dust loop MVP: data-driven emission, filters, dust meter, survival source | In progress (simulation refactor) |
 | **M2** | Purest / alloy expansion: filter + 培养液 + supercooling | Not started (items/fluids exist) |
 | **M3** | Reactor: heat, cooling, instability / meltdown | Stub only (`/coi_debug reactor`) |

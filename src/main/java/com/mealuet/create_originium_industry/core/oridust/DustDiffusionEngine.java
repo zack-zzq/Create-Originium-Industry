@@ -33,15 +33,12 @@ import java.util.Set;
  *   <li>For each active chunk with dust &gt; 0, calculate pressure difference
  *       with each active neighbor</li>
  *   <li>Transfer a fraction of the difference (controlled by {@code diffusionRate})</li>
- *   <li>Apply a diffusion decay factor: neighbor only receives 80% of what
- *       source loses (20% is lost to simulate environmental absorption)</li>
+ *   <li>Apply a diffusion decay factor: neighbor receives
+ *       {@code 1 - diffusionLossFactor} of what the source loses</li>
  *   <li>After diffusion, apply natural decay to active chunks with dust &gt; 0</li>
  * </ol>
  */
 public class DustDiffusionEngine {
-
-    /** Fraction of dust lost during transfer (neighbor receives 1 - this fraction) */
-    private static final double DIFFUSION_LOSS_FACTOR = 0.2;
 
     @SubscribeEvent
     public static void onWorldTick(LevelTickEvent.Post event) {
@@ -64,8 +61,11 @@ public class DustDiffusionEngine {
 
         Map<ChunkPos, Integer> deltas = new HashMap<>();
 
-        double diffusionRate = COIConfig.DIFFUSION_RATE.get();
-        double receiveFactor = 1.0 - DIFFUSION_LOSS_FACTOR; // 0.8 — neighbor receives this fraction
+        boolean dedicated = COIConfig.isDedicated(level.getServer());
+        double diffusionRate = COIConfig.effectiveDiffusionRate(dedicated);
+        double receiveFactor = 1.0 - COIConfig.DIFFUSION_LOSS_FACTOR.get();
+        int minDifference = COIConfig.DIFFUSION_MIN_DIFFERENCE.get();
+        int transferDivisor = Math.max(1, COIConfig.DIFFUSION_TRANSFER_DIVISOR.get());
 
         snapshot.forEach((pos, currentDust) -> {
             if (currentDust <= 0) return;
@@ -79,13 +79,13 @@ public class DustDiffusionEngine {
 
                 // Only diffuse from high to low, with a minimum threshold
                 // to avoid low-level noise oscillation
-                if (difference < 50) continue;
+                if (difference < minDifference) continue;
 
                 // Transfer amount: fraction of difference, scaled by config rate
-                // Divide by 128 for very gradual diffusion:
+                // Divide by transferDivisor (default 128) for gradual diffusion:
                 //   5000 dust → ~39 per neighbor per cycle
                 //   500 dust  → ~3 per neighbor per cycle
-                int transfer = (int) (difference * diffusionRate / 128.0);
+                int transfer = (int) (difference * diffusionRate / (double) transferDivisor);
                 if (transfer <= 0) continue;
 
                 // Don't transfer more than what the source has

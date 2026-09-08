@@ -94,11 +94,18 @@ Common config spec is `COIConfig.COMMON_SPEC`. Top-level keys:
 - `player_exposure`
 - `feature_toggles`
 - `dust_filter`
+- `protection` *(additive)*
+- `reactor` *(additive; M3 stub knobs)*
+- `multiplayer` *(additive; dedicated-server spread policy)*
 - `debug`
 
 Do not rename these sections once a release has shipped. New sections are fine.
-Client / accessibility config does not exist yet; add `COIConfig` client spec
-rather than stuffing render settings into common.
+
+Client spec is `COIConfig.CLIENT_SPEC` (`ModConfig.Type.CLIENT`). Top-level key:
+
+- `client` — accessibility: `reduceFlicker`, `simplifyParticles`, `particleDensity`, `highContrastIndicators`, `uiDetailLevel`, `debugOverlayDetail`, `showSicknessHud`
+
+Read client values through `COIClientOptions` so a dedicated server (where the client spec is not loaded) never calls `.get()` on an unloaded spec.
 
 ## Frozen recipe ids
 
@@ -134,6 +141,7 @@ to tags or recipe JSON, **keep these ids working** (or data-gen aliases).
 |---|---|---|
 | `item/originium_materials` | raw, shard, originium, dust, purest | present |
 | `item/dust_producing` | items whose processing emits chunk dust | **not shipped — dust API work** |
+| `item/originium_protection` | protection gear that reduces exposure/infection | **not shipped — no gear yet; tag key exists** |
 | `block/dust_sources` | blocks that emit dust | **not shipped — dust API work** |
 | `block/dust_filters` | blocks that remove/modify dust | **not shipped — dust API work** |
 | `fluid/originium_fluids` | all originium fluids | present |
@@ -153,28 +161,15 @@ Pattern: `<category>.create_originium_industry.<path>`
 | `effect` | `effect.create_originium_industry.ori_dust_sickness` |
 | `itemGroup` | `itemGroup.create_originium_industry.main` |
 | `commands` | `commands.coi_debug.dust.get` |
-| `dust_level` | `dust_level.create_originium_industry.safe` |
+| `hud` | `hud.create_originium_industry.sickness` |
 
 `en_us` and `zh_cn` must stay in lockstep.
 
 ### Known missing keys (do not delete; still referenced in Java)
 
-These filter / goggle strings are used by the current dust-filter block but are
-absent from lang files. Fill them or stop referencing them — do not leave raw
-keys in game:
-
-- `block.create_originium_industry.originium_dust_filter.status`
-- `block.create_originium_industry.originium_dust_filter.no_sieve`
-- `block.create_originium_industry.originium_dust_filter.speed`
-- `block.create_originium_industry.originium_dust_filter.no_power`
-- `block.create_originium_industry.originium_dust_filter.goggle.sieve`
-- `block.create_originium_industry.originium_dust_filter.goggle.no_sieve`
-- `block.create_originium_industry.originium_dust_filter.goggle.rate`
-- `block.create_originium_industry.originium_dust_filter.sieve_inserted`
-- `block.create_originium_industry.originium_dust_filter.already_has_sieve`
-- `block.create_originium_industry.originium_dust_filter.sieve_removed`
-
-If the filter is redesigned, update this list in the same change.
+None at the moment. Filter / goggle / HUD / debug tooltip strings live in
+`en_us.json` and `zh_cn.json`. If you add a `Component.translatable` call,
+add both language keys in the same change.
 
 ## Allowed to add later
 
@@ -189,7 +184,6 @@ Expected (not frozen until registered):
 - Purification intermediates for the purest line
 - Reactor blocks / block entities
 - Ponder / JEI lang keys
-- Client config spec
 
 ## Debug surface
 

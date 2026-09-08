@@ -9,6 +9,7 @@ import com.mealuet.create_originium_industry.core.oridust.DustByproduct;
 import com.mealuet.create_originium_industry.core.oridust.DustReason;
 import com.mealuet.create_originium_industry.core.oridust.IDustPurifier;
 import com.mealuet.create_originium_industry.core.oridust.OriginiumDustManager;
+import com.mealuet.create_originium_industry.core.oridust.SieveKind;
 import com.mealuet.create_originium_industry.index.COIBlocks;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntity;
 import net.minecraft.core.BlockPos;
@@ -41,6 +42,7 @@ public class DustFilterBlockEntity extends KineticBlockEntity implements IDustPu
 
     private boolean hasSieve = false;
     private int sieveDurability = 0;
+    private SieveKind sieveKind = SieveKind.STANDARD;
     private final ByproductBuffer byproduct = new ByproductBuffer();
     /**
      * GameTest-only: stay "spinning" without a kinetic network. Not serialized.
@@ -78,7 +80,7 @@ public class DustFilterBlockEntity extends KineticBlockEntity implements IDustPu
 
     @Override
     public double emissionCaptureFactor() {
-        return isPurifierActive() ? COIConfig.FILTER_EMISSION_CAPTURE.get() : 0.0;
+        return isPurifierActive() ? sieveKind.filterCapture() : 0.0;
     }
 
     @Override
@@ -126,6 +128,14 @@ public class DustFilterBlockEntity extends KineticBlockEntity implements IDustPu
         return hasSieve;
     }
 
+    public SieveKind sieveKind() {
+        return hasSieve ? sieveKind : SieveKind.STANDARD;
+    }
+
+    public int sieveDurability() {
+        return sieveDurability;
+    }
+
     /**
      * Remainder dust stored toward the next {@code originium_dust} item.
      */
@@ -147,21 +157,25 @@ public class DustFilterBlockEntity extends KineticBlockEntity implements IDustPu
     }
 
     public void insertSieve(ItemStack sieveStack) {
-        if (sieveStack.getItem() == COIBlocks.DUST_SIEVE.asItem()) {
-            this.hasSieve = true;
-            this.sieveDurability = COIConfig.FILTER_SIEVE_DURABILITY.get();
-            setChanged();
+        SieveKind kind = SieveKind.fromStack(sieveStack);
+        if (kind == null) {
+            return;
         }
+        this.hasSieve = true;
+        this.sieveKind = kind;
+        this.sieveDurability = kind.durability();
+        setChanged();
     }
 
     public ItemStack removeSieve() {
         if (hasSieve) {
             hasSieve = false;
-            int remaining = sieveDurability;
             sieveDurability = 0;
+            SieveKind removed = sieveKind;
+            sieveKind = SieveKind.STANDARD;
             setChanged();
             // Return a sieve item (regardless of remaining durability for simplicity)
-            return new ItemStack(COIBlocks.DUST_SIEVE.asItem(), 1);
+            return new ItemStack(removed.item(), 1);
         }
         return ItemStack.EMPTY;
     }
@@ -171,7 +185,7 @@ public class DustFilterBlockEntity extends KineticBlockEntity implements IDustPu
      */
     public void sendStatusMessage(ServerPlayer player) {
         if (hasSieve) {
-            int maxDurability = COIConfig.FILTER_SIEVE_DURABILITY.get();
+            int maxDurability = sieveKind.durability();
             int percent = maxDurability > 0 ? (sieveDurability * 100 / maxDurability) : 0;
             player.sendSystemMessage(Component.translatable(
                     "block.create_originium_industry.originium_dust_filter.status",
@@ -207,7 +221,7 @@ public class DustFilterBlockEntity extends KineticBlockEntity implements IDustPu
         }
 
         if (hasSieve) {
-            int maxDurability = COIConfig.FILTER_SIEVE_DURABILITY.get();
+            int maxDurability = sieveKind.durability();
             int percent = maxDurability > 0 ? (sieveDurability * 100 / maxDurability) : 0;
             tooltip.add(Component.literal("    ").append(Component.translatable(
                     "block.create_originium_industry.originium_dust_filter.goggle.sieve",
@@ -255,6 +269,7 @@ public class DustFilterBlockEntity extends KineticBlockEntity implements IDustPu
         super.write(compound, registries, clientPacket);
         compound.putBoolean(NBT_HAS_SIEVE, hasSieve);
         compound.putInt(NBT_SIEVE_DURABILITY, sieveDurability);
+        compound.putString(SieveKind.NBT_KEY, sieveKind.id());
         byproduct.save(compound);
     }
 
@@ -263,6 +278,7 @@ public class DustFilterBlockEntity extends KineticBlockEntity implements IDustPu
         super.read(compound, registries, clientPacket);
         hasSieve = compound.getBoolean(NBT_HAS_SIEVE);
         sieveDurability = compound.getInt(NBT_SIEVE_DURABILITY);
+        sieveKind = SieveKind.fromNbt(compound.getString(SieveKind.NBT_KEY));
         byproduct.load(compound);
     }
 }

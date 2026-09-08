@@ -46,6 +46,10 @@ stable unless a migration is documented here first.
 | `originium_debug_wand` | 源石调试器 | Originium Debug Wand | Debug-only; do not add survival recipes |
 | `originium_respirator` | 源石防护面罩 | Originium Respirator | Head-slot Equipable; tagged `originium_protection` |
 | `originium_filter_canister` | 源石滤毒罐 | Originium Filter Canister | Chest-slot Equipable; tagged `originium_protection` |
+| `originium_sealed_canister` | 源石密封滤毒罐 | Originium Sealed Canister | Alloy chest upgrade; also tagged `originium_reinforced_protection` |
+| `originium_alloy_casing` | 源石合金壳体 | Originium Alloy Casing | Pollution-resistant casing (BlockItem) |
+| `originium_alloy_sieve` | 源石合金滤网 | Originium Alloy Sieve | Filter upgrade attachment; also kinetic-filter insert |
+| `originium_core_housing` | 源石核心外壳 | Originium Core Housing | M3 reactor shell precursor (BlockItem) |
 | `molten_originium_bucket` | 熔融源石桶 | Molten Originium Bucket | Generated with the fluid |
 | `filtered_molten_originium_bucket` | 过滤熔融源石桶 | Filtered Molten Originium Bucket | Generated with the fluid |
 | `cultured_originium_bucket` | 培养源石液桶 | Cultured Originium Bucket | Filtered molten + 培养液 |
@@ -56,8 +60,11 @@ stable unless a migration is documented here first.
 
 | Registry id | Notes |
 |---|---|
-| `originium_dust_filter` | Kinetic dust absorber (block + block entity share this path). BE NBT: `HasSieve`, `SieveDurability`, additive `CapturedDust` |
+| `originium_dust_filter` | Kinetic dust absorber (block + block entity share this path). BE NBT: `HasSieve`, `SieveDurability`, additive `CapturedDust`, additive `SieveKind` (`standard` / `alloy`; missing = standard) |
 | `originium_dust_sieve` | Process sieve attachment (block + BE share this path with the item). BE NBT: `SieveDurability`, additive `CapturedDust` |
+| `originium_alloy_sieve` | Alloy process sieve. Shares the `originium_dust_sieve` block entity type. New id. |
+| `originium_alloy_casing` | Pollution-resistant casing. Tagged `pollution_resistant` + `reactor_housing`. No BE. |
+| `originium_core_housing` | Denser M3 shell. Same tags as the casing; stronger per-face emission seal. No BE. |
 | `originium_dust_nozzle` | Encased Fan nozzle (block + BE share this path with the item). BE NBT: `LastMoved`, `HasFlow` |
 | `originium_dust_meter` | Dust gauge. BE NBT: `Dust`, `Risk`, `ProtectionPercent` (client packet snapshot; goggles prefer nearby `VisibleDust` cache) |
 | `originium_cooling_chamber` | Basin supercooling attachment (block + BE). BE NBT: `ChamberDurability`, additive `version` (1) |
@@ -117,6 +124,7 @@ Common config spec is `COIConfig.COMMON_SPEC`. Top-level keys:
 - `reactor` *(additive; M3 stub knobs)*
 - `multiplayer` *(additive; dedicated-server spread policy + nearby client dust sync)*
 - `purest_line` *(additive; cooling-chamber durability)*
+- `alloy_parts` *(additive; housing seal, alloy sieve, sealed canister bonus)*
 - `debug`
 
 Do not rename these sections once a release has shipped. New sections are fine.
@@ -159,6 +167,12 @@ Datapack path is the recipe id (`create_originium_industry:<path>`).
 | `crafting/originium_dust_filter` | `minecraft:crafting_shaped` | kinetic filter |
 | `crafting/originium_respirator` | `minecraft:crafting_shaped` | head-slot dust mask |
 | `crafting/originium_filter_canister` | `minecraft:crafting_shaped` | chest-slot filter tank |
+| `crafting/originium_alloy_casing` | `minecraft:crafting_shapeless` | andesite casing + alloy ingot |
+| `item_application/originium_alloy_casing` | `create:item_application` | same casing (deployer / JEI) |
+| `crafting/originium_alloy_sieve` | `minecraft:crafting_shapeless` | dust sieve + alloy ingot |
+| `item_application/originium_alloy_sieve` | `create:item_application` | same sieve upgrade |
+| `crafting/originium_sealed_canister` | `minecraft:crafting_shaped` | filter canister + alloy casing + alloy ingot |
+| `crafting/originium_core_housing` | `minecraft:crafting_shaped` | 4 alloy casings + cooling chamber |
 | `crafting/originium_cooling_chamber` | `minecraft:crafting_shaped` | basin cooling chamber (alloy + blue ice + copper casing) |
 | `mixing/filtered_molten_originium` | `create:mixing` + basin sieve | filtered molten from molten |
 | `mixing/cultured_originium` | `create:mixing` + heated | cultured originium from filtered + 培养液 |
@@ -235,6 +249,11 @@ is tagged `originium_protection`. A full set is **2** pieces (`protection.protec
 older configs that still have `4` from the M0 skeleton should retune). Broken gear
 drops `originium_dust` back into the factory loop.
 
+`originium_sealed_canister` is an alloy chest upgrade (same slot). It stays in
+`originium_protection` and is also tagged `originium_reinforced_protection`, which
+applies `alloy_parts.sealedProtectionBonus` (default 0.10) to whatever gain the
+piece-count formula left. Iron canister behaviour is unchanged.
+
 Infection stages (additive `infection` section) apply vanilla effects from stored
 infection. `ori_dust_sickness` stays the exposure-layer effect.
 
@@ -274,6 +293,21 @@ matching lives at `data/<namespace>/coi_basin_process/*.json`:
 blaze burner. Unlock timing: superheat (melt) + alloy ingot + blue ice for the
 chamber craft; packed ice per supercool.
 
+### Alloy housing
+
+`originium_alloy_ingot` crafts into factory parts, not a dead-end ingot:
+
+- **Casing** — andesite casing + alloy (crafting table or Create item application).
+  Adjacent faces cut process emission by 10% each (cap 50%).
+- **Alloy sieve** — upgrade of `originium_dust_sieve`. 70% process capture / 75%
+  kinetic-filter capture; 1500 durability. Same attachment rules; insertable
+  into the existing filter (`SieveKind` is additive NBT).
+- **Sealed canister** — alloy chest protection (see protection tags above).
+- **Core housing** — 4 casings + cooling chamber. 20% seal per face. Tagged
+  `reactor_housing` for M3.
+
+Housing runs in `DustSubmission` on `MACHINE_PROCESSING` **before** purifiers.
+
 ## Tags
 
 ### Published (`c` namespace)
@@ -299,9 +333,12 @@ chamber craft; packed ice per supercool.
 |---|---|---|
 | `item/originium_materials` | raw, shard, originium, dust, purest | present |
 | `item/dust_producing` | items whose processing emits chunk dust | present (raw, shard, originium, dust, purest) |
-| `item/originium_protection` | protection gear that reduces exposure/infection | present (`originium_respirator`, `originium_filter_canister`) |
+| `item/originium_protection` | protection gear that reduces exposure/infection | present (`originium_respirator`, `originium_filter_canister`, `originium_sealed_canister`) |
+| `item/originium_reinforced_protection` | alloy-grade extra protection bonus | present (`originium_sealed_canister`) |
 | `block/dust_sources` | blocks that emit dust | present (empty; future COI machines) |
-| `block/dust_filters` | blocks that remove/modify dust | present (`originium_dust_filter`, `originium_dust_sieve`, `originium_dust_nozzle`) |
+| `block/dust_filters` | blocks that remove/modify dust | present (`originium_dust_filter`, `originium_dust_sieve`, `originium_alloy_sieve`, `originium_dust_nozzle`) |
+| `block/pollution_resistant` | adjacent housing that seals process emission | present (`originium_alloy_casing`, `originium_core_housing`) |
+| `block/reactor_housing` | M3 shell contract | present (same as pollution_resistant) |
 | `block/raw_originium_ores` | stone + deepslate raw originium ore | present |
 | `fluid/originium_fluids` | all originium fluids | present (includes filtered + cultured) |
 
@@ -337,7 +374,7 @@ New ids are fine. Do not reuse a frozen id for a different object.
 
 Expected (not frozen until registered):
 
-- Reactor blocks / block entities
+- Reactor blocks / block entities (power core; housing ids above are the shell contract)
 - Ponder / JEI lang keys
 
 ## Debug surface

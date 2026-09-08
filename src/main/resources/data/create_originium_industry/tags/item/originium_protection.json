@@ -2,6 +2,7 @@
   "replace": false,
   "values": [
     "create_originium_industry:originium_respirator",
-    "create_originium_industry:originium_filter_canister"
+    "create_originium_industry:originium_filter_canister",
+    "create_originium_industry:originium_sealed_canister"
   ]
 }

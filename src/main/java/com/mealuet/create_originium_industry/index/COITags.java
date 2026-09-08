@@ -20,9 +20,15 @@ public class COITags {
         public static final TagKey<Item> DUST_PRODUCING = tag("dust_producing");
         /**
          * Protection equipment that reduces exposure/infection gain.
-         * Shipped values: originium_respirator, originium_filter_canister.
+         * Shipped values: originium_respirator, originium_filter_canister,
+         * originium_sealed_canister.
          */
         public static final TagKey<Item> ORIGINIUM_PROTECTION = tag("originium_protection");
+        /**
+         * Alloy-grade protection that adds {@code alloy_parts.sealedProtectionBonus}
+         * on top of the piece-count formula.
+         */
+        public static final TagKey<Item> REINFORCED_PROTECTION = tag("originium_reinforced_protection");
 
         private static TagKey<Item> tag(String name) {
             return TagKey.create(Registries.ITEM,
@@ -37,6 +43,16 @@ public class COITags {
         public static final TagKey<Block> DUST_FILTERS = tag("dust_filters");
         /** Stone / deepslate raw originium ore blocks */
         public static final TagKey<Block> RAW_ORIGINIUM_ORES = tag("raw_originium_ores");
+        /**
+         * Pollution-resistant factory housing. Adjacent faces reduce machine
+         * emission ({@link com.mealuet.create_originium_industry.core.oridust.AlloyHousing}).
+         */
+        public static final TagKey<Block> POLLUTION_RESISTANT = tag("pollution_resistant");
+        /**
+         * M3 reactor shell contract. Alloy casing and core housing ship here so
+         * the power core can require this tag without renaming ids.
+         */
+        public static final TagKey<Block> REACTOR_HOUSING = tag("reactor_housing");
 
         private static TagKey<Block> tag(String name) {
             return TagKey.create(Registries.BLOCK,

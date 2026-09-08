@@ -1,0 +1,6 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "create_originium_industry:item/originium_sealed_canister"
+  }
+}

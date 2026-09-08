@@ -1,0 +1,16 @@
+{
+  "type": "create:item_application",
+  "ingredients": [
+    {
+      "item": "create_originium_industry:originium_dust_sieve"
+    },
+    {
+      "item": "create_originium_industry:originium_alloy_ingot"
+    }
+  ],
+  "results": [
+    {
+      "id": "create_originium_industry:originium_alloy_sieve"
+    }
+  ]
+}

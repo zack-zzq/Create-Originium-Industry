@@ -48,6 +48,7 @@ Two industrial routes:
 | `originium_cooling_chamber` | Originium Cooling Chamber | 源石冷却室 (Basin supercooling attachment) |
 | `originium_respirator` | Originium Respirator | 源石防护面罩 (head slot) |
 | `originium_filter_canister` | Originium Filter Canister | 源石滤毒罐 (chest slot) |
+| `originium_sealed_canister` | Originium Sealed Canister | 源石密封滤毒罐 (alloy chest upgrade) |
 | `originium_debug_wand` | Originium Debug Wand | 源石调试器 (creative / OP) |
 
 ### Blocks
@@ -59,6 +60,9 @@ Two industrial routes:
 | `originium_dust_nozzle` | Originium Dust Nozzle | 源石尘分散滤网 |
 | `originium_dust_meter` | Originium Dust Meter | 源石尘计 |
 | `originium_cooling_chamber` | Originium Cooling Chamber | 源石冷却室 |
+| `originium_alloy_casing` | Originium Alloy Casing | 源石合金壳体 |
+| `originium_alloy_sieve` | Originium Alloy Sieve | 源石合金滤网 |
+| `originium_core_housing` | Originium Core Housing | 源石核心外壳 |
 | `raw_originium_ore` | Raw Originium Ore | 粗制源石矿 |
 | `deepslate_raw_originium_ore` | Deepslate Raw Originium Ore | 深板岩粗制源石矿 |
 
@@ -91,6 +95,10 @@ purest originium (superheated mix) → purest molten originium (late reactor int
 redstone + sugar + lapis + water (heated mix) → originium catalyst (培养液)
 
 originium alloy + blue ice + copper casing → originium cooling chamber
+andesite casing + originium alloy → originium alloy casing
+originium dust sieve + originium alloy → originium alloy sieve
+filter canister + alloy casing + alloy ingot → originium sealed canister
+4 alloy casings + cooling chamber → originium core housing
 ```
 
 ### Systems (in progress)
@@ -99,15 +107,16 @@ originium alloy + blue ice + copper casing → originium cooling chamber
 - Uncommon Overworld raw originium ore (`raw_originium_ore` / `deepslate_raw_originium_ore`, config `worldgen.*`)
 - Create mill / crush / mix hooks that emit dust via `IOridustProducer` (datapack `coi_dust_emission` JSON; config overrides frozen recipe ids). Heated shard mix and superheated melt emit more than cold milling; `catalyst_mixing` is heated but ships amount 0 (no originium feedstock). No furnace/fan recipes.
 - Player exposure, Originium Exposure Sickness, and a 4-stage infection course (weakness → restricted → growth → bargain)
-- Protection gear (`originium_respirator` + `originium_filter_canister`) tagged `originium_protection`; wearing a full set halves exposure gain. Spent gear drops `originium_dust`.
+- Protection gear (`originium_respirator` + `originium_filter_canister`) tagged `originium_protection`; wearing a full set halves exposure gain. Spent gear drops `originium_dust`. `originium_sealed_canister` is an alloy chest upgrade with extra durability and a 10% residual-gain bonus.
 - Death handling is configurable: singleplayer defaults clear exposure and keep 25% infection (no death spiral)
-- Kinetic dust filter implements shared `IDustPurifier` (chunk absorb, nearby emission capture, `originium_dust` byproduct with remainder buffer — no dup/void)
-- Basin / process sieve (`originium_dust_sieve`) attaches to a Basin, mill, mixer, or crushing controller and captures process emission as byproduct (no GUI, no RPM)
+- Kinetic dust filter implements shared `IDustPurifier` (chunk absorb, nearby emission capture, `originium_dust` byproduct with remainder buffer — no dup/void). Accepts the iron sieve or the alloy sieve upgrade.
+- Basin / process sieve (`originium_dust_sieve`) attaches to a Basin, mill, mixer, or crushing controller and captures process emission as byproduct (no GUI, no RPM). Alloy sieve is the same attachment with higher capture/durability.
 - Encased Fan nozzle (`originium_dust_nozzle`) redirects chunk dust downwind without voiding it
 - Dust meter (`originium_dust_meter`) shows chunk concentration, risk tier, and a protection hint (goggles / right-click / comparator)
 - Basin cooling chamber (`originium_cooling_chamber`) attaches to a Basin only (no GUI). Supercooling recipes refuse an active blaze burner. Chamber craft needs alloy + blue ice.
+- Originium alloy casing / core housing placed beside a processing machine cut process emission (10% / 20% per face, cap 50%) before filters run. Both are tagged `reactor_housing` for M3.
 - Nearby chunk dust and local-player exposure/infection sync to clients at low frequency (dirty set / on-demand window — not the full map)
-- Common + client config (`create_originium_industry-common.toml` / `-client.toml`): dust, exposure, infection stages, filter, worldgen, protection gear, reactor stubs, dedicated-server spread policy, accessibility
+- Common + client config (`create_originium_industry-common.toml` / `-client.toml`): dust, exposure, infection stages, filter, worldgen, protection gear, alloy parts, reactor stubs, dedicated-server spread policy, accessibility
 - `/coi_debug` and the debug wand for inspection
 
 Dust and pollution are being reworked. Treat `core/oridust` as unstable; **do not rename registry ids** — see [docs/REGISTRY.md](docs/REGISTRY.md).
@@ -118,7 +127,7 @@ Dust and pollution are being reworked. Treat `core/oridust` as unstable; **do no
 |---|---|---|
 | **M0** | Tech cleanup: freeze ids, docs, metadata, config skeleton | Done |
 | **M1** | Dust loop MVP: data-driven emission, filters, dust meter, survival source | In progress (simulation refactor) |
-| **M2** | Purest / alloy expansion: filter + 培养液 + supercooling | Survival path in (`purest_originium`); alloy housing (#21) still open |
+| **M2** | Purest / alloy expansion: filter + 培养液 + supercooling | Survival path in (`purest_originium`); alloy housing / sieve / sealed canister in |
 | **M3** | Reactor: heat, cooling, instability / meltdown | Stub only (`/coi_debug reactor`; meltdown = dust, not explosion) |
 | **M4** | Ponder, GameTests, optional compat (e.g. Create: Aeronautics) | Not started |
 

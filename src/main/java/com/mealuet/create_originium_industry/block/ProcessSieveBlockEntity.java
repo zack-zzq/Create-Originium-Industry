@@ -6,6 +6,7 @@ import com.mealuet.create_originium_industry.config.UiDetailLevel;
 import com.mealuet.create_originium_industry.core.oridust.ByproductBuffer;
 import com.mealuet.create_originium_industry.core.oridust.DustByproduct;
 import com.mealuet.create_originium_industry.core.oridust.IDustPurifier;
+import com.mealuet.create_originium_industry.core.oridust.SieveKind;
 import com.simibubi.create.api.equipment.goggles.IHaveGoggleInformation;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
@@ -34,7 +35,11 @@ public class ProcessSieveBlockEntity extends SmartBlockEntity implements IDustPu
 
     public ProcessSieveBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
-        this.durability = COIConfig.processSieveDurability();
+        this.durability = sieveKind().durability();
+    }
+
+    public SieveKind sieveKind() {
+        return SieveKind.fromBlock(getBlockState().getBlock());
     }
 
     @Override
@@ -48,7 +53,7 @@ public class ProcessSieveBlockEntity extends SmartBlockEntity implements IDustPu
 
     @Override
     public double emissionCaptureFactor() {
-        return isPurifierActive() ? COIConfig.PROCESS_SIEVE_EMISSION_CAPTURE.get() : 0.0;
+        return isPurifierActive() ? sieveKind().processCapture() : 0.0;
     }
 
     @Override
@@ -78,12 +83,12 @@ public class ProcessSieveBlockEntity extends SmartBlockEntity implements IDustPu
      * GameTest helper: full durability without placing via item.
      */
     public void activatePurifierForGameTest() {
-        this.durability = COIConfig.processSieveDurability();
+        this.durability = sieveKind().durability();
         setChanged();
     }
 
     public void sendStatusMessage(ServerPlayer player) {
-        int max = COIConfig.processSieveDurability();
+        int max = sieveKind().durability();
         int percent = max > 0 ? (durability * 100 / max) : 0;
         player.sendSystemMessage(Component.translatable(
                 "block.create_originium_industry.originium_dust_sieve.status",
@@ -100,7 +105,7 @@ public class ProcessSieveBlockEntity extends SmartBlockEntity implements IDustPu
         if (COIClientOptions.uiDetailLevel() == UiDetailLevel.MINIMAL) {
             return true;
         }
-        int max = COIConfig.processSieveDurability();
+        int max = sieveKind().durability();
         int percent = max > 0 ? (durability * 100 / max) : 0;
         tooltip.add(Component.literal("    ").append(Component.translatable(
                 "block.create_originium_industry.originium_dust_sieve.goggle.durability",

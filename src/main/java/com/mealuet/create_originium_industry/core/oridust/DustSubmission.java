@@ -32,7 +32,11 @@ public final class DustSubmission implements IOridustProducer {
         }
 
         DustReason effectiveReason = reason == null ? DustReason.UNKNOWN : reason;
-        PurificationResult purified = DustPurification.reduceNearby(level, pos, expectedAmount);
+        int incoming = expectedAmount;
+        if (effectiveReason == DustReason.MACHINE_PROCESSING) {
+            incoming = AlloyHousing.reduceEmission(level, pos, incoming);
+        }
+        PurificationResult purified = DustPurification.reduceNearby(level, pos, incoming);
         int deposited = purified.remaining();
         if (deposited > 0) {
             OriginiumDustManager.addDustAt(level, pos, deposited, effectiveReason);
@@ -40,9 +44,9 @@ public final class DustSubmission implements IOridustProducer {
 
         if (COIConfig.ENABLE_DEBUG_LOGGING.get()) {
             CreateOriginiumIndustry.LOGGER.info(
-                    "[OriDust] submit at [{}, {}, {}]: expected={}, captured={}, deposited={} (reason: {})",
+                    "[OriDust] submit at [{}, {}, {}]: expected={}, sealed={}, captured={}, deposited={} (reason: {})",
                     pos.getX(), pos.getY(), pos.getZ(),
-                    expectedAmount, purified.captured(), deposited, effectiveReason.getId()
+                    expectedAmount, incoming, purified.captured(), deposited, effectiveReason.getId()
             );
         }
         return deposited;

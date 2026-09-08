@@ -22,11 +22,26 @@ public final class ProtectionHooks {
     private ProtectionHooks() {}
 
     public static double incomingExposureFactor(LivingEntity entity) {
-        return incomingFactor(countProtectionPieces(entity), COIConfig.PROTECTION_EXPOSURE_REDUCTION.get());
+        return applyReinforcedBonus(entity, incomingFactor(countProtectionPieces(entity), COIConfig.PROTECTION_EXPOSURE_REDUCTION.get()));
     }
 
     public static double incomingInfectionFactor(LivingEntity entity) {
-        return incomingFactor(countProtectionPieces(entity), COIConfig.PROTECTION_INFECTION_REDUCTION.get());
+        return applyReinforcedBonus(entity, incomingFactor(countProtectionPieces(entity), COIConfig.PROTECTION_INFECTION_REDUCTION.get()));
+    }
+
+    /**
+     * Alloy sealed canisters (and other {@code originium_reinforced_protection}
+     * items) cut a further slice of whatever gain the piece-count formula left.
+     */
+    public static double applyReinforcedBonus(LivingEntity entity, double factor) {
+        if (factor >= 1.0 || !wearsReinforcedProtection(entity)) {
+            return factor;
+        }
+        double bonus = COIConfig.SEALED_PROTECTION_BONUS.get();
+        if (bonus <= 0.0) {
+            return factor;
+        }
+        return Math.max(0.0, factor * (1.0 - Math.min(1.0, bonus)));
     }
 
     /**
@@ -67,6 +82,23 @@ public final class ProtectionHooks {
 
     public static boolean isProtectionItem(ItemStack stack) {
         return stack != null && !stack.isEmpty() && stack.is(COITags.Items.ORIGINIUM_PROTECTION);
+    }
+
+    public static boolean isReinforcedProtectionItem(ItemStack stack) {
+        return stack != null && !stack.isEmpty() && stack.is(COITags.Items.REINFORCED_PROTECTION);
+    }
+
+    public static boolean wearsReinforcedProtection(LivingEntity entity) {
+        if (entity == null) {
+            return false;
+        }
+        for (ItemStack stack : entity.getArmorSlots()) {
+            if (isReinforcedProtectionItem(stack)) {
+                return true;
+            }
+        }
+        return isReinforcedProtectionItem(entity.getMainHandItem())
+                || isReinforcedProtectionItem(entity.getOffhandItem());
     }
 
     /**

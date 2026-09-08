@@ -13,7 +13,11 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.RecipeType;
 import net.neoforged.neoforge.fluids.FluidStack;
+
+import java.util.IdentityHashMap;
+import java.util.List;
 
 /**
  * Recipe/item-aware facade over {@link IOridustProducer}.
@@ -37,7 +41,21 @@ public final class DustProductionHelper {
 
     private static final String MOD_ID = CreateOriginiumIndustry.MODID;
 
+    /**
+     * Identity cache of {@link RecipeHolder#value()} → datapack id. Recipe
+     * instances are stable until datapack reload; {@link #clearRecipeIdCache()}
+     * is called from {@link DustEmissionIndex}.
+     */
+    private static final IdentityHashMap<Recipe<?>, ResourceLocation> HOLDER_IDS = new IdentityHashMap<>();
+
     private DustProductionHelper() {}
+
+    /**
+     * Drop cached holder ids after a datapack / recipe reload.
+     */
+    public static void clearRecipeIdCache() {
+        HOLDER_IDS.clear();
+    }
 
     /**
      * Resolves the dust production amount for a given recipe ID.
@@ -57,7 +75,10 @@ public final class DustProductionHelper {
         if (recipe == null) {
             return 0;
         }
-        ResourceLocation id = resolveRecipeId(level, recipe);
+        return amountForResolved(resolveRecipeId(level, recipe), recipe);
+    }
+
+    private static int amountForResolved(ResourceLocation id, Recipe<?> recipe) {
         int mapped = mappedAmount(id);
         if (mapped >= 0) {
             return mapped;
@@ -125,15 +146,37 @@ public final class DustProductionHelper {
         if (recipe == null) {
             return null;
         }
-        if (level != null) {
-            for (RecipeHolder<?> holder : level.getRecipeManager().getRecipes()) {
-                if (holder.value() == recipe) {
-                    return holder.id();
-                }
-            }
+        ResourceLocation cached = HOLDER_IDS.get(recipe);
+        if (cached != null) {
+            return cached;
         }
+        ResourceLocation id = lookupHolderId(level, recipe);
+        if (id != null) {
+            HOLDER_IDS.put(recipe, id);
+            return id;
+        }
+        // Create type ids (create:mixing / create:milling) are not cached:
+        // a later call with a real RecipeManager must still be able to resolve.
         if (recipe instanceof ProcessingRecipe<?> processing) {
             return processing.id;
+        }
+        return null;
+    }
+
+    /**
+     * Scan only recipes of the same {@link RecipeType}, not the full registry.
+     */
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    private static ResourceLocation lookupHolderId(ServerLevel level, Recipe<?> recipe) {
+        if (level == null) {
+            return null;
+        }
+        RecipeType type = recipe.getType();
+        List<RecipeHolder<?>> holders = level.getRecipeManager().getAllRecipesFor(type);
+        for (RecipeHolder<?> holder : holders) {
+            if (holder.value() == recipe) {
+                return holder.id();
+            }
         }
         return null;
     }
@@ -144,6 +187,9 @@ public final class DustProductionHelper {
      * Goes through {@link DustSubmission} ({@link IOridustProducer}).
      */
     public static void emitDustFromRecipe(ServerLevel level, BlockPos pos, ResourceLocation recipeId) {
+        if (level == null || !COIConfig.ENABLE_DUST_PRODUCTION.get()) {
+            return;
+        }
         int dustAmount = getDustForRecipe(recipeId);
         if (dustAmount <= 0) {
             return;
@@ -153,20 +199,27 @@ public final class DustProductionHelper {
 
     /**
      * Emits dust for a completed Create {@link Recipe}, resolving the holder id
-     * (and heat-aware fallback) the same way machine mixins do.
+     * once (and applying heat-aware fallback) the same way machine mixins do.
      */
     public static void emitDustFromRecipe(ServerLevel level, BlockPos pos, Recipe<?> recipe) {
-        int dustAmount = getDustForRecipe(level, recipe);
+        if (level == null || recipe == null || !COIConfig.ENABLE_DUST_PRODUCTION.get()) {
+            return;
+        }
+        ResourceLocation id = resolveRecipeId(level, recipe);
+        int dustAmount = amountForResolved(id, recipe);
         if (dustAmount <= 0) {
             return;
         }
-        submit(level, pos, dustAmount, resolveRecipeId(level, recipe));
+        submit(level, pos, dustAmount, id);
     }
 
     /**
      * Emits dust for an item being processed when no recipe mapping applies.
      */
     public static void emitDustFromItem(ServerLevel level, BlockPos pos, ItemStack stack) {
+        if (level == null || !COIConfig.ENABLE_DUST_PRODUCTION.get()) {
+            return;
+        }
         int dustAmount = getDustForItem(stack);
         if (dustAmount <= 0) {
             return;

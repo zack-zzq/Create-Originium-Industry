@@ -62,6 +62,11 @@ public final class DustProcessingGameTests {
                 "mill holder id"
         );
         helper.assertValueEqual(
+                DustProductionHelper.resolveRecipeId(level, milling),
+                id("milling/raw_originium_milling"),
+                "second resolve uses cached mill id"
+        );
+        helper.assertValueEqual(
                 DustProductionHelper.resolveRecipeId(level, heated),
                 id("mixing/originium_shard_mixing"),
                 "heated mix holder id"
@@ -117,6 +122,29 @@ public final class DustProcessingGameTests {
 
         DustProductionHelper.emitDustFromRecipe(level, pos, catalyst);
         helper.assertValueEqual(OriginiumDustManager.getDust(level, chunk), 0, "chunk unchanged");
+        helper.succeed();
+    }
+
+    @GameTest(template = "empty", batch = "dust_processing")
+    public static void typeIdFallbackDoesNotPoisonHolderCache(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+        Recipe<?> superheated = recipe(helper, "mixing/originium_mixing");
+        DustProductionHelper.clearRecipeIdCache();
+
+        ResourceLocation withoutManager = DustProductionHelper.resolveRecipeId(null, superheated);
+        if (superheated instanceof ProcessingRecipe<?> processing && processing.id != null) {
+            helper.assertValueEqual(withoutManager, processing.id, "null level uses ProcessingRecipe.id");
+        }
+        helper.assertValueEqual(
+                DustProductionHelper.resolveRecipeId(level, superheated),
+                id("mixing/originium_mixing"),
+                "later manager lookup is not stuck on create:mixing"
+        );
+        helper.assertValueEqual(
+                DustProductionHelper.getDustForRecipe(level, superheated),
+                COIConfig.DUST_FROM_ORIGINIUM_MELTING.get(),
+                "datapack/config mapping still applies"
+        );
         helper.succeed();
     }
 

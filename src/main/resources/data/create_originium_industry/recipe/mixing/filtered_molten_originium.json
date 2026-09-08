@@ -1,0 +1,16 @@
+{
+  "type": "create:mixing",
+  "ingredients": [
+    {
+      "type": "fluid_stack",
+      "amount": 100,
+      "fluid": "create_originium_industry:molten_originium"
+    }
+  ],
+  "results": [
+    {
+      "amount": 100,
+      "id": "create_originium_industry:filtered_molten_originium"
+    }
+  ]
+}

@@ -8,6 +8,8 @@ import static com.mealuet.create_originium_industry.util.FluidRegisterHelper.cre
 
 public class COIFluids {
     public static final FluidEntry<BaseFlowingFluid.Flowing> MOLTEN_ORIGINIUM = createDensityFluid("molten_originium");
+    public static final FluidEntry<BaseFlowingFluid.Flowing> FILTERED_MOLTEN_ORIGINIUM = createDensityFluid("filtered_molten_originium");
+    public static final FluidEntry<BaseFlowingFluid.Flowing> CULTURED_ORIGINIUM = createLightFluid("cultured_originium");
     public static final FluidEntry<BaseFlowingFluid.Flowing> PUREST_MOLTEN_ORIGINIUM = createDensityFluid("purest_molten_originium");
     public static final FluidEntry<BaseFlowingFluid.Flowing> ORIGINIUM_CATALYST = createLightFluid("originium_catalyst");
 

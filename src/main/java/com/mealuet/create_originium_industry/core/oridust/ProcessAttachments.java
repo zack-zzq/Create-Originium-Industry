@@ -12,16 +12,21 @@ import net.minecraft.world.level.block.Block;
 /**
  * Blocks a process sieve may attach to: Create Basin / mill / mixer / crush,
  * plus datapack {@code dust_sources}.
+ * The cooling chamber is Basin-only ({@link #isBasinSupport}).
  */
 public final class ProcessAttachments {
 
     private ProcessAttachments() {}
 
+    public static boolean isBasinSupport(LevelReader level, BlockPos pos) {
+        return level != null && pos != null && BasinBlock.isBasin(level, pos);
+    }
+
     public static boolean isSupport(LevelReader level, BlockPos pos) {
         if (level == null || pos == null) {
             return false;
         }
-        if (BasinBlock.isBasin(level, pos)) {
+        if (isBasinSupport(level, pos)) {
             return true;
         }
         Block block = level.getBlockState(pos).getBlock();

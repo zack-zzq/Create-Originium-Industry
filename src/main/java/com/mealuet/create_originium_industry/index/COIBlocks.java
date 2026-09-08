@@ -1,6 +1,7 @@
 package com.mealuet.create_originium_industry.index;
 
 import com.mealuet.create_originium_industry.CreateOriginiumIndustry;
+import com.mealuet.create_originium_industry.block.CoolingChamberBlock;
 import com.mealuet.create_originium_industry.block.DustFilterBlock;
 import com.mealuet.create_originium_industry.block.DustMeterBlock;
 import com.mealuet.create_originium_industry.block.DustNozzleBlock;
@@ -50,6 +51,19 @@ public class COIBlocks {
             .properties(p -> p
                     .strength(1.5f)
                     .sound(SoundType.METAL)
+                    .noOcclusion()
+            )
+            .simpleItem()
+            .register();
+
+    /**
+     * Basin supercooling attachment. New id — not a rename of any frozen path.
+     */
+    public static final BlockEntry<CoolingChamberBlock> COOLING_CHAMBER = CreateOriginiumIndustry.REGISTRATE
+            .block("originium_cooling_chamber", CoolingChamberBlock::new)
+            .properties(p -> p
+                    .strength(1.5f)
+                    .sound(SoundType.COPPER)
                     .noOcclusion()
             )
             .simpleItem()

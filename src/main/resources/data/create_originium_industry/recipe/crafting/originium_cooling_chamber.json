@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": {
+      "item": "create:copper_casing"
+    },
+    "A": {
+      "item": "create_originium_industry:originium_alloy_ingot"
+    },
+    "B": {
+      "item": "minecraft:blue_ice"
+    }
+  },
+  "pattern": [
+    " B ",
+    "ACA",
+    " C "
+  ],
+  "result": {
+    "count": 1,
+    "id": "create_originium_industry:originium_cooling_chamber"
+  }
+}

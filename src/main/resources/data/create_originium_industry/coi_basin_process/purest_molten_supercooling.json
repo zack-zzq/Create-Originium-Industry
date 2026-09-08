@@ -1,0 +1,5 @@
+{
+  "recipe": "create_originium_industry:mixing/purest_molten_supercooling",
+  "require_cooling_chamber": true,
+  "reject_heat": true
+}

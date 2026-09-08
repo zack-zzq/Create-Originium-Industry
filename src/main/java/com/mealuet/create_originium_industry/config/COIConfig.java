@@ -10,7 +10,7 @@ import net.neoforged.neoforge.common.ModConfigSpec;
  * {@code dust_production}, {@code player_exposure}, {@code feature_toggles},
  * {@code dust_filter}, {@code debug}. Additive sections: {@code protection},
  * {@code infection}, {@code reactor}, {@code multiplayer}, {@code dust_nozzle},
- * {@code dust_meter}, {@code worldgen}. New keys are additive only.
+ * {@code dust_meter}, {@code worldgen}, {@code purest_line}. New keys are additive only.
  * <p>
  * Client spec is registered as {@link net.neoforged.fml.config.ModConfig.Type#CLIENT}
  * and is <em>not</em> loaded on a dedicated server — read it through
@@ -134,6 +134,9 @@ public class COIConfig {
     public static final ModConfigSpec.BooleanValue SYNC_DUST_TO_CLIENTS;
     public static final ModConfigSpec.IntValue DUST_SYNC_INTERVAL;
     public static final ModConfigSpec.IntValue DUST_SYNC_RADIUS;
+
+    // --- Purest line ---
+    public static final ModConfigSpec.IntValue COOLING_CHAMBER_DURABILITY;
 
     // --- Debug ---
     public static final ModConfigSpec.BooleanValue ENABLE_DEBUG_COMMANDS;
@@ -520,6 +523,18 @@ public class COIConfig {
 
         builder.pop();
 
+        // ==================== Purest line ====================
+        builder.comment(
+                "M2 purest-originium line. Recipes stay Create mixing JSON; sieve / cooling-chamber",
+                "gates live in coi_basin_process datapack. Additive section."
+        ).push("purest_line");
+
+        COOLING_CHAMBER_DURABILITY = builder
+                .comment("Operations a basin cooling-chamber attachment survives before it breaks")
+                .defineInRange("coolingChamberDurability", 250, 1, 10000);
+
+        builder.pop();
+
         // ==================== Debug ====================
         builder.comment("Debug settings").push("debug");
 
@@ -627,6 +642,10 @@ public class COIConfig {
 
     public static int processSieveDurability() {
         return COMMON_SPEC.isLoaded() ? FILTER_SIEVE_DURABILITY.get() : 500;
+    }
+
+    public static int coolingChamberDurability() {
+        return COMMON_SPEC.isLoaded() ? COOLING_CHAMBER_DURABILITY.get() : 250;
     }
 
     public static int meterSyncInterval() {

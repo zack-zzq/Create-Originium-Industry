@@ -1,0 +1,15 @@
+{
+  "type": "create:mixing",
+  "heat_requirement": "superheated",
+  "ingredients": [
+    {
+      "item": "create_originium_industry:purest_originium"
+    }
+  ],
+  "results": [
+    {
+      "amount": 100,
+      "id": "create_originium_industry:purest_molten_originium"
+    }
+  ]
+}

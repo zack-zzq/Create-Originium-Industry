@@ -1,0 +1,4 @@
+{
+  "name": "Create: Originium Industry",
+  "install": "./gradlew --no-daemon build"
+}

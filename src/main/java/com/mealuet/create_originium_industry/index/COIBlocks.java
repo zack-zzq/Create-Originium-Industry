@@ -11,6 +11,7 @@ import com.mealuet.create_originium_industry.config.COIConfig;
 import com.simibubi.create.api.stress.BlockStressValues;
 import com.tterrag.registrate.util.entry.BlockEntry;
 import net.minecraft.world.level.block.Block;
+import net.neoforged.fml.event.config.ModConfigEvent;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.material.MapColor;
@@ -143,8 +144,7 @@ public class COIBlocks {
                     .requiresCorrectToolForDrops()
                     .noOcclusion()
             )
-            .onRegister(BlockStressValues.setGeneratorSpeed(32))
-            .onRegister(block -> BlockStressValues.CAPACITIES.register(block, COIConfig::reactorStressCapacity))
+            .onRegister(COIBlocks::registerPowerCoreStress)
             .simpleItem()
             .register();
 
@@ -191,5 +191,40 @@ public class COIBlocks {
 
     public static void register() {
         // Force class loading to trigger static field initialization
+    }
+
+    /**
+     * Create's {@code BlockStressValues.RPM} holds a {@code GeneratedRpm}
+     * int snapshot (not a supplier). A provider re-reads
+     * {@link COIConfig#reactorGeneratedRpmInt()} after
+     * {@link #invalidatePowerCoreRpmDisplay()} on COMMON config load/reload.
+     * Capacity already accepts a live {@link java.util.function.DoubleSupplier}.
+     */
+    static void registerPowerCoreStress(Block block) {
+        BlockStressValues.RPM.registerProvider(candidate ->
+                candidate == block ? powerCoreGeneratedRpm() : null);
+        BlockStressValues.CAPACITIES.register(block, COIConfig::reactorStressCapacity);
+    }
+
+    /**
+     * Current config RPM as Create's display snapshot. {@code mayGenerateLess}
+     * stays false to match {@link BlockStressValues#setGeneratorSpeed(int)}.
+     */
+    public static BlockStressValues.GeneratedRpm powerCoreGeneratedRpm() {
+        return new BlockStressValues.GeneratedRpm(COIConfig.reactorGeneratedRpmInt(), false);
+    }
+
+    /**
+     * Drop cached provider lookups so KineticStats / goggles pick up a new
+     * {@code reactor.generatedRpm}. Safe no-op if nothing has queried RPM yet.
+     */
+    public static void invalidatePowerCoreRpmDisplay() {
+        BlockStressValues.RPM.invalidate();
+    }
+
+    public static void onModConfig(ModConfigEvent event) {
+        if (event.getConfig().getSpec() == COIConfig.COMMON_SPEC) {
+            invalidatePowerCoreRpmDisplay();
+        }
     }
 }

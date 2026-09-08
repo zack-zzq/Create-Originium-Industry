@@ -1,5 +1,6 @@
 package com.mealuet.create_originium_industry.client.ponder;
 
+import com.mealuet.create_originium_industry.config.COIConfig;
 import com.mealuet.create_originium_industry.index.COIFluids;
 import com.mealuet.create_originium_industry.index.COIItems;
 import com.mealuet.create_originium_industry.ponder.COIPonderKeys;
@@ -47,7 +48,8 @@ public final class ReactorScenes {
         scene.world().showSection(util.select().position(chamber), Direction.EAST);
         scene.world().showSection(util.select().position(superChamber), Direction.DOWN);
         scene.world().showSection(shafts, Direction.WEST);
-        scene.world().setKineticSpeed(util.select().fromTo(3, 1, 3, 5, 1, 3), 32);
+        scene.world().setKineticSpeed(util.select().fromTo(3, 1, 3, 5, 1, 3),
+                COIConfig.DEFAULT_REACTOR_GENERATED_RPM);
 
         scene.overlay().showControls(util.vector().blockSurface(core, Direction.UP), Pointing.DOWN, 40)
                 .rightClick()

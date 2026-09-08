@@ -120,6 +120,20 @@ public class COIConfig {
     public static final ModConfigSpec.IntValue INFECTION_STAGE_GROWTH;
     public static final ModConfigSpec.IntValue INFECTION_STAGE_BARGAIN;
 
+    /**
+     * Default Create RPM for {@code originium_power_core}. Used as the
+     * {@code reactor.generatedRpm} spec default, the unloaded-spec fallback,
+     * and the value Create's {@code BlockStressValues.RPM} display re-reads.
+     * Keep this at 32 so existing worlds keep the original generator feel.
+     */
+    public static final int DEFAULT_REACTOR_GENERATED_RPM = 32;
+    /**
+     * Default stress capacity (SU at 1 RPM). Same single-source role as
+     * {@link #DEFAULT_REACTOR_GENERATED_RPM}; Create's capacity registry
+     * already accepts a live {@link java.util.function.DoubleSupplier}.
+     */
+    public static final double DEFAULT_REACTOR_STRESS_CAPACITY = 256.0;
+
     // --- Reactor ---
     public static final ModConfigSpec.IntValue REACTOR_CORE_HEAT;
     public static final ModConfigSpec.DoubleValue REACTOR_MOLTEN_HEAT_CAPACITY;
@@ -550,11 +564,21 @@ public class COIConfig {
                 .comment("Ticks one purest originium item keeps the core running")
                 .defineInRange("fuelTicksPerItem", 1200, 1, 72000);
         REACTOR_GENERATED_RPM = builder
-                .comment("Create RPM generated while the core is running")
-                .defineInRange("generatedRpm", 32, 1, 256);
+                .comment(
+                        "Create RPM generated while the core is running. Single source for",
+                        "PowerCoreBlockEntity.getGeneratedSpeed and Create's BlockStressValues RPM",
+                        "display (KineticStats tooltip). Create stores RPM as an int snapshot, not a",
+                        "supplier — this mod re-reads the live value on COMMON config load/reload.",
+                        "Default " + DEFAULT_REACTOR_GENERATED_RPM + " matches the previous hardcoded generator speed."
+                )
+                .defineInRange("generatedRpm", DEFAULT_REACTOR_GENERATED_RPM, 1, 256);
         REACTOR_STRESS_CAPACITY = builder
-                .comment("Create stress capacity (SU at 1 RPM) while generating")
-                .defineInRange("stressCapacity", 256.0, 0.0, 16384.0);
+                .comment(
+                        "Create stress capacity (SU at 1 RPM) while generating. Live-bound through",
+                        "BlockStressValues.CAPACITIES (DoubleSupplier). Default "
+                                + (int) DEFAULT_REACTOR_STRESS_CAPACITY + "."
+                )
+                .defineInRange("stressCapacity", DEFAULT_REACTOR_STRESS_CAPACITY, 0.0, 16384.0);
         REACTOR_UNSTABLE_DUST = builder
                 .comment("Chunk dust leaked per second while S < 0 (risk byproduct into the dust loop)")
                 .defineInRange("unstableDustPerSecond", 10, 0, 10000);
@@ -836,12 +860,20 @@ public class COIConfig {
         return COMMON_SPEC.isLoaded() ? REACTOR_FUEL_TICKS_PER_ITEM.get() : 1200;
     }
 
+    /**
+     * Integer RPM used by Create's {@code BlockStressValues.GeneratedRpm}
+     * snapshot and by {@link #reactorGeneratedRpm()}.
+     */
+    public static int reactorGeneratedRpmInt() {
+        return COMMON_SPEC.isLoaded() ? REACTOR_GENERATED_RPM.get() : DEFAULT_REACTOR_GENERATED_RPM;
+    }
+
     public static float reactorGeneratedRpm() {
-        return COMMON_SPEC.isLoaded() ? REACTOR_GENERATED_RPM.get().floatValue() : 32f;
+        return reactorGeneratedRpmInt();
     }
 
     public static double reactorStressCapacity() {
-        return COMMON_SPEC.isLoaded() ? REACTOR_STRESS_CAPACITY.get() : 256.0;
+        return COMMON_SPEC.isLoaded() ? REACTOR_STRESS_CAPACITY.get() : DEFAULT_REACTOR_STRESS_CAPACITY;
     }
 
     public static int reactorUnstableDustPerSecond() {

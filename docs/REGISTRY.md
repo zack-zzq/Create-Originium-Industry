@@ -139,7 +139,7 @@ Common config spec is `COIConfig.COMMON_SPEC`. Top-level keys:
 - `worldgen` *(additive; raw originium ore frequency / height)*
 - `protection` *(additive; respirator + canister)*
 - `infection` *(additive; stage thresholds)*
-- `reactor` *(additive; power-core knobs. Frozen keys keep names; coolant/chamber/RPM keys added beside them. Additive `meltdownMoltenSources` caps the world leak of `purest_molten_originium`. Meltdown never explodes.)*
+- `reactor` *(additive; power-core knobs. Frozen keys keep names; coolant/chamber/RPM keys added beside them. `generatedRpm` (default 32) is the single source for `PowerCoreBlockEntity.getGeneratedSpeed` and Create `BlockStressValues.RPM` display. Create's RPM registry is an int snapshot, not a supplier — this mod re-reads the live config on COMMON load/reload. `stressCapacity` (default 256) is a live `DoubleSupplier`. Additive `meltdownMoltenSources` caps the world leak of `purest_molten_originium`. Meltdown never explodes.)*
 - `multiplayer` *(additive; dedicated-server spread policy + nearby client dust sync)*
 - `purest_line` *(additive; cooling-chamber durability)*
 - `alloy_parts` *(additive; housing seal, alloy sieve, sealed canister bonus)*
@@ -318,6 +318,15 @@ remelts into that spray), and leftover coolant / water become hot water.
 `#create_originium_industry:reactor_housing` is required to run. Insert
 `purest_originium` by right-click (no GUI). Internal tanks hold coolant /
 water / hot water; pipes and buckets work through a fluid capability.
+
+Kinetic output knobs (COMMON `reactor` section):
+
+| Key | Default | Role |
+|---|---|---|
+| `generatedRpm` | 32 | RPM while the core is running. Same value for `getGeneratedSpeed` and Create's `BlockStressValues.RPM` / KineticStats tooltip. Create 6.0.4 stores RPM as `GeneratedRpm(int)`, not a supplier; changing the toml is picked up on config load/reload (provider cache is invalidated). |
+| `stressCapacity` | 256 | SU at 1 RPM. Live `BlockStressValues.CAPACITIES` `DoubleSupplier`. |
+
+Do not hardcode a second RPM at registration. Existing worlds keep the 32 RPM feel unless `generatedRpm` is changed.
 
 Stability: **S = C × M − H**.
 

@@ -94,6 +94,10 @@ public final class COIConfigGameTests {
         helper.assertValueEqual(COIConfig.REACTOR_MELTDOWN_DUST_BURST.get(), 5000, "meltdownDustBurst");
         helper.assertValueEqual(COIConfig.REACTOR_MELTDOWN_MOLTEN_SOURCES.get(), 6, "meltdownMoltenSources");
         helper.assertValueEqual(COIConfig.reactorMeltdownMoltenSources(), 6, "molten source helper");
+        helper.assertValueEqual(COIConfig.REACTOR_GENERATED_RPM.get(), COIConfig.DEFAULT_REACTOR_GENERATED_RPM, "generatedRpm");
+        helper.assertValueEqual(COIConfig.reactorGeneratedRpmInt(), COIConfig.DEFAULT_REACTOR_GENERATED_RPM, "rpm helper");
+        helper.assertValueEqual(COIConfig.REACTOR_STRESS_CAPACITY.get(), COIConfig.DEFAULT_REACTOR_STRESS_CAPACITY, "stressCapacity");
+        helper.assertValueEqual(COIConfig.reactorStressCapacity(), COIConfig.DEFAULT_REACTOR_STRESS_CAPACITY, "capacity helper");
         helper.succeed();
     }
 

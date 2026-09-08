@@ -1,6 +1,8 @@
 package com.mealuet.create_originium_industry.core.oridust;
 
+import com.mealuet.create_originium_industry.CreateOriginiumIndustry;
 import com.mealuet.create_originium_industry.config.COIConfig;
+import com.mealuet.create_originium_industry.core.PersistSchema;
 import it.unimi.dsi.fastutil.longs.Long2IntMap;
 import it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
@@ -27,12 +29,16 @@ import net.minecraft.world.level.saveddata.SavedData;
 public class OriDustSavedData extends SavedData {
 
     public static final String DATA_NAME = "create_originium_industry_ori_dust";
-    private static final int FORMAT_VERSION = 1;
-
-    private static final String NBT_VERSION = "Version";
-    private static final String NBT_CHUNK_KEYS = "ChunkKeys";
-    private static final String NBT_DUST_VALUES = "DustValues";
-    private static final String NBT_MIGRATED = "MigratedChunks";
+    /**
+     * Current Overworld dust-store schema. Missing {@code Version} is
+     * {@link PersistSchema#UNVERSIONED}; v0 and v1 share the same array layout.
+     * The key is PascalCase because this store already shipped {@code Version}.
+     */
+    public static final int SCHEMA_VERSION = 1;
+    public static final String NBT_VERSION = "Version";
+    public static final String NBT_CHUNK_KEYS = "ChunkKeys";
+    public static final String NBT_DUST_VALUES = "DustValues";
+    public static final String NBT_MIGRATED = "MigratedChunks";
 
     public static final Factory<OriDustSavedData> FACTORY = new Factory<>(
             OriDustSavedData::new,
@@ -64,23 +70,65 @@ public class OriDustSavedData extends SavedData {
 
     public static OriDustSavedData load(CompoundTag tag, HolderLookup.Provider registries) {
         OriDustSavedData data = new OriDustSavedData();
+        int version = PersistSchema.read(tag, NBT_VERSION);
+        data.readPayload(migrate(tag, version));
+        return data;
+    }
+
+    /**
+     * Upgrade hook for the Overworld dust store.
+     * <p>
+     * {@link PersistSchema#UNVERSIONED} ({@code 0}) is any payload written before
+     * {@code Version} existed. v0 already used {@code ChunkKeys}/{@code DustValues}/
+     * {@code MigratedChunks}, so v0→v1 is identity. Add a step here when those
+     * arrays change shape, then bump {@link #SCHEMA_VERSION}.
+     */
+    public static CompoundTag migrate(CompoundTag tag, int fromVersion) {
+        int version = Math.max(fromVersion, PersistSchema.UNVERSIONED);
+        if (version > SCHEMA_VERSION) {
+            CreateOriginiumIndustry.LOGGER.warn(
+                    "OriDustSavedData version {} is newer than supported {}; reading known fields.",
+                    version, SCHEMA_VERSION);
+            return tag;
+        }
+        while (version < SCHEMA_VERSION) {
+            version = upgrade(tag, version);
+        }
+        return tag;
+    }
+
+    /**
+     * One schema step. v0→v1 does not remap keys. Add a {@code case} and bump
+     * {@link #SCHEMA_VERSION} when the array layout changes.
+     */
+    private static int upgrade(CompoundTag tag, int fromVersion) {
+        return switch (fromVersion) {
+            case PersistSchema.UNVERSIONED -> {
+                PersistSchema.write(tag, NBT_VERSION, 1);
+                yield 1;
+            }
+            default -> throw new IllegalStateException(
+                    "No OriDustSavedData upgrade from version " + fromVersion);
+        };
+    }
+
+    private void readPayload(CompoundTag tag) {
         long[] keys = tag.getLongArray(NBT_CHUNK_KEYS);
         int[] values = tag.getIntArray(NBT_DUST_VALUES);
         int n = Math.min(keys.length, values.length);
         for (int i = 0; i < n; i++) {
             if (values[i] > 0) {
-                data.dustByChunk.put(keys[i], values[i]);
+                this.dustByChunk.put(keys[i], values[i]);
             }
         }
         for (long migrated : tag.getLongArray(NBT_MIGRATED)) {
-            data.migratedChunks.add(migrated);
+            this.migratedChunks.add(migrated);
         }
-        return data;
     }
 
     @Override
     public CompoundTag save(CompoundTag tag, HolderLookup.Provider registries) {
-        tag.putInt(NBT_VERSION, FORMAT_VERSION);
+        PersistSchema.write(tag, NBT_VERSION, SCHEMA_VERSION);
 
         int size = this.dustByChunk.size();
         long[] keys = new long[size];

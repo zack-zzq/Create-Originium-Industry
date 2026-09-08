@@ -16,7 +16,8 @@ public class COIAttachments {
     public static final DeferredRegister<AttachmentType<?>> ATTACHMENT_TYPES = DeferredRegister.create(NeoForgeRegistries.ATTACHMENT_TYPES, CreateOriginiumIndustry.MODID);
 
     /**
-     * Legacy chunk attachment. Kept so old saves deserialize; {@link com.mealuet.create_originium_industry.core.oridust.DustCacheManager}
+     * Legacy chunk attachment ({@link OriDustData#SCHEMA_VERSION}). Kept so old
+     * saves deserialize; {@link com.mealuet.create_originium_industry.core.oridust.DustCacheManager}
      * migrates values into {@link com.mealuet.create_originium_industry.core.oridust.OriDustSavedData} and zeros the attachment.
      * New dust writes do not use this store.
      */
@@ -26,7 +27,8 @@ public class COIAttachments {
     );
 
     /**
-     * Per-player exposure/infection. {@code copyOnDeath} copies the attachment;
+     * Per-player exposure/infection ({@link PlayerExposureData#SCHEMA_VERSION}).
+     * {@code copyOnDeath} copies the attachment;
      * {@link com.mealuet.create_originium_industry.core.oridust.PlayerDeathDustHandler}
      * then applies {@code deathExposureRetain} / {@code deathInfectionRetain}.
      */

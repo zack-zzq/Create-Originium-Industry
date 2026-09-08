@@ -16,9 +16,11 @@ registry ids, recipe paths, or NBT keys.
 2. **Do not change** the namespace `create_originium_industry`.
 3. **Display names may change.** `originium_catalyst` stays the registry id;
    players see 培养液 / Originium Catalyst.
-4. **NBT and attachments** must keep reading old keys. New fields are additive.
-   When a schema actually changes, write a `version` int (start at `1`) and
-   migrate in `deserializeNBT`.
+4. **NBT, attachments, and SavedData** must keep reading old keys. New fields
+   are additive. When a schema actually changes, write a `version` int (start
+   at `1`; missing = `0`) and migrate in `deserializeNBT` /
+   `OriDustSavedData.load`. Dust fog lives in Overworld `OriDustSavedData`;
+   the chunk attachment is a lazy-migration leftover.
 5. **Lang keys** follow `category.create_originium_industry.path`. Missing keys
    are a bug; deleting a key that is still referenced is a bug.
 6. **Common tags (`c:`)** already published stay. Conventional aliases may be
@@ -118,12 +120,30 @@ Exposure-layer effect. Long-term infection uses vanilla effects via `InfectionSt
 
 ### Attachments
 
-| Attachment id | Holder | Current NBT keys | Version field |
+| Attachment id | Holder | Current NBT keys | Schema version |
 |---|---|---|---|
-| `chunk_oridust_data` | chunk | `DustLevel` (int) | **not present — add on next schema change** |
-| `player_exposure_data` | player (`copyOnDeath`) | `Exposure`, `Infection` (ints) | **not present — add on next schema change** |
+| `chunk_oridust_data` | chunk (legacy; lazy-migrated into SavedData) | `version` (1), `DustLevel` (int) | **1** (missing `version` = 0, identity migrate of `DustLevel`) |
+| `player_exposure_data` | player (`copyOnDeath`) | `version` (1), `Exposure`, `Infection` (ints) | **1** (missing `version` = 0, identity migrate of `Exposure`/`Infection`) |
 
 `copyOnDeath` still copies the attachment on respawn. Additive knobs `player_exposure.deathExposureRetain` (default 0) and `deathInfectionRetain` (default 0.25) then scale the clone so singleplayer deaths are not a spiral. Set both to `1.0` to keep the old full-retain behaviour.
+
+Unversioned payloads still load. The next write stamps `version` `1`. Future
+layout changes add a step in each type's `migrate` hook and bump the number.
+
+### SavedData
+
+Dust fog is the Overworld `DimensionDataStorage` entry
+`create_originium_industry_ori_dust` (`OriDustSavedData`). Persistence does
+not require the corresponding chunk to be loaded. On chunk load, a leftover
+non-zero `chunk_oridust_data` attachment is merged once (`MigratedChunks`)
+and then zeroed.
+
+| Store | NBT keys | Schema version |
+|---|---|---|
+| `create_originium_industry_ori_dust` | `Version`, `ChunkKeys`, `DustValues`, `MigratedChunks` | **1** (missing `Version` = 0, identity migrate of the same arrays) |
+
+`Version` is PascalCase because that key already shipped with the SavedData
+store. Attachment and block-entity payloads use lowercase `version`.
 
 ### Config file
 

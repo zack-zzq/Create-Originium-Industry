@@ -37,7 +37,8 @@ import java.util.List;
  * Power-core simulation. Fuel is {@code purest_originium} (right-click).
  * Adjacent {@code reactor_housing} is required to run. Cooling chambers
  * attached to faces contribute {@code M}. Fluids convert along
- * coolant ↔ water ↔ hot water from {@code S}. Meltdown dumps dust.
+ * coolant ↔ water ↔ hot water from {@code S}. Meltdown dumps dust and leaks
+ * {@code purest_molten_originium} into the world — never an explosion.
  */
 public class PowerCoreBlockEntity extends GeneratingKineticBlockEntity {
 
@@ -327,6 +328,7 @@ public class PowerCoreBlockEntity extends GeneratingKineticBlockEntity {
             return;
         }
         MeltdownPolicy.dumpDust(serverLevel, worldPosition);
+        MeltdownPolicy.leakMolten(serverLevel, worldPosition, fuelCount);
         fuelCount = 0;
         fuelTicks = 0;
         shutdown = true;

@@ -39,7 +39,7 @@ import java.util.Optional;
  * Coverage for issue #5: molten → filter (basin sieve) → 培养液 culture →
  * supercooling (cooling chamber, no blaze heat) → {@code purest_originium}.
  * {@code purest_molten_originium} is the accident / late remelt fluid, not the
- * clean-route output. Meltdown never explodes.
+ * clean-route output. Meltdown dumps that fluid and dust; it never explodes.
  */
 @GameTestHolder(CreateOriginiumIndustry.MODID)
 @PrefixGameTestTemplate(false)

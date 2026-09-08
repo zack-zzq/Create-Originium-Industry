@@ -63,6 +63,8 @@ public final class ReactorScenes {
 
         scene.overlay().showControls(util.vector().topOf(core), Pointing.DOWN, 40)
                 .withItem(new ItemStack(Items.TNT));
+        scene.overlay().showControls(util.vector().blockSurface(core, Direction.EAST), Pointing.RIGHT, 40)
+                .withItem(new ItemStack(COIFluids.PUREST_MOLTEN_ORIGINIUM.get().getBucket()));
         scene.overlay().showOutline(PonderPalette.RED, "meltdown", util.select().position(core), 80);
         scene.world().createItemEntity(
                 util.vector().topOf(core).add(0.3, 0.2, 0),

@@ -92,6 +92,8 @@ public final class COIConfigGameTests {
         helper.assertValueEqual(COIConfig.REACTOR_COOLING_MULTIPLIER.get(), 1.0, "coolingMultiplier");
         helper.assertValueEqual(COIConfig.REACTOR_MELTDOWN_THRESHOLD.get(), 100.0, "meltdownThreshold");
         helper.assertValueEqual(COIConfig.REACTOR_MELTDOWN_DUST_BURST.get(), 5000, "meltdownDustBurst");
+        helper.assertValueEqual(COIConfig.REACTOR_MELTDOWN_MOLTEN_SOURCES.get(), 6, "meltdownMoltenSources");
+        helper.assertValueEqual(COIConfig.reactorMeltdownMoltenSources(), 6, "molten source helper");
         helper.succeed();
     }
 

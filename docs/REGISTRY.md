@@ -129,7 +129,7 @@ Common config spec is `COIConfig.COMMON_SPEC`. Top-level keys:
 - `worldgen` *(additive; raw originium ore frequency / height)*
 - `protection` *(additive; respirator + canister)*
 - `infection` *(additive; stage thresholds)*
-- `reactor` *(additive; M3 power-core knobs. Frozen keys keep names; coolant/chamber/RPM keys added beside them)*
+- `reactor` *(additive; M3 power-core knobs. Frozen keys keep names; coolant/chamber/RPM keys added beside them. Additive `meltdownMoltenSources` caps the world leak of `purest_molten_originium`.)*
 - `multiplayer` *(additive; dedicated-server spread policy + nearby client dust sync)*
 - `purest_line` *(additive; cooling-chamber durability)*
 - `alloy_parts` *(additive; housing seal, alloy sieve, sealed canister bonus)*
@@ -294,11 +294,13 @@ Clean route: **basin sieve** filters molten originium → heated mix with 培养
 
 `purest_molten_originium` is **not** that output. Superheating the cultured
 fluid (or remelting the purest item) yields the accident / late intermediate
-fluid. Recover it with a cooling chamber + blue ice. M3 meltdown should dump
+fluid. Recover it with a cooling chamber + blue ice. M3 meltdown dumps
 this fluid and chunk dust — never explode blocks or spawn TNT
 (`MeltdownPolicy.explodesBlocks()` is false). The power core follows the
-same contract: meltdown dumps `meltdownDustBurst` into the chunk and
-consumes remaining `purest_originium`.
+same contract: meltdown dumps `meltdownDustBurst` into the chunk,
+`MeltdownPolicy.leakMolten` places up to `meltdownMoltenSources` world
+source blocks of `purest_molten_originium` (remaining `purest_originium`
+remelts into that spray), and leftover coolant / water become hot water.
 
 ### Power core (M3)
 
@@ -315,7 +317,7 @@ Stability: **S = C × M − H**.
 - **S > 0** stable: fluids convert toward coolant
 - **S ≈ 0** (`|S| ≤ stabilityEpsilon`) borderline
 - **S < 0** unstable: fluids convert toward hot water; dust leaks into the chunk
-- Instability accumulates via `instabilityGainPerTick` / `instabilityDecayPerTick`. At `meltdownThreshold` (if `enableReactorMeltdown`) the core shuts down and dumps dust.
+- Instability accumulates via `instabilityGainPerTick` / `instabilityDecayPerTick`. At `meltdownThreshold` (if `enableReactorMeltdown`) the core shuts down, dumps `meltdownDustBurst` dust, leaks remaining fuel as world `purest_molten_originium` (`meltdownMoltenSources` cap), and converts leftover tanks to hot water. Never explodes.
 
 The basin `originium_cooling_chamber` also attaches to the core (normal
 tier). `originium_super_cooling_chamber` is the snow-golem super tier.

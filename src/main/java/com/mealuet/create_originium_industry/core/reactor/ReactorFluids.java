@@ -54,7 +54,9 @@ public final class ReactorFluids {
     }
 
     /**
-     * Meltdown dump: remaining coolant and water become hot water (heat, not TNT).
+     * Meltdown heat dump: remaining coolant and water become hot water.
+     * World-side {@code purest_molten_originium} is leaked by {@code MeltdownPolicy},
+     * not stored in these tanks. Never an explosion.
      */
     public static Amounts dumpHeat(Amounts in, int tankCapacity) {
         if (in == null) {

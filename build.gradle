@@ -97,13 +97,15 @@ runs {
     }
 }
 
-tasks.named('runGameTestServer').configure {
-    // GameTestServer persists the Overworld SavedData under runs/; wipe it so
-    // MigratedChunks from a previous local run cannot skip merge assertions.
-    doFirst {
-        def worldDir = layout.projectDirectory.dir('runs/gameTestServer/world').asFile
-        if (worldDir.exists()) {
-            delete worldDir
+tasks.configureEach { task ->
+    if (task.name == 'runGameTestServer') {
+        // GameTestServer persists the Overworld SavedData under runs/; wipe it so
+        // MigratedChunks from a previous local run cannot skip merge assertions.
+        task.doFirst {
+            def worldDir = layout.projectDirectory.dir('runs/gameTestServer/world').asFile
+            if (worldDir.exists()) {
+                delete worldDir
+            }
         }
     }
 }

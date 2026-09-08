@@ -193,5 +193,10 @@
   "create_originium_industry.ponder.power_core.text_1": "在动力核心旁放置反应炉外壳。右键放入至纯源石作为燃料。没有管理界面。",
   "create_originium_industry.ponder.power_core.text_2": "稳定值 S = C × M − H。冷却液提高 C；冷却室提高 M；燃料提高 H。",
   "create_originium_industry.ponder.power_core.text_3": "S 大于等于零时，流体会转向冷却液。S 为负时，流体会变成热水并泄漏粉尘。",
-  "create_originium_industry.ponder.power_core.text_4": "熔毁会喷出粉尘并耗尽剩余燃料。不会爆炸，也不会生成 TNT。"
+  "create_originium_industry.ponder.power_core.text_4": "熔毁会喷出粉尘并耗尽剩余燃料。不会爆炸，也不会生成 TNT。",
+
+  "subtitles.create_originium_industry.filter_work": "滤网吸附运转",
+  "subtitles.create_originium_industry.high_dust": "高浓度源石尘环境",
+  "subtitles.create_originium_industry.reactor_steady": "动力核心稳态运转",
+  "subtitles.create_originium_industry.reactor_alarm": "动力核心告警"
 }

@@ -193,5 +193,10 @@
   "create_originium_industry.ponder.power_core.text_1": "Place reactor housing beside the power core. Right-click purest originium to fuel it. There is no GUI.",
   "create_originium_industry.ponder.power_core.text_2": "Stability is S = C × M − H. Coolant raises C; cooling chambers raise M; fuel raises H.",
   "create_originium_industry.ponder.power_core.text_3": "When S is at least zero, fluids convert toward coolant. When S is negative, they convert to hot water and dust leaks.",
-  "create_originium_industry.ponder.power_core.text_4": "Meltdown dumps a dust burst and consumes remaining fuel. It does not explode or spawn TNT."
+  "create_originium_industry.ponder.power_core.text_4": "Meltdown dumps a dust burst and consumes remaining fuel. It does not explode or spawn TNT.",
+
+  "subtitles.create_originium_industry.filter_work": "Filter mesh working",
+  "subtitles.create_originium_industry.high_dust": "Originium dust in the air",
+  "subtitles.create_originium_industry.reactor_steady": "Power core humming",
+  "subtitles.create_originium_industry.reactor_alarm": "Power core alarm"
 }

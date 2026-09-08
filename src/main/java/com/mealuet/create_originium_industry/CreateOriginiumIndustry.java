@@ -58,6 +58,7 @@ public class CreateOriginiumIndustry
         COIEffects.register(modEventBus);
         COIAttachments.register(modEventBus);
         COICriteria.register(modEventBus);
+        COISounds.register(modEventBus);
         COIWorldGen.register(modEventBus);
 
         modEventBus.addListener(COICapabilities::register);

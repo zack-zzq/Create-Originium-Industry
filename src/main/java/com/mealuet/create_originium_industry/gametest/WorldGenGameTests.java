@@ -29,6 +29,7 @@ import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Coverage for issue #22: Overworld raw originium ore, loot, and config-driven worldgen.

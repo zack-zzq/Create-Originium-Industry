@@ -69,6 +69,7 @@ public final class PerfBaselineGameTests {
             int active = 0;
             for (int i = 0; i < TRIALS; i++) {
                 PerfLoad.seedMachineDust(level, center);
+                PerfProbe.resetForTests();
                 long start = System.nanoTime();
                 active = DustDiffusionEngine.runActiveSetCycle(level);
                 samples[i] = System.nanoTime() - start;
@@ -100,6 +101,7 @@ public final class PerfBaselineGameTests {
         long[] samples = new long[TRIALS];
         for (int i = 0; i < TRIALS; i++) {
             core.configureForGameTest(8, 4000, 0, 0, 0.0);
+            PerfProbe.resetForTests();
             long start = System.nanoTime();
             for (int n = 0; n < PerfProbe.STATED_MACHINE_COUNT; n++) {
                 core.tickReactor(level);
@@ -129,6 +131,7 @@ public final class PerfBaselineGameTests {
             for (int i = 0; i < TRIALS; i++) {
                 PerfLoad.seedMachineDust(level, center);
                 OriginiumDustManager.setDust(level, WorldSpace.toDustChunk(level, filterAbs), 2000, DustReason.DEBUG);
+                PerfProbe.resetForTests();
                 long start = System.nanoTime();
                 absorbHundredChunks(level, center);
                 filter.absorbAmbient(level, filterAbs, COIConfig.FILTER_ABSORPTION_RATE.get());
@@ -162,6 +165,7 @@ public final class PerfBaselineGameTests {
                 core.configureForGameTest(8, 4000, 0, 0, 0.0);
                 PerfLoad.seedMachineDust(level, center);
                 OriginiumDustManager.setDust(level, WorldSpace.toDustChunk(level, filterAbs), 2000, DustReason.DEBUG);
+                PerfProbe.resetForTests();
                 long start = System.nanoTime();
                 active = alignedOnce(level, center, core, filter, filterAbs);
                 samples[i] = System.nanoTime() - start;

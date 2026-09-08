@@ -108,22 +108,28 @@ Export the spark viewer link or a screenshot into the PR that changes this basel
 
 ## Baseline numbers
 
-Recorded from `runGameTestServer` (see the `[COI perf]` lines in that build log). Host: Cloud Agent VM, OpenJDK 21, NeoForge 1.21.1 GameTestServer, no Spark.
+Recorded from `./gradlew runGameTestServer` on 8 Sep 2026 (Cloud Agent VM, OpenJDK 21, NeoForge 1.21.1 GameTestServer, no Spark). Log lines: `[COI perf]`.
+
+Active set on this runner was **160** logical chunks (10×10 machine grid + neighbor halo). The GameTest dummy player does not expand the set to the full 17×17 = 289 player disk; that is still a 100-machine factory, not an empty-radius walk.
 
 | Lane | Load | Median | Min | vs 2 ms target |
 |---|---|---|---|---|
-| `dust_cycle` | 100-machine checkerboard + player active set | _fill after GameTest_ | _fill_ | _fill_ |
-| `reactor_x100` | 100 `tickReactor` on one housed core | _fill after GameTest_ | _fill_ | _fill_ |
-| `filter_x100` | 100 chunk absorbs + 1 live filter | _fill after GameTest_ | _fill_ | _fill_ |
-| `aligned_extra` | all of the above + sync flush, same tick | _fill after GameTest_ | _fill_ | _fill_ |
+| `dust_cycle` | 100-machine checkerboard + active set (160 chunks) | **0.260 ms** | 0.223 ms | under (~13%) |
+| `reactor_x100` | 100 `tickReactor` on one housed core | **0.291 ms** | 0.260 ms | under (~15%) |
+| `filter_x100` | 100 chunk absorbs + 1 live filter | **0.055 ms** | 0.052 ms | under (~3%) |
+| `aligned_extra` | dust + 100 reactors + 100 filter writes + sync, same tick | **0.469 ms** | 0.429 ms | **under (~23%)** |
+
+Last aligned trial split (probe, same tick): dust 0.163 ms, reactors 0.253 ms, live filter absorb 0.010 ms, sync 0.010 ms.
+
+Amortized extra at default intervals ≈ reactors + (dust + filters + sync) / 20 ≈ **0.31 ms/tick**.
 
 CI guard: every median above must stay **&lt; 50 ms**.
 
 ## Verdict and follow-ups
 
-If `aligned_extra` median is **under 2 ms**, the stated load meets the design budget in this isolated GameTest. Keep the follow-ups below as optional work when factories grow (more than 100 machines, or Spark shows Create networks dominating).
+`aligned_extra` median **0.469 ms** is under the **2 ms** design budget in this isolated GameTest (~4× headroom). Do not rewrite dust or reactor systems for speed on this load.
 
-If it is **over 2 ms**, treat the list as the next optimization issues. Do not rewrite the dust or reactor systems in the same change as the baseline unless a single cheap win is obvious.
+Keep the follow-ups below as optional work when factories grow past 100 machines, when Spark shows Create kinetic networks dominating, or when a dedicated server enables `AGGRESSIVE` spread (larger active set than this baseline).
 
 Concrete follow-ups (cheapest first):
 

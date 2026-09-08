@@ -151,13 +151,16 @@ public final class DustProductionHelper {
             return cached;
         }
         ResourceLocation id = lookupHolderId(level, recipe);
-        if (id == null && recipe instanceof ProcessingRecipe<?> processing) {
-            id = processing.id;
-        }
         if (id != null) {
             HOLDER_IDS.put(recipe, id);
+            return id;
         }
-        return id;
+        // Create type ids (create:mixing / create:milling) are not cached:
+        // a later call with a real RecipeManager must still be able to resolve.
+        if (recipe instanceof ProcessingRecipe<?> processing) {
+            return processing.id;
+        }
+        return null;
     }
 
     /**

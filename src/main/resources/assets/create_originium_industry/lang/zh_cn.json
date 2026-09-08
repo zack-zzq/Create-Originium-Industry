@@ -61,6 +61,9 @@
   "hud.create_originium_industry.sickness.verbose": "源石暴露  %s级",
   "hud.create_originium_industry.debug.no_sickness": "[COI] 无暴露效果",
   "hud.create_originium_industry.debug.dust_unsynced": "[COI] 区块粉尘 HUD 需客户端同步（当前关闭）",
+  "hud.create_originium_industry.debug.dust": "[COI] 粉尘 %s %s",
+  "hud.create_originium_industry.debug.exposure": "[COI] 暴露 %s  感染 %s",
+  "item.create_originium_industry.debug.client_readout": "§8[COI 调试] 粉尘 %s | 暴露 %s | 感染 %s",
 
   "block.create_originium_industry.originium_dust_filter.status": "滤网耐久: %s / %s (%s%%)",
   "block.create_originium_industry.originium_dust_filter.no_sieve": "未安装滤网",

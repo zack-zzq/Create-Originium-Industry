@@ -132,6 +132,8 @@ public class COIConfig {
     public static final ModConfigSpec.DoubleValue DEDICATED_SERVER_DIFFUSION_MULTIPLIER;
     public static final ModConfigSpec.IntValue DEDICATED_SERVER_RADIUS_BONUS;
     public static final ModConfigSpec.BooleanValue SYNC_DUST_TO_CLIENTS;
+    public static final ModConfigSpec.IntValue DUST_SYNC_INTERVAL;
+    public static final ModConfigSpec.IntValue DUST_SYNC_RADIUS;
 
     // --- Debug ---
     public static final ModConfigSpec.BooleanValue ENABLE_DEBUG_COMMANDS;
@@ -507,8 +509,14 @@ public class COIConfig {
                 .comment("Extra chunks added to initChunkRadius on dedicated servers (0 = no change). Stacks with strategy.")
                 .defineInRange("dedicatedServerRadiusBonus", 0, 0, 24);
         SYNC_DUST_TO_CLIENTS = builder
-                .comment("Reserved: when true, future networking will sync chunk dust to nearby players for HUD/particles. Currently unused (no packet).")
-                .define("syncDustToClients", false);
+                .comment("When true, nearby chunk dust is synced to clients (dirty set / on-demand window, not the full map) for meters, HUD, and particles.")
+                .define("syncDustToClients", true);
+        DUST_SYNC_INTERVAL = builder
+                .comment("Ticks between nearby dust / exposure client sync flushes (20 = 1 second). Additive.")
+                .defineInRange("dustSyncInterval", 20, 5, 200);
+        DUST_SYNC_RADIUS = builder
+                .comment("Chebyshev chunk radius synced around each player. Clamped to the dust active-set radius so this never walks farther than simulation.")
+                .defineInRange("dustSyncRadius", 8, 1, 16);
 
         builder.pop();
 
@@ -553,7 +561,7 @@ public class COIConfig {
                 .comment("How much COI UI to show: minimal (hide HUD extras), standard, verbose (goggle numbers)")
                 .defineEnum("uiDetailLevel", UiDetailLevel.STANDARD);
         DEBUG_OVERLAY_DETAIL = client
-                .comment("Extra debug overlay: off, compact (sickness amplifier), full (also notes unsynced dust)")
+                .comment("Extra debug overlay: off, compact (sickness amplifier), full (VisibleDust chunk + exposure)")
                 .defineEnum("debugOverlayDetail", DebugOverlayDetail.OFF);
         SHOW_SICKNESS_HUD = client
                 .comment("Show a small HUD hint when the player has Originium Exposure Sickness")
@@ -653,5 +661,29 @@ public class COIConfig {
 
     public static float rawOriginiumDiscardChance() {
         return COMMON_SPEC.isLoaded() ? RAW_ORIGINIUM_DISCARD_CHANCE.get().floatValue() : 0.7f;
+    }
+
+    /**
+     * Nearby chunk-dust packets. Default on once #17 landed. Missing spec
+     * (early boot) matches the shipped default.
+     */
+    public static boolean syncDustToClients() {
+        return !COMMON_SPEC.isLoaded() || SYNC_DUST_TO_CLIENTS.get();
+    }
+
+    public static int dustSyncInterval() {
+        return COMMON_SPEC.isLoaded() ? DUST_SYNC_INTERVAL.get() : 20;
+    }
+
+    /**
+     * Sync window never exceeds the diffusion active-set radius.
+     */
+    public static int dustSyncRadius(boolean dedicatedServer) {
+        int configured = COMMON_SPEC.isLoaded() ? DUST_SYNC_RADIUS.get() : 8;
+        if (!COMMON_SPEC.isLoaded()) {
+            return configured;
+        }
+        int active = effectiveInitChunkRadius(dedicatedServer);
+        return Math.max(1, Math.min(configured, active));
     }
 }

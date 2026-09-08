@@ -41,6 +41,8 @@ public class PlayerExposureHandler {
         if (serverPlayer.tickCount % checkInterval != 0) return;
 
         PlayerExposureData data = COIAttachments.getPlayerExposure(serverPlayer);
+        int beforeExposure = data.getExposure();
+        int beforeInfection = data.getInfection();
         ChunkPos chunkPos = WorldSpace.toDustChunk(serverPlayer);
         int dustLevel = OriginiumDustManager.getDust(serverPlayer.serverLevel(), chunkPos);
         int threshold = COIConfig.DUST_EFFECT_THRESHOLD.get();
@@ -98,6 +100,10 @@ public class PlayerExposureHandler {
         }
 
         InfectionStage.fromInfection(data.getInfection()).apply(serverPlayer, checkInterval + 5);
+
+        if (data.getExposure() != beforeExposure || data.getInfection() != beforeInfection) {
+            DustSyncTracker.markExposureDirty(serverPlayer);
+        }
 
         if (COIConfig.ENABLE_DEBUG_LOGGING.get() && serverPlayer.tickCount % (checkInterval * 10) == 0) {
             CreateOriginiumIndustry.LOGGER.debug(

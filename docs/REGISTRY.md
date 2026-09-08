@@ -56,7 +56,7 @@ stable unless a migration is documented here first.
 | `originium_dust_filter` | Kinetic dust absorber (block + block entity share this path). BE NBT: `HasSieve`, `SieveDurability`, additive `CapturedDust` |
 | `originium_dust_sieve` | Process sieve attachment (block + BE share this path with the item). BE NBT: `SieveDurability`, additive `CapturedDust` |
 | `originium_dust_nozzle` | Encased Fan nozzle (block + BE share this path with the item). BE NBT: `LastMoved`, `HasFlow` |
-| `originium_dust_meter` | Dust gauge. BE NBT: `Dust`, `Risk`, `ProtectionPercent` (client packet snapshot of server chunk dust) |
+| `originium_dust_meter` | Dust gauge. BE NBT: `Dust`, `Risk`, `ProtectionPercent` (client packet snapshot; goggles prefer nearby `VisibleDust` cache) |
 | `raw_originium_ore` | Overworld stone ore. Drops frozen item `raw_originium` (silk touch keeps the block). Iron pickaxe. |
 | `deepslate_raw_originium_ore` | Deepslate variant of the same ore / drops |
 
@@ -109,7 +109,7 @@ Common config spec is `COIConfig.COMMON_SPEC`. Top-level keys:
 - `protection` *(additive; respirator + canister)*
 - `infection` *(additive; stage thresholds)*
 - `reactor` *(additive; M3 stub knobs)*
-- `multiplayer` *(additive; dedicated-server spread policy)*
+- `multiplayer` *(additive; dedicated-server spread policy + nearby client dust sync)*
 - `debug`
 
 Do not rename these sections once a release has shipped. New sections are fine.
@@ -204,9 +204,11 @@ redirects chunk dust into the downwind neighbouring chunk (`DustReason.DIFFUSER`
 It never voids dust.
 
 The dust meter copies server chunk dust onto the block entity (goggles /
-comparator) and reports nearby protection as a percent of exposure reduction.
-That is **not** the full client chunk-dust sync reserved under
-`multiplayer.syncDustToClients` (#17).
+comparator). Nearby players also receive a low-frequency dirty-set / on-demand
+window of chunk dust (`multiplayer.syncDustToClients`, default on). Meter
+goggles, debug overlay, and debug tooltips read `VisibleDust` so two
+clients looking at the same chunk agree after a short delay. Exposure and
+infection sync only to the local player.
 
 Protection gear (`originium_respirator` head, `originium_filter_canister` chest)
 is tagged `originium_protection`. A full set is **2** pieces (`protection.protectionFullSetPieces`;

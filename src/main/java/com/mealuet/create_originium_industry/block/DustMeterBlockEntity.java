@@ -1,11 +1,14 @@
 package com.mealuet.create_originium_industry.block;
 
+import com.mealuet.create_originium_industry.compat.WorldSpace;
 import com.mealuet.create_originium_industry.config.COIClientOptions;
 import com.mealuet.create_originium_industry.config.COIConfig;
 import com.mealuet.create_originium_industry.config.UiDetailLevel;
+import com.mealuet.create_originium_industry.core.oridust.ClientDustCache;
 import com.mealuet.create_originium_industry.core.oridust.DustLevel;
 import com.mealuet.create_originium_industry.core.oridust.OriginiumDustManager;
 import com.mealuet.create_originium_industry.core.oridust.ProtectionHooks;
+import com.mealuet.create_originium_industry.core.oridust.VisibleDust;
 import com.simibubi.create.api.equipment.goggles.IHaveGoggleInformation;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
@@ -24,9 +27,9 @@ import net.minecraft.world.phys.AABB;
 import java.util.List;
 
 /**
- * Server-accurate dust readout. Chunk dust is copied onto this block entity
- * and included in client packets so goggles match the server without a full
- * chunk-dust net sync (#17).
+ * Server-accurate dust readout. Comparator uses the BE snapshot.
+ * Goggles / status share {@link com.mealuet.create_originium_industry.core.oridust.VisibleDust}
+ * with HUD and debug so two players looking at the same chunk agree after nearby sync.
  */
 public class DustMeterBlockEntity extends SmartBlockEntity implements IHaveGoggleInformation {
 
@@ -70,8 +73,19 @@ public class DustMeterBlockEntity extends SmartBlockEntity implements IHaveGoggl
         return syncedDust;
     }
 
+    /**
+     * Value shown to players (goggles / status). Server is SavedData;
+     * client prefers the nearby sync cache and falls back to the BE snapshot.
+     */
+    public int displayedDust() {
+        if (level == null) {
+            return syncedDust;
+        }
+        return VisibleDust.chunkDustOrFallback(level, WorldSpace.toDustChunk(level, worldPosition), syncedDust);
+    }
+
     public DustLevel risk() {
-        return DustLevel.fromDust(syncedDust);
+        return DustLevel.fromDust(displayedDust());
     }
 
     public int protectionPercent() {
@@ -85,10 +99,10 @@ public class DustMeterBlockEntity extends SmartBlockEntity implements IHaveGoggl
 
     public void sendStatusMessage(ServerPlayer player) {
         refreshFromServer();
-        DustLevel level = DustLevel.fromDust(syncedDust);
+        DustLevel level = DustLevel.fromDust(displayedDust());
         player.sendSystemMessage(Component.translatable(
                 "block.create_originium_industry.originium_dust_meter.status",
-                syncedDust,
+                displayedDust(),
                 Component.translatable(level.getLangKey())
         ));
         if (protectionPercent > 0) {
@@ -126,7 +140,7 @@ public class DustMeterBlockEntity extends SmartBlockEntity implements IHaveGoggl
         }
         tooltip.add(Component.literal("    ").append(Component.translatable(
                 "block.create_originium_industry.originium_dust_meter.goggle.dust",
-                syncedDust
+                displayedDust()
         )));
         tooltip.add(Component.literal("    ").append(Component.translatable(risk().getLangKey())));
         if (protectionPercent > 0) {
@@ -172,5 +186,11 @@ public class DustMeterBlockEntity extends SmartBlockEntity implements IHaveGoggl
         syncedDust = tag.getInt(NBT_DUST);
         riskId = tag.contains(NBT_RISK) ? tag.getString(NBT_RISK) : DustLevel.SAFE.getId();
         protectionPercent = tag.getInt(NBT_PROTECTION);
+        if (clientPacket && hasLevel() && level != null && level.isClientSide) {
+            ClientDustCache.apply(
+                    new long[] {WorldSpace.toDustChunk(level, worldPosition).toLong()},
+                    new int[] {syncedDust}
+            );
+        }
     }
 }

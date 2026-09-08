@@ -55,6 +55,9 @@ public class PlayerDeathDustHandler {
         PlayerExposureData dest = COIAttachments.getPlayerExposure(event.getEntity());
         dest.setExposure(PlayerExposureData.retain(source.getExposure(), retainOrDefault(COIConfig.DEATH_EXPOSURE_RETAIN, 0.0)));
         dest.setInfection(PlayerExposureData.retain(source.getInfection(), retainOrDefault(COIConfig.DEATH_INFECTION_RETAIN, 0.25)));
+        if (event.getEntity() instanceof ServerPlayer serverPlayer) {
+            DustSyncTracker.markExposureDirty(serverPlayer);
+        }
     }
 
     private static double retainOrDefault(net.neoforged.neoforge.common.ModConfigSpec.DoubleValue value, double fallback) {

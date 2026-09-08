@@ -104,7 +104,10 @@ public final class COIConfigGameTests {
         );
         helper.assertValueEqual(COIConfig.DEDICATED_SERVER_DIFFUSION_MULTIPLIER.get(), 1.0, "dedicated multiplier");
         helper.assertValueEqual(COIConfig.DEDICATED_SERVER_RADIUS_BONUS.get(), 0, "dedicated radius bonus");
-        helper.assertFalse(COIConfig.SYNC_DUST_TO_CLIENTS.get(), "sync reserved off");
+        helper.assertTrue(COIConfig.SYNC_DUST_TO_CLIENTS.get(), "sync nearby dust to clients");
+        helper.assertValueEqual(COIConfig.DUST_SYNC_INTERVAL.get(), 20, "dustSyncInterval");
+        helper.assertValueEqual(COIConfig.DUST_SYNC_RADIUS.get(), 8, "dustSyncRadius");
+        helper.assertValueEqual(COIConfig.dustSyncRadius(false), 8, "SP sync radius clamped to active set");
 
         helper.assertValueEqual(COIConfig.effectiveDiffusionRate(false), 1.0, "SP diffusion");
         helper.assertValueEqual(COIConfig.effectiveDiffusionRate(true), 1.0, "dedicated default diffusion");

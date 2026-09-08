@@ -97,6 +97,7 @@ public final class OriginiumDustManager {
 
         if (newLevel != current) {
             DustCacheManager.markWritten(level, pos);
+            DustSyncTracker.markDustDirty(pos);
             logDustChange(pos, current, newLevel, reason);
         }
     }
@@ -130,6 +131,9 @@ public final class OriginiumDustManager {
         int current = OriDustSavedData.get(level).get(pos);
         int clamped = OriDustSavedData.get(level).set(pos, newDust);
         DustCacheManager.markWritten(level, pos);
+        if (clamped != current) {
+            DustSyncTracker.markDustDirty(pos);
+        }
         logDustChange(pos, current, clamped, reason);
     }
 
@@ -148,6 +152,7 @@ public final class OriginiumDustManager {
         if (current > 0) {
             OriDustSavedData.get(level).set(pos, 0);
             DustCacheManager.markWritten(level, pos);
+            DustSyncTracker.markDustDirty(pos);
             logDustChange(pos, current, 0, reason);
         }
     }
@@ -157,7 +162,11 @@ public final class OriginiumDustManager {
      * Used by diffusion/decay so the active set cannot walk across the whole map.
      */
     static void applySimulated(ServerLevel level, ChunkPos pos, int newDust) {
-        OriDustSavedData.get(level).set(pos, newDust);
+        int current = OriDustSavedData.get(level).get(pos);
+        int clamped = OriDustSavedData.get(level).set(pos, newDust);
+        if (clamped != current) {
+            DustSyncTracker.markDustDirty(pos);
+        }
     }
 
     // ==================== Internal ====================

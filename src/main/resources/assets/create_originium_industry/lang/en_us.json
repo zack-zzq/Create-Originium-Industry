@@ -61,6 +61,9 @@
   "hud.create_originium_industry.sickness.verbose": "Originium exposure  Lv.%s",
   "hud.create_originium_industry.debug.no_sickness": "[COI] no sickness effect",
   "hud.create_originium_industry.debug.dust_unsynced": "[COI] chunk dust HUD needs client sync (off)",
+  "hud.create_originium_industry.debug.dust": "[COI] dust %s %s",
+  "hud.create_originium_industry.debug.exposure": "[COI] exposure %s  infection %s",
+  "item.create_originium_industry.debug.client_readout": "§8[COI debug] Dust %s | Exposure %s | Infection %s",
 
   "block.create_originium_industry.originium_dust_filter.status": "Sieve durability: %s / %s (%s%%)",
   "block.create_originium_industry.originium_dust_filter.no_sieve": "No sieve inserted",

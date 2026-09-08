@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "I": {
+      "item": "minecraft:iron_ingot"
+    },
+    "S": {
+      "item": "create_originium_industry:originium_dust_sieve"
+    },
+    "A": {
+      "item": "create:andesite_alloy"
+    }
+  },
+  "pattern": [
+    " I ",
+    " S ",
+    " A "
+  ],
+  "result": {
+    "count": 1,
+    "id": "create_originium_industry:originium_filter_canister"
+  }
+}

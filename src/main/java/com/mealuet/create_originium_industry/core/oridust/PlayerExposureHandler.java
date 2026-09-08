@@ -26,7 +26,8 @@ import net.neoforged.neoforge.event.tick.PlayerTickEvent;
  * <ul>
  *   <li>Increases slowly when exposure exceeds the infection threshold</li>
  *   <li>Does NOT decay naturally — permanent contamination</li>
- *   <li>At high levels, causes effects even in clean areas</li>
+ *   <li>At high levels, causes {@code ori_dust_sickness} even in clean areas
+ *       (via {@code infectionSymptomRatio}) plus {@link InfectionStage} effects</li>
  * </ul>
  */
 public class PlayerExposureHandler {
@@ -53,6 +54,7 @@ public class PlayerExposureHandler {
             if (gain > 0) {
                 data.addExposure(gain);
             }
+            ProtectionHooks.wearProtectionInDust(serverPlayer);
         } else {
             int decayRate = COIConfig.EXPOSURE_DECAY_RATE.get();
             if (decayRate > 0 && data.getExposure() > 0) {
@@ -94,6 +96,8 @@ public class PlayerExposureHandler {
                 ));
             }
         }
+
+        InfectionStage.fromInfection(data.getInfection()).apply(serverPlayer, checkInterval + 5);
 
         if (COIConfig.ENABLE_DEBUG_LOGGING.get() && serverPlayer.tickCount % (checkInterval * 10) == 0) {
             CreateOriginiumIndustry.LOGGER.debug(

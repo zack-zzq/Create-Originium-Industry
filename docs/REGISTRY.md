@@ -43,6 +43,8 @@ stable unless a migration is documented here first.
 | `originium_dust_sieve` | 源石尘滤网 | Originium Dust Sieve | Placeable Basin/process attachment; also inserted into the kinetic filter |
 | `originium_dust_nozzle` | 源石尘分散滤网 | Originium Dust Nozzle | Encased Fan attachment (block + BlockItem, same id) |
 | `originium_debug_wand` | 源石调试器 | Originium Debug Wand | Debug-only; do not add survival recipes |
+| `originium_respirator` | 源石防护面罩 | Originium Respirator | Head-slot Equipable; tagged `originium_protection` |
+| `originium_filter_canister` | 源石滤毒罐 | Originium Filter Canister | Chest-slot Equipable; tagged `originium_protection` |
 | `molten_originium_bucket` | 熔融源石桶 | Molten Originium Bucket | Generated with the fluid |
 | `purest_molten_originium_bucket` | 至纯熔融源石桶 | Purest Molten Originium Bucket | Generated with the fluid |
 | `originium_catalyst_bucket` | 培养液桶 | Originium Catalyst Bucket | Display = 培养液; id stays catalyst |
@@ -73,6 +75,8 @@ Still / flowing textures live at `textures/fluid/<id>_still.png` and
 |---|---|---|
 | `ori_dust_sickness` | 源石暴露症状 | Originium Exposure Sickness |
 
+Exposure-layer effect. Long-term infection uses vanilla effects via `InfectionStage` (no extra effect id).
+
 ### Creative tab
 
 | Registry id | lang key |
@@ -86,7 +90,7 @@ Still / flowing textures live at `textures/fluid/<id>_still.png` and
 | `chunk_oridust_data` | chunk | `DustLevel` (int) | **not present — add on next schema change** |
 | `player_exposure_data` | player (`copyOnDeath`) | `Exposure`, `Infection` (ints) | **not present — add on next schema change** |
 
-`copyOnDeath` on player exposure is intentional: infection survives respawn.
+`copyOnDeath` still copies the attachment on respawn. Additive knobs `player_exposure.deathExposureRetain` (default 0) and `deathInfectionRetain` (default 0.25) then scale the clone so singleplayer deaths are not a spiral. Set both to `1.0` to keep the old full-retain behaviour.
 
 ### Config file
 
@@ -99,7 +103,8 @@ Common config spec is `COIConfig.COMMON_SPEC`. Top-level keys:
 - `dust_filter`
 - `dust_nozzle` *(additive)*
 - `dust_meter` *(additive)*
-- `protection` *(additive; no gear yet)*
+- `protection` *(additive; respirator + canister)*
+- `infection` *(additive; stage thresholds)*
 - `reactor` *(additive; M3 stub knobs)*
 - `multiplayer` *(additive; dedicated-server spread policy)*
 - `debug`
@@ -128,6 +133,8 @@ Datapack path is the recipe id (`create_originium_industry:<path>`).
 | `crafting/originium_dust_nozzle` | `minecraft:crafting_shaped` | Encased Fan nozzle |
 | `crafting/originium_dust_meter` | `minecraft:crafting_shaped` | dust meter |
 | `crafting/originium_dust_filter` | `minecraft:crafting_shaped` | kinetic filter |
+| `crafting/originium_respirator` | `minecraft:crafting_shaped` | head-slot dust mask |
+| `crafting/originium_filter_canister` | `minecraft:crafting_shaped` | chest-slot filter tank |
 
 Dust production for frozen recipe ids is keyed in datapack JSON under
 `data/create_originium_industry/coi_dust_emission/` (recipe / item / item_tag +
@@ -180,8 +187,25 @@ redirects chunk dust into the downwind neighbouring chunk (`DustReason.DIFFUSER`
 It never voids dust.
 
 The dust meter copies server chunk dust onto the block entity (goggles /
-comparator). That is **not** the full client chunk-dust sync reserved under
+comparator) and reports nearby protection as a percent of exposure reduction.
+That is **not** the full client chunk-dust sync reserved under
 `multiplayer.syncDustToClients` (#17).
+
+Protection gear (`originium_respirator` head, `originium_filter_canister` chest)
+is tagged `originium_protection`. A full set is **2** pieces (`protection.protectionFullSetPieces`;
+older configs that still have `4` from the M0 skeleton should retune). Broken gear
+drops `originium_dust` back into the factory loop.
+
+Infection stages (additive `infection` section) apply vanilla effects from stored
+infection. `ori_dust_sickness` stays the exposure-layer effect.
+
+| Stage | Default infection | Effects |
+|---|---|---|
+| none | below 200 | — |
+| weakness | 200 | Weakness I |
+| restricted | 800 | Weakness I + Mining Fatigue I |
+| growth | 2500 | Mining Fatigue II + Slowness I + Hunger I |
+| bargain | 6000 | Haste I + Strength I + Hunger II |
 
 `create_originium_industry:example/datapack_only` is a shipped mapping (amount
 33) for GameTests / pack authors. It is **not** a real recipe.
@@ -204,7 +228,7 @@ comparator). That is **not** the full client chunk-dust sync reserved under
 |---|---|---|
 | `item/originium_materials` | raw, shard, originium, dust, purest | present |
 | `item/dust_producing` | items whose processing emits chunk dust | present (raw, shard, originium, dust, purest) |
-| `item/originium_protection` | protection gear that reduces exposure/infection | **not shipped — no gear yet; tag key exists** |
+| `item/originium_protection` | protection gear that reduces exposure/infection | present (`originium_respirator`, `originium_filter_canister`) |
 | `block/dust_sources` | blocks that emit dust | present (empty; future COI machines) |
 | `block/dust_filters` | blocks that remove/modify dust | present (`originium_dust_filter`, `originium_dust_sieve`, `originium_dust_nozzle`) |
 | `fluid/originium_fluids` | all originium fluids | present |
@@ -225,6 +249,7 @@ Pattern: `<category>.create_originium_industry.<path>`
 | `itemGroup` | `itemGroup.create_originium_industry.main` |
 | `commands` | `commands.coi_debug.dust.get` |
 | `hud` | `hud.create_originium_industry.sickness` |
+| `infection_stage` | `infection_stage.create_originium_industry.weakness` |
 
 `en_us` and `zh_cn` must stay in lockstep.
 
@@ -241,7 +266,6 @@ New ids are fine. Do not reuse a frozen id for a different object.
 Expected (not frozen until registered):
 
 - Originium ore / worldgen features
-- Protection equipment
 - Purification intermediates for the purest line
 - Reactor blocks / block entities
 - Ponder / JEI lang keys

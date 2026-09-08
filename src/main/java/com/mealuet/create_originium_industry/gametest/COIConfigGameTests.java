@@ -75,6 +75,9 @@ public final class COIConfigGameTests {
         helper.assertValueEqual(COIConfig.METER_COMPARATOR_FULL_DUST.get(), 8000, "meterComparatorFullDust");
         helper.assertTrue(COIConfig.ENABLE_PROTECTION.get(), "enableProtection");
         helper.assertValueEqual(COIConfig.PROTECTION_EXPOSURE_REDUCTION.get(), 0.5, "protectionExposureReduction");
+        helper.assertValueEqual(COIConfig.DEATH_EXPOSURE_RETAIN.get(), 0.0, "deathExposureRetain");
+        helper.assertValueEqual(COIConfig.DEATH_INFECTION_RETAIN.get(), 0.25, "deathInfectionRetain");
+        helper.assertTrue(COIConfig.ENABLE_INFECTION_STAGES.get(), "enableInfectionStages");
         helper.succeed();
     }
 
@@ -129,9 +132,11 @@ public final class COIConfigGameTests {
     @GameTest(template = "empty", batch = "config")
     public static void protectionHooksUnprotectedByDefault(GameTestHelper helper) {
         helper.assertValueEqual(ProtectionHooks.incomingFactor(0, 0.5), 1.0, "no gear");
-        helper.assertValueEqual(ProtectionHooks.incomingFactor(4, 0.5), 0.5, "full set");
-        helper.assertValueEqual(ProtectionHooks.incomingFactor(2, 0.5), 0.75, "half set scales");
+        helper.assertValueEqual(ProtectionHooks.incomingFactor(2, 0.5), 0.5, "full set of 2");
+        helper.assertValueEqual(ProtectionHooks.incomingFactor(1, 0.5), 0.75, "half set scales");
+        helper.assertValueEqual(ProtectionHooks.incomingFactor(4, 0.5), 0.5, "extra pieces cap at full");
         helper.assertValueEqual(ProtectionHooks.countProtectionPieces(null), 0, "null entity");
+        helper.assertValueEqual(COIConfig.PROTECTION_FULL_SET_PIECES.get(), 2, "default full set");
         helper.succeed();
     }
 

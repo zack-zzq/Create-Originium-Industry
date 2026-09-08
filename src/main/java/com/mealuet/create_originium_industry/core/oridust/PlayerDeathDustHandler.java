@@ -7,8 +7,10 @@ import com.mealuet.create_originium_industry.index.COIAttachments;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.ChunkPos;
+import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 
 /**
  * Handles dust burst on player death from originium exposure.
@@ -37,6 +39,26 @@ public class PlayerDeathDustHandler {
                     scaledBurst, chunkPos.x, chunkPos.z
             );
         }
+    }
+
+    /**
+     * After NeoForge copies {@code copyOnDeath} attachments, scale exposure /
+     * infection by the configured retain fractions. Defaults clear exposure
+     * and keep a quarter of infection so singleplayer deaths are not a spiral.
+     */
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public static void onPlayerClone(PlayerEvent.Clone event) {
+        if (!event.isWasDeath()) {
+            return;
+        }
+        PlayerExposureData source = COIAttachments.getPlayerExposure(event.getOriginal());
+        PlayerExposureData dest = COIAttachments.getPlayerExposure(event.getEntity());
+        dest.setExposure(PlayerExposureData.retain(source.getExposure(), retainOrDefault(COIConfig.DEATH_EXPOSURE_RETAIN, 0.0)));
+        dest.setInfection(PlayerExposureData.retain(source.getInfection(), retainOrDefault(COIConfig.DEATH_INFECTION_RETAIN, 0.25)));
+    }
+
+    private static double retainOrDefault(net.neoforged.neoforge.common.ModConfigSpec.DoubleValue value, double fallback) {
+        return COIConfig.COMMON_SPEC.isLoaded() ? value.get() : fallback;
     }
 
     /**

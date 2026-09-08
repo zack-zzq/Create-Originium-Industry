@@ -200,6 +200,10 @@ public class COIDebugCommand {
         ctx.getSource().sendSuccess(() -> Component.translatable(
                 "commands.coi_debug.exposure.get", exposure, infection, dust
         ), false);
+        ctx.getSource().sendSuccess(() -> Component.translatable(
+                "commands.coi_debug.infection.stage",
+                Component.translatable(data.getInfectionStage().getLangKey())
+        ), false);
         return 1;
     }
 

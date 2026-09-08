@@ -9,7 +9,7 @@ import net.neoforged.neoforge.common.ModConfigSpec;
  * Existing top-level COMMON sections are frozen: {@code dust_diffusion},
  * {@code dust_production}, {@code player_exposure}, {@code feature_toggles},
  * {@code dust_filter}, {@code debug}. Additive sections: {@code protection},
- * {@code reactor}, {@code multiplayer}, {@code dust_nozzle}, {@code dust_meter}.
+ * {@code infection}, {@code reactor}, {@code multiplayer}, {@code dust_nozzle}, {@code dust_meter}.
  * New keys are additive only.
  * <p>
  * Client spec is registered as {@link net.neoforged.fml.config.ModConfig.Type#CLIENT}
@@ -65,6 +65,8 @@ public class COIConfig {
     public static final ModConfigSpec.DoubleValue DEATH_BURST_SCALE_DIVISOR;
     public static final ModConfigSpec.DoubleValue DEATH_BURST_MAX_SCALE;
     public static final ModConfigSpec.IntValue SICKNESS_EFFECT_INTERVAL;
+    public static final ModConfigSpec.DoubleValue DEATH_EXPOSURE_RETAIN;
+    public static final ModConfigSpec.DoubleValue DEATH_INFECTION_RETAIN;
 
     // --- Feature Toggles ---
     public static final ModConfigSpec.BooleanValue ENABLE_REACTOR_MELTDOWN;
@@ -90,12 +92,20 @@ public class COIConfig {
     public static final ModConfigSpec.IntValue METER_COMPARATOR_FULL_DUST;
     public static final ModConfigSpec.IntValue METER_SYNC_INTERVAL;
 
-    // --- Protection (hooks; no gear registered yet) ---
+    // --- Protection ---
     public static final ModConfigSpec.BooleanValue ENABLE_PROTECTION;
     public static final ModConfigSpec.DoubleValue PROTECTION_EXPOSURE_REDUCTION;
     public static final ModConfigSpec.DoubleValue PROTECTION_INFECTION_REDUCTION;
     public static final ModConfigSpec.BooleanValue PROTECTION_REQUIRES_FULL_SET;
     public static final ModConfigSpec.IntValue PROTECTION_FULL_SET_PIECES;
+    public static final ModConfigSpec.IntValue PROTECTION_DURABILITY_LOSS;
+
+    // --- Infection stages ---
+    public static final ModConfigSpec.BooleanValue ENABLE_INFECTION_STAGES;
+    public static final ModConfigSpec.IntValue INFECTION_STAGE_WEAKNESS;
+    public static final ModConfigSpec.IntValue INFECTION_STAGE_RESTRICTED;
+    public static final ModConfigSpec.IntValue INFECTION_STAGE_GROWTH;
+    public static final ModConfigSpec.IntValue INFECTION_STAGE_BARGAIN;
 
     // --- Reactor (M3 stub knobs) ---
     public static final ModConfigSpec.IntValue REACTOR_CORE_HEAT;
@@ -264,6 +274,12 @@ public class COIConfig {
         SICKNESS_EFFECT_INTERVAL = builder
                 .comment("Ticks between ori_dust_sickness slowness/weakness pulses (20 = 1 second)")
                 .defineInRange("sicknessEffectInterval", 20, 1, 200);
+        DEATH_EXPOSURE_RETAIN = builder
+                .comment("Fraction of exposure kept on respawn (0 = clear). Singleplayer-friendly default wipes short-term exposure.")
+                .defineInRange("deathExposureRetain", 0.0, 0.0, 1.0);
+        DEATH_INFECTION_RETAIN = builder
+                .comment("Fraction of infection kept on respawn (0 = clear, 1 = keep all). Default 0.25 avoids a death spiral without a full reset.")
+                .defineInRange("deathInfectionRetain", 0.25, 0.0, 1.0);
 
         builder.pop();
 
@@ -347,8 +363,8 @@ public class COIConfig {
 
         // ==================== Protection ====================
         builder.comment(
-                "Protection equipment hooks. No protection items are registered yet;",
-                "these knobs are used once gear (or the originium_protection item tag) exists.",
+                "Protection equipment. Tagged items (originium_respirator, originium_filter_canister,",
+                "or the originium_protection item tag) reduce incoming exposure/infection.",
                 "Unprotected players always take full exposure; changing these values does not rewrite saves."
         ).push("protection");
 
@@ -365,8 +381,35 @@ public class COIConfig {
                 .comment("If true, partial sets give no reduction. If false, reduction scales with equipped pieces / fullSetPieces.")
                 .define("protectionRequiresFullSet", false);
         PROTECTION_FULL_SET_PIECES = builder
-                .comment("How many tagged protection items count as a full set")
-                .defineInRange("protectionFullSetPieces", 4, 1, 8);
+                .comment("How many tagged protection items count as a full set (respirator + canister = 2)")
+                .defineInRange("protectionFullSetPieces", 2, 1, 8);
+        PROTECTION_DURABILITY_LOSS = builder
+                .comment("Durability lost per exposure check while standing in dusty air (0 = no wear). Broken gear drops originium_dust.")
+                .defineInRange("protectionDurabilityLoss", 1, 0, 64);
+
+        builder.pop();
+
+        // ==================== Infection stages ====================
+        builder.comment(
+                "Long-term infection course. ori_dust_sickness remains the exposure-layer effect;",
+                "these stages add vanilla effects from stored infection. Additive section."
+        ).push("infection");
+
+        ENABLE_INFECTION_STAGES = builder
+                .comment("Master switch for infection-stage effects. Off = infection still stores, no extra stage debuffs.")
+                .define("enableInfectionStages", true);
+        INFECTION_STAGE_WEAKNESS = builder
+                .comment("Infection at which Weakness starts (虚弱)")
+                .defineInRange("stageWeakness", 200, 0, 100000);
+        INFECTION_STAGE_RESTRICTED = builder
+                .comment("Infection at which action is limited (受限): weakness + mining fatigue")
+                .defineInRange("stageRestricted", 800, 0, 100000);
+        INFECTION_STAGE_GROWTH = builder
+                .comment("Infection at which growth/crystallization symptoms start (增生)")
+                .defineInRange("stageGrowth", 2500, 0, 100000);
+        INFECTION_STAGE_BARGAIN = builder
+                .comment("Infection at which cost/benefit starts (代价交换): haste + strength, hunger cost")
+                .defineInRange("stageBargain", 6000, 0, 100000);
 
         builder.pop();
 

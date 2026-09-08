@@ -57,6 +57,37 @@ public class PlayerExposureData implements INBTSerializable<CompoundTag> {
         setInfection(this.infection + amount);
     }
 
+    public InfectionStage getInfectionStage() {
+        return InfectionStage.fromInfection(this.infection);
+    }
+
+    /**
+     * Singleplayer-friendly death handling: scale stored values by the
+     * configured retain fractions (0 = clear, 1 = keep). Call after
+     * {@code copyOnDeath} has copied this attachment onto the clone.
+     */
+    public void applyDeathRetention() {
+        setExposure(retain(this.exposure, deathRetain(COIConfig.DEATH_EXPOSURE_RETAIN, 0.0)));
+        setInfection(retain(this.infection, deathRetain(COIConfig.DEATH_INFECTION_RETAIN, 0.25)));
+    }
+
+    /**
+     * {@code fraction <= 0} clears; {@code >= 1} keeps the value.
+     */
+    public static int retain(int value, double fraction) {
+        if (value <= 0 || fraction <= 0.0) {
+            return 0;
+        }
+        if (fraction >= 1.0) {
+            return value;
+        }
+        return Math.max(0, (int) Math.round(value * fraction));
+    }
+
+    private static double deathRetain(net.neoforged.neoforge.common.ModConfigSpec.DoubleValue value, double fallback) {
+        return COIConfig.COMMON_SPEC.isLoaded() ? value.get() : fallback;
+    }
+
     // --- Serialization ---
 
     @Override

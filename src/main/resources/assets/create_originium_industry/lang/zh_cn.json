@@ -9,6 +9,12 @@
   "item.create_originium_industry.purest_originium": "至纯源石",
   "item.create_originium_industry.originium_dust_sieve": "源石尘滤网",
   "item.create_originium_industry.originium_dust_nozzle": "源石尘分散滤网",
+  "item.create_originium_industry.originium_respirator": "源石防护面罩",
+  "item.create_originium_industry.originium_filter_canister": "源石滤毒罐",
+  "item.create_originium_industry.originium_respirator.hint": "戴在头上可降低源石尘暴露",
+  "item.create_originium_industry.originium_filter_canister.hint": "戴在胸前，与面罩成套",
+  "item.create_originium_industry.originium_respirator.tooltip.summary": "机械动力风格的_防尘面罩_。佩戴后减缓源石_暴露_。",
+  "item.create_originium_industry.originium_filter_canister.tooltip.summary": "胸前的备用_滤材_。损坏后掉落_源石尘_。",
 
   "block.create_originium_industry.originium_dust_filter": "源石尘滤网机",
   "block.create_originium_industry.originium_dust_sieve": "源石尘滤网",
@@ -35,6 +41,7 @@
   "commands.coi_debug.exposure.get": "暴露值: %d | 感染值: %d | 当前区块粉尘: %d",
   "commands.coi_debug.exposure.set": "已将暴露值设为: %d",
   "commands.coi_debug.infection.set": "已将感染值设为: %d",
+  "commands.coi_debug.infection.stage": "感染分期: %s",
   "commands.coi_debug.reactor.status": "反应炉状态查看（尚未实现，P6 阶段开发）。当前配置：",
   "commands.coi_debug.reactor.status.values": "核心热值=%s  熔融热容=%s  至纯热容=%s  冷却倍率=%s  失稳增速=%s  熔毁阈值=%s  熔毁开关=%s  熔毁粉尘=%s",
   "commands.coi_debug.reactor.stabilize": "反应炉强制稳定（尚未实现，P6 阶段开发）",
@@ -44,6 +51,7 @@
   "item.create_originium_industry.originium_debug_wand.tooltip2": "§7Shift+右键方块§r - 查看区块源石尘信息",
   "item.create_originium_industry.originium_debug_wand.chunk_info": "§6[源石调试器]§r 区块 [%s, %s] 源石尘: §e%d",
   "item.create_originium_industry.originium_debug_wand.player_info": "§6[源石调试器]§r 暴露值: §e%d§r | 感染值: §c%d§r | 当前区块粉尘: §e%d",
+  "item.create_originium_industry.originium_debug_wand.infection_stage": "§6[源石调试器]§r 感染分期: %s",
   "item.create_originium_industry.debug.dust_item": "§8[COI 调试] 加工此物品可能排放区块源石尘。",
   "item.create_originium_industry.debug.protection_item": "§8[COI 调试] 计入源石防护装备。",
 
@@ -86,5 +94,11 @@
   "dust_level.create_originium_industry.low": "§e[低风险]",
   "dust_level.create_originium_industry.medium": "§6[中等风险]",
   "dust_level.create_originium_industry.high": "§c[高风险]",
-  "dust_level.create_originium_industry.critical": "§4[严重污染]"
+  "dust_level.create_originium_industry.critical": "§4[严重污染]",
+
+  "infection_stage.create_originium_industry.none": "无",
+  "infection_stage.create_originium_industry.weakness": "虚弱",
+  "infection_stage.create_originium_industry.restricted": "受限",
+  "infection_stage.create_originium_industry.growth": "增生",
+  "infection_stage.create_originium_industry.bargain": "代价交换"
 }

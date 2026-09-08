@@ -191,6 +191,8 @@ public final class DustDevicesGameTests {
         helper.assertTrue(recipePresent(helper, "crafting/originium_dust_nozzle"), "nozzle recipe");
         helper.assertTrue(recipePresent(helper, "crafting/originium_dust_meter"), "meter recipe");
         helper.assertTrue(recipePresent(helper, "crafting/originium_dust_filter"), "filter recipe");
+        helper.assertTrue(recipePresent(helper, "crafting/originium_respirator"), "respirator recipe");
+        helper.assertTrue(recipePresent(helper, "crafting/originium_filter_canister"), "canister recipe");
         helper.assertTrue(COIBlocks.DUST_SIEVE.asItem() != net.minecraft.world.item.Items.AIR, "sieve item");
         helper.assertTrue(COIBlocks.DUST_NOZZLE.asItem() != net.minecraft.world.item.Items.AIR, "nozzle item");
         helper.assertTrue(COIBlocks.DUST_METER.asItem() != net.minecraft.world.item.Items.AIR, "meter item");

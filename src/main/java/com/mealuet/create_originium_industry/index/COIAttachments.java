@@ -25,6 +25,11 @@ public class COIAttachments {
             () -> AttachmentType.serializable(OriDustData::new).build()
     );
 
+    /**
+     * Per-player exposure/infection. {@code copyOnDeath} copies the attachment;
+     * {@link com.mealuet.create_originium_industry.core.oridust.PlayerDeathDustHandler}
+     * then applies {@code deathExposureRetain} / {@code deathInfectionRetain}.
+     */
     public static final Supplier<AttachmentType<PlayerExposureData>> PLAYER_EXPOSURE_TYPE = ATTACHMENT_TYPES.register(
             "player_exposure_data",
             () -> AttachmentType.serializable(PlayerExposureData::new).copyOnDeath().build()

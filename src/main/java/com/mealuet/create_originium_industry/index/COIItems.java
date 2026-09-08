@@ -19,6 +19,14 @@ public class COIItems {
     public static final ItemEntry<OriginiumDebugWandItem> ORIGINIUM_DEBUG_WAND = CreateOriginiumIndustry.REGISTRATE.item("originium_debug_wand", OriginiumDebugWandItem::new)
             .model((ctx, prov) -> prov.generated(ctx, prov.modLoc("item/originium_dust")))
             .register();
+    public static final ItemEntry<OriginiumProtectionItem> ORIGINIUM_RESPIRATOR =
+            CreateOriginiumIndustry.REGISTRATE.item("originium_respirator",
+                            p -> new OriginiumProtectionItem(p, net.minecraft.world.entity.EquipmentSlot.HEAD))
+                    .register();
+    public static final ItemEntry<OriginiumProtectionItem> ORIGINIUM_FILTER_CANISTER =
+            CreateOriginiumIndustry.REGISTRATE.item("originium_filter_canister",
+                            p -> new OriginiumProtectionItem(p, net.minecraft.world.entity.EquipmentSlot.CHEST))
+                    .register();
 
     public static void register() {}
 }

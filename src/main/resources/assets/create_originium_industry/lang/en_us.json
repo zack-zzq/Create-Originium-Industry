@@ -9,6 +9,12 @@
   "item.create_originium_industry.purest_originium": "Purest Originium",
   "item.create_originium_industry.originium_dust_sieve": "Originium Dust Sieve",
   "item.create_originium_industry.originium_dust_nozzle": "Originium Dust Nozzle",
+  "item.create_originium_industry.originium_respirator": "Originium Respirator",
+  "item.create_originium_industry.originium_filter_canister": "Originium Filter Canister",
+  "item.create_originium_industry.originium_respirator.hint": "Wear on the head to cut dust exposure",
+  "item.create_originium_industry.originium_filter_canister.hint": "Wear on the chest; pairs with the respirator",
+  "item.create_originium_industry.originium_respirator.tooltip.summary": "Create-style _dust mask_. Wear it to slow originium _exposure_.",
+  "item.create_originium_industry.originium_filter_canister.tooltip.summary": "Spare _filter media_ on the chest. Broken canisters drop _originium dust_.",
 
   "block.create_originium_industry.originium_dust_filter": "Originium Dust Filter",
   "block.create_originium_industry.originium_dust_sieve": "Originium Dust Sieve",
@@ -35,6 +41,7 @@
   "commands.coi_debug.exposure.get": "Exposure: %d | Infection: %d | Current chunk dust: %d",
   "commands.coi_debug.exposure.set": "Set exposure to: %d",
   "commands.coi_debug.infection.set": "Set infection to: %d",
+  "commands.coi_debug.infection.stage": "Infection stage: %s",
   "commands.coi_debug.reactor.status": "Reactor status view (not yet implemented, Phase 6). Config knobs:",
   "commands.coi_debug.reactor.status.values": "coreHeat=%s  moltenCap=%s  purestCap=%s  cooling=%s  instabilityGain=%s  meltdownAt=%s  meltdownEnabled=%s  meltdownDust=%s",
   "commands.coi_debug.reactor.stabilize": "Reactor force stabilize (not yet implemented, Phase 6)",
@@ -44,6 +51,7 @@
   "item.create_originium_industry.originium_debug_wand.tooltip2": "§7Shift+Right-click block§r - View chunk dust info",
   "item.create_originium_industry.originium_debug_wand.chunk_info": "§6[Debug Wand]§r Chunk [%s, %s] dust: §e%d",
   "item.create_originium_industry.originium_debug_wand.player_info": "§6[Debug Wand]§r Exposure: §e%d§r | Infection: §c%d§r | Chunk dust: §e%d",
+  "item.create_originium_industry.originium_debug_wand.infection_stage": "§6[Debug Wand]§r Infection stage: %s",
   "item.create_originium_industry.debug.dust_item": "§8[COI debug] Processing this item can emit chunk dust.",
   "item.create_originium_industry.debug.protection_item": "§8[COI debug] Counted as originium protection gear.",
 
@@ -86,5 +94,11 @@
   "dust_level.create_originium_industry.low": "§e[Low Risk]",
   "dust_level.create_originium_industry.medium": "§6[Medium Risk]",
   "dust_level.create_originium_industry.high": "§c[High Risk]",
-  "dust_level.create_originium_industry.critical": "§4[Critical]"
+  "dust_level.create_originium_industry.critical": "§4[Critical]",
+
+  "infection_stage.create_originium_industry.none": "None",
+  "infection_stage.create_originium_industry.weakness": "Weakness",
+  "infection_stage.create_originium_industry.restricted": "Restricted",
+  "infection_stage.create_originium_industry.growth": "Growth",
+  "infection_stage.create_originium_industry.bargain": "Bargain"
 }

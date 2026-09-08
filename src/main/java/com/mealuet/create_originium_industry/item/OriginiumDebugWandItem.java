@@ -53,6 +53,10 @@ public class OriginiumDebugWandItem extends Item {
                 "item.create_originium_industry.originium_debug_wand.player_info",
                 exposure, infection, dust
         ).append(" ").append(Component.translatable(dustLevel.getLangKey())));
+        serverPlayer.sendSystemMessage(Component.translatable(
+                "item.create_originium_industry.originium_debug_wand.infection_stage",
+                Component.translatable(data.getInfectionStage().getLangKey())
+        ));
 
         return InteractionResultHolder.success(player.getItemInHand(hand));
     }

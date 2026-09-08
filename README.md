@@ -45,6 +45,8 @@ Two industrial routes:
 | `purest_originium` | Purest Originium | 至纯源石 (no recipe yet) |
 | `originium_dust_sieve` | Originium Dust Sieve | 源石尘滤网 (Basin/process attachment; also kinetic-filter insert) |
 | `originium_dust_nozzle` | Originium Dust Nozzle | 源石尘分散滤网 (Encased Fan attachment) |
+| `originium_respirator` | Originium Respirator | 源石防护面罩 (head slot) |
+| `originium_filter_canister` | Originium Filter Canister | 源石滤毒罐 (chest slot) |
 | `originium_debug_wand` | Originium Debug Wand | 源石调试器 (creative / OP) |
 
 ### Blocks
@@ -78,12 +80,14 @@ redstone + sugar + lapis + water (heated mix) → originium catalyst (培养液)
 
 - Per-chunk originium dust, diffusion, and decay (overworld)
 - Create mill / crush / mix hooks that emit dust via `IOridustProducer` (datapack `coi_dust_emission` JSON; config overrides frozen recipe ids). Heated shard mix and superheated melt emit more than cold milling; `catalyst_mixing` is heated but ships amount 0 (no originium feedstock). No furnace/fan recipes.
-- Player exposure, infection, and Originium Exposure Sickness
+- Player exposure, Originium Exposure Sickness, and a 4-stage infection course (weakness → restricted → growth → bargain)
+- Protection gear (`originium_respirator` + `originium_filter_canister`) tagged `originium_protection`; wearing a full set halves exposure gain. Spent gear drops `originium_dust`.
+- Death handling is configurable: singleplayer defaults clear exposure and keep 25% infection (no death spiral)
 - Kinetic dust filter implements shared `IDustPurifier` (chunk absorb, nearby emission capture, `originium_dust` byproduct with remainder buffer — no dup/void)
 - Basin / process sieve (`originium_dust_sieve`) attaches to a Basin, mill, mixer, or crushing controller and captures process emission as byproduct (no GUI, no RPM)
 - Encased Fan nozzle (`originium_dust_nozzle`) redirects chunk dust downwind without voiding it
 - Dust meter (`originium_dust_meter`) shows chunk concentration, risk tier, and a protection hint (goggles / right-click / comparator); BE snapshot is enough for the placing player without full #17 net sync
-- Common + client config (`create_originium_industry-common.toml` / `-client.toml`): dust, exposure, filter, protection hooks, reactor stubs, dedicated-server spread policy, accessibility
+- Common + client config (`create_originium_industry-common.toml` / `-client.toml`): dust, exposure, infection stages, filter, protection gear, reactor stubs, dedicated-server spread policy, accessibility
 - `/coi_debug` and the debug wand for inspection
 
 Dust and pollution are being reworked. Treat `core/oridust` as unstable; **do not rename registry ids** — see [docs/REGISTRY.md](docs/REGISTRY.md).

@@ -155,8 +155,7 @@ public class DustMeterBlockEntity extends SmartBlockEntity implements IHaveGoggl
         if (nearest == null) {
             return 0;
         }
-        double factor = ProtectionHooks.incomingExposureFactor(nearest);
-        return Mth.clamp((int) Math.round((1.0 - factor) * 100.0), 0, 100);
+        return ProtectionHooks.exposureReductionPercent(nearest);
     }
 
     @Override

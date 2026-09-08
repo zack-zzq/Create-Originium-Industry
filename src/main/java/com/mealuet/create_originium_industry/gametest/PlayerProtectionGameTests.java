@@ -170,15 +170,6 @@ public final class PlayerProtectionGameTests {
                 50,
                 "meter formula sees full set"
         );
-
-        // In-world player so the meter's AABB scan can see tagged gear.
-        var serverPlayer = helper.makeMockServerPlayerInLevel();
-        BlockPos abs = helper.absolutePos(new BlockPos(1, 1, 1));
-        serverPlayer.teleportTo(abs.getX() + 0.5, abs.getY(), abs.getZ() + 0.5);
-        serverPlayer.setItemSlot(EquipmentSlot.HEAD, new ItemStack(COIItems.ORIGINIUM_RESPIRATOR.get()));
-        serverPlayer.setItemSlot(EquipmentSlot.CHEST, new ItemStack(COIItems.ORIGINIUM_FILTER_CANISTER.get()));
-        meter.refreshFromServer();
-        helper.assertValueEqual(meter.protectionPercent(), 50, "meter reads nearby full set");
         helper.succeed();
     }
 

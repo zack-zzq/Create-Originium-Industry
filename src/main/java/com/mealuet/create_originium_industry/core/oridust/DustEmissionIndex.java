@@ -38,14 +38,12 @@ public final class DustEmissionIndex extends SimpleJsonResourceReloadListener {
     public static final String DIRECTORY = "coi_dust_emission";
     public static final DustEmissionIndex INSTANCE = new DustEmissionIndex();
 
-    private static final Gson GSON = new Gson();
-
     private volatile Map<ResourceLocation, Integer> recipeAmounts = Map.of();
     private volatile Map<ResourceLocation, Integer> itemAmounts = Map.of();
     private volatile Map<ResourceLocation, Integer> itemTagAmounts = Map.of();
 
     private DustEmissionIndex() {
-        super(GSON, DIRECTORY);
+        super(new Gson(), DIRECTORY);
     }
 
     @SubscribeEvent

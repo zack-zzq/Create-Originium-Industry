@@ -191,6 +191,7 @@ Datapack path is the recipe id (`create_originium_industry:<path>`).
 | `mixing/purest_originium_melting` | `create:mixing` + superheated | late remelt: purest item → purest molten |
 | `mixing/purest_molten_supercooling` | `create:mixing` + cooling chamber, **no blaze heat**, blue ice | recover purest item from accident fluid |
 | `mixing/originium_coolant` | `create:mixing` | water + 培养液 + packed ice → originium coolant |
+| `mixing/originium_dust_recycling` | `create:mixing` + heated | 4 captured dust → 1 shard (recovery, not a 1:1 compact) |
 
 Dust production for frozen recipe ids is keyed in datapack JSON under
 `data/create_originium_industry/coi_dust_emission/` (recipe / item / item_tag +
@@ -215,6 +216,7 @@ Heat tiers (intentional):
 | `mixing/purest_molten_accident` | superheated | 250 |
 | `mixing/purest_originium_melting` | superheated | 200 |
 | `mixing/purest_molten_supercooling` | none (chamber, reject heat) | 80 |
+| `mixing/originium_dust_recycling` | heated | 80 (datapack only; no `dust_production.*` override) |
 
 **Intentional omissions**
 
@@ -258,7 +260,11 @@ infection sync only to the local player.
 Protection gear (`originium_respirator` head, `originium_filter_canister` chest)
 is tagged `originium_protection`. A full set is **2** pieces (`protection.protectionFullSetPieces`;
 older configs that still have `4` from the M0 skeleton should retune). Broken gear
-drops `originium_dust` back into the factory loop.
+drops `originium_dust` back into the factory loop. Filters and process sieves
+do the same. Recycle that item with `mixing/originium_dust_recycling` (heated
+mix, 4 dust → 1 shard). Emission is datapack `80` only — not a
+`dust_production.*` override — and stays below `FILTER_BYPRODUCT_DUST_PER_ITEM`
+(100) so one recycle cannot mint a dust item even at full capture.
 
 `originium_sealed_canister` is an alloy chest upgrade (same slot). It stays in
 `originium_protection` and is also tagged `originium_reinforced_protection`, which

@@ -99,6 +99,9 @@ purest originium (superheated mix) → purest molten originium (late reactor int
 
 redstone + sugar + lapis + water (heated mix) → originium catalyst (培养液)
 
+originium dust (filter / sieve / spent protection)
+  └─ heated mix 4 dust → originium shard (recovery; still emits dust)
+
 originium alloy + blue ice + copper casing → originium cooling chamber
 andesite casing + originium alloy → originium alloy casing
 originium dust sieve + originium alloy → originium alloy sieve

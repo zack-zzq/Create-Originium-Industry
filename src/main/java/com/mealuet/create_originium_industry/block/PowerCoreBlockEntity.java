@@ -266,10 +266,11 @@ public class PowerCoreBlockEntity extends GeneratingKineticBlockEntity {
             }
             consumeFuelTick();
             instability = StabilityMath.nextInstability(instability, stability);
-            leakUnstableDust(serverLevel);
             if (COIConfig.reactorMeltdownEnabled()
                     && instability >= COIConfig.reactorMeltdownThreshold()) {
                 triggerMeltdown(serverLevel);
+            } else {
+                leakUnstableDust(serverLevel);
             }
         }
 

@@ -2,16 +2,16 @@ modLoader="javafml"
 
 loaderVersion="${loader_version_range}"
 license="${mod_license}"
-issueTrackerURL="https://github.com/kressety/Create-Originium-Industry/issues"
+issueTrackerURL="https://github.com/zack-zzq/Create-Originium-Industry/issues"
 
 [[mods]]
     modId="${mod_id}"
     version="${mod_version}"
     displayName="${mod_name}"
     #updateJSONURL="https://change.me.example.invalid/updates.json"
-    displayURL="https://github.com/kressety/Create-Originium-Industry"
-    #logoFile="examplemod.png"
-    #credits=""
+    displayURL="https://github.com/zack-zzq/Create-Originium-Industry"
+    logoFile="logo.png"
+    credits="Depends on Create. Gameplay inspired by Arknights; original assets only."
     authors="${mod_authors}"
     description='''${mod_description}'''
 

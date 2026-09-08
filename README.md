@@ -141,13 +141,14 @@ Dust and pollution are being reworked. Treat `core/oridust` as unstable; **do no
 | **M1** | Dust loop MVP: data-driven emission, filters, dust meter, survival source | In progress (simulation refactor) |
 | **M2** | Purest / alloy expansion: filter + 培养液 + supercooling | Survival path in (`purest_originium`); alloy housing / sieve / sealed canister in |
 | **M3** | Reactor: heat, cooling, instability / meltdown | Alpha in (power core + chambers + S; meltdown = dust, not explosion) |
-| **M4** | Ponder, GameTests, optional compat (e.g. Create: Aeronautics) | Ponder scenes + advancement backbone + industrial SFX in |
+| **M4** | Ponder, GameTests, optional compat (e.g. Create: Aeronautics) | Ponder scenes + advancement backbone + industrial SFX + dust/reactor perf baseline in |
 
 M1 must be playable before M3. The reactor depends on dust APIs and the purest fuel chain. Ponder scenes cover dust, filters, supercooling, and the power core.
 
 ## Documentation for contributors
 
 - [Registry, lang keys, and save compatibility](docs/REGISTRY.md) — what must not be renamed
+- [Dust / reactor performance baseline](docs/PERF.md) — F3+L / Spark / GameTest timing, 100-machine load, 2 ms/tick budget
 - Issues: [github.com/zack-zzq/Create-Originium-Industry/issues](https://github.com/zack-zzq/Create-Originium-Industry/issues)
 
 ## Inspiration and copyright

@@ -461,3 +461,5 @@ High-dust volume follows `simplifyParticles` / `particleDensity`. `reduceFlicker
 - Item: `originium_debug_wand`
 - Reactor subcommands read a targeted power core (`reactor status`, `reactor stabilize`).
   Command names stay frozen.
+- Perf subcommands (`perf`, `perf run`, `perf seed`, `perf clear`) are additive.
+  They print `PerfProbe` timings and can seed a 10×10 dusty grid. See [PERF.md](PERF.md).

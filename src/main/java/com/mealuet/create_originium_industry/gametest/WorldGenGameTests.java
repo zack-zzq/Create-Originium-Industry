@@ -49,7 +49,7 @@ public final class WorldGenGameTests {
         helper.assertValueEqual(COIConfig.rawOriginiumVeinsPerChunk(), 4, "veinsPerChunk");
         helper.assertValueEqual(COIConfig.rawOriginiumMinY(), -64, "minY");
         helper.assertValueEqual(COIConfig.rawOriginiumMaxY(), 16, "maxY");
-        helper.assertValueEqual((double) COIConfig.rawOriginiumDiscardChance(), 0.7, "discardChance");
+        helper.assertValueEqual(COIConfig.RAW_ORIGINIUM_DISCARD_CHANCE.get(), 0.7, "discardChance");
         helper.assertTrue(COIConfig.rawOriginiumVeinsPerChunk() < 7, "scarcer than diamond small (7)");
         helper.succeed();
     }

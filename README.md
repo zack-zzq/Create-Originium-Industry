@@ -31,7 +31,7 @@ Two industrial routes:
 1. **Alloy route** — molten originium + iron → originium alloy ingot (safer structural material).
 2. **Purest route** — not in-game yet. Planned: filter / purify molten originium, then culture solution (培养液) + supercooling → purest originium (hotter fuel, nastier failure).
 
-## What's in this version (`0.0.7-dev`)
+## What's in this version (`0.0.8-dev`)
 
 ### Items
 

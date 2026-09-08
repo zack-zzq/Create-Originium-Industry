@@ -4,17 +4,27 @@ import com.google.gson.JsonParser;
 import com.mealuet.create_originium_industry.CreateOriginiumIndustry;
 import com.mealuet.create_originium_industry.client.ponder.COIPonderPlugin;
 import com.mealuet.create_originium_industry.ponder.COIPonderKeys;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.locale.Language;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtAccounter;
+import net.minecraft.nbt.NbtIo;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.contents.TranslatableContents;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.neoforged.neoforge.gametest.GameTestHolder;
 import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 
+import java.io.BufferedInputStream;
+import java.io.DataInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.zip.GZIPInputStream;
 
 /**
  * Coverage for issue #19: Ponder scenes for dust, filter, supercooling, and
@@ -78,6 +88,29 @@ public final class PonderGameTests {
                 int b2 = in.read();
                 helper.assertValueEqual(b1, 0x1f, name + " gzip 1");
                 helper.assertValueEqual(b2, 0x8b, name + " gzip 2");
+            }
+            // Same read path as PonderSceneRegistry.loadSchematic: GZIP + NbtIo.read.
+            // A gzip magic-only check missed truncated list-of-compound payloads (EOFException).
+            try (InputStream in = PonderGameTests.class.getResourceAsStream(path);
+                    DataInputStream stream = new DataInputStream(new BufferedInputStream(new GZIPInputStream(in)))) {
+                CompoundTag nbt = NbtIo.read(stream, NbtAccounter.create(0x20000000L));
+                helper.assertTrue(nbt.contains("size", Tag.TAG_LIST), name + " has size");
+                helper.assertTrue(nbt.contains("palette", Tag.TAG_LIST), name + " has palette");
+                helper.assertTrue(nbt.contains("blocks", Tag.TAG_LIST), name + " has blocks");
+                ListTag blocks = nbt.getList("blocks", Tag.TAG_COMPOUND);
+                helper.assertFalse(blocks.isEmpty(), name + " blocks not empty");
+                CompoundTag firstBlock = blocks.getCompound(0);
+                helper.assertTrue(firstBlock.contains("pos", Tag.TAG_LIST), name + " block.pos at top level");
+                helper.assertTrue(firstBlock.contains("state", Tag.TAG_INT), name + " block.state at top level");
+                ListTag palette = nbt.getList("palette", Tag.TAG_COMPOUND);
+                helper.assertFalse(palette.isEmpty(), name + " palette not empty");
+                helper.assertTrue(palette.getCompound(0).contains("Name", Tag.TAG_STRING), name + " palette.Name");
+
+                StructureTemplate template = new StructureTemplate();
+                template.load(BuiltInRegistries.BLOCK.asLookup(), nbt);
+                helper.assertTrue(template.getSize().getX() > 0, name + " template width");
+                helper.assertTrue(template.getSize().getY() > 0, name + " template height");
+                helper.assertTrue(template.getSize().getZ() > 0, name + " template depth");
             }
         }
         helper.succeed();

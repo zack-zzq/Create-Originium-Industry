@@ -428,6 +428,17 @@ Ponder scene ids (additive; do not rename once shipped):
 
 Tag id: `originium_industry`.
 
+Schematics are gzip vanilla structure NBTs at
+`assets/create_originium_industry/ponder/<id>.nbt`. Regenerate with
+`python3 scripts/gen_ponder_schematics.py`. Compound list elements must be
+anonymous (no per-element `0x0A 0x00 0x00` type+name prefix) or Ponder's
+`NbtIo.read` throws `EOFException` when holding W on a scene item.
+
+GameTests parse each schematic the same way `PonderSceneRegistry.loadSchematic`
+does. They cannot open client `PonderUI`; after a schematic change, hold W on a
+COI item in creative (e.g. dust meter or power core) and confirm the scene
+opens without a client crash.
+
 ### Advancements (additive)
 
 Datapack path is the advancement id (`create_originium_industry:<path>`).

@@ -168,5 +168,30 @@
   "advancements.create_originium_industry.dust_purified.title": "Clean Air, Sort Of",
   "advancements.create_originium_industry.dust_purified.description": "A spinning filter or process sieve captured dust into originium dust.",
   "advancements.create_originium_industry.start_power_core.title": "It Turns",
-  "advancements.create_originium_industry.start_power_core.description": "Start an originium power core. Housing, coolant, and a cooling chamber keep it alive."
+  "advancements.create_originium_industry.start_power_core.description": "Start an originium power core. Housing, coolant, and a cooling chamber keep it alive.",
+
+  "create_originium_industry.ponder.tag.originium_industry": "Originium Industry",
+  "create_originium_industry.ponder.tag.originium_industry.description": "Dust, filters, the purest line, and the power core.",
+
+  "create_originium_industry.ponder.dust_generation.header": "Dust generation and diffusion",
+  "create_originium_industry.ponder.dust_generation.text_1": "Milling, crushing, or mixing originium emits originium dust into the chunk.",
+  "create_originium_industry.ponder.dust_generation.text_2": "Dust diffuses into neighbouring chunks and decays slowly. A dust meter reads the concentration.",
+  "create_originium_industry.ponder.dust_generation.text_3": "Wear a respirator and filter canister. Accidents dump more dust — they never explode.",
+
+  "create_originium_industry.ponder.dust_filter.header": "Filters recover originium dust",
+  "create_originium_industry.ponder.dust_filter.text_1": "Insert a dust sieve into the kinetic filter. Rotation absorbs chunk dust and returns originium dust items.",
+  "create_originium_industry.ponder.dust_filter.text_2": "A process sieve on a Basin, mill, or mixer captures neighbouring emission instead of letting it pollute.",
+  "create_originium_industry.ponder.dust_filter.text_3": "The alloy sieve is a stronger upgrade. A fan nozzle redirects dust downwind. Neither voids dust.",
+
+  "create_originium_industry.ponder.purest_supercooling.header": "Supercooling the purest line",
+  "create_originium_industry.ponder.purest_supercooling.text_1": "A Basin sieve filters molten originium into filtered molten originium.",
+  "create_originium_industry.ponder.purest_supercooling.text_2": "Heat the filtered fluid with culture solution (培养液). The registry id stays originium_catalyst.",
+  "create_originium_industry.ponder.purest_supercooling.text_3": "Attach a cooling chamber and mix packed ice with no blaze heat to supercool into purest originium.",
+  "create_originium_industry.ponder.purest_supercooling.text_4": "Superheating is the accident path: purest molten. Meltdown dumps dust — it never explodes.",
+
+  "create_originium_industry.ponder.power_core.header": "Power core stability",
+  "create_originium_industry.ponder.power_core.text_1": "Place reactor housing beside the power core. Right-click purest originium to fuel it. There is no GUI.",
+  "create_originium_industry.ponder.power_core.text_2": "Stability is S = C × M − H. Coolant raises C; cooling chambers raise M; fuel raises H.",
+  "create_originium_industry.ponder.power_core.text_3": "When S is at least zero, fluids convert toward coolant. When S is negative, they convert to hot water and dust leaks.",
+  "create_originium_industry.ponder.power_core.text_4": "Meltdown dumps a dust burst and consumes remaining fuel. It does not explode or spawn TNT."
 }

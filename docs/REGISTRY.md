@@ -396,6 +396,9 @@ Pattern: `<category>.create_originium_industry.<path>`
 | `hud` | `hud.create_originium_industry.sickness` |
 | `infection_stage` | `infection_stage.create_originium_industry.weakness` |
 | `advancements` | `advancements.create_originium_industry.obtain_raw_originium.title` |
+| `ponder` | `create_originium_industry.ponder.<sceneId>.header` / `.text_N` and `.ponder.tag.<id>` |
+
+Ponder copy is registered through `Component.translatable`. Keep `en_us` and `zh_cn` in lockstep; do not rename scene ids once shipped.
 
 `en_us` and `zh_cn` must stay in lockstep.
 
@@ -411,7 +414,18 @@ New ids are fine. Do not reuse a frozen id for a different object.
 
 Expected (not frozen until registered):
 
-- Ponder / JEI lang keys
+- JEI lang keys
+
+Ponder scene ids (additive; do not rename once shipped):
+
+| Scene id | Schematic | Attached to |
+|---|---|---|
+| `dust_generation` | `ponder/dust_generation.nbt` | dust meter, raw originium, originium dust, millstone |
+| `dust_filter` | `ponder/dust_filter.nbt` | kinetic filter, sieves, nozzle |
+| `purest_supercooling` | `ponder/purest_supercooling.nbt` | cooling chamber, process sieve, purest originium |
+| `power_core` | `ponder/power_core.nbt` | power core, super chamber, housing, cooling chamber |
+
+Tag id: `originium_industry`.
 
 ### Advancements (additive)
 

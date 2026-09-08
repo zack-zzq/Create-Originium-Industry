@@ -18,7 +18,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.neoforged.neoforge.gametest.GameTestHolder;
 import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
@@ -134,12 +133,13 @@ public final class OriDustGameTests {
 
     /**
      * Legacy attachment merge: add+clamp, attachment zeroed, second pass does
-     * not double-count.
+     * not double-count. Merge/NBT assertions use a fresh SavedData instance so
+     * a reused GameTestServer world cannot poison {@code MigratedChunks}.
      */
     @GameTest(template = "empty", batch = "oridust")
     public static void lazyMigrationMergesOnceAndZerosAttachment(GameTestHelper helper) {
         ServerLevel level = helper.getLevel();
-        OriDustSavedData saved = OriDustSavedData.get(level);
+        OriDustSavedData saved = new OriDustSavedData();
 
         ChunkPos logical = new ChunkPos(31001, 31002);
         saved.set(logical, 200);
@@ -163,11 +163,9 @@ public final class OriDustGameTests {
 
         ServerLevel overworld = level.getServer().overworld();
         helper.assertTrue(overworld != null, "overworld present");
-        // Nearby unique chunk: ChunkEvent.Load with zero attachment does not
-        // mark migrated, so this exercises the live migrateLoadedChunk path.
-        ChunkPos unique = new ChunkPos(42, -57);
-        LevelChunk chunk = overworld.getChunk(unique.x, unique.z);
         OriDustSavedData overworldSaved = OriDustSavedData.get(overworld);
+        ChunkPos unique = unusedChunk(overworldSaved);
+        LevelChunk chunk = overworld.getChunk(unique.x, unique.z);
         overworldSaved.set(unique, 200);
 
         OriDustData legacy = chunk.getData(COIAttachments.CHUNK_DUST_TYPE);
@@ -202,5 +200,19 @@ public final class OriDustGameTests {
                 "absolute test-structure pos identity"
         );
         helper.succeed();
+    }
+
+    /**
+     * Picks a logical chunk that is not already in the Overworld store, so a
+     * reused GameTest world cannot skip {@link DustCacheManager#migrateLoadedChunk}.
+     */
+    private static ChunkPos unusedChunk(OriDustSavedData saved) {
+        for (int i = 0; i < 2048; i++) {
+            ChunkPos pos = new ChunkPos(32 + i, 32);
+            if (!saved.isMigrated(pos) && saved.get(pos) == 0) {
+                return pos;
+            }
+        }
+        throw new IllegalStateException("Could not find an unmigrated ChunkPos for GameTest");
     }
 }

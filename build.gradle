@@ -23,6 +23,22 @@ repositories {
     maven { url = "https://maven.createmod.net" } // Create, Ponder, Flywheel
     maven { url = "https://mvn.devos.one/snapshots" } // Registrate
     maven { url = "https://raw.githubusercontent.com/Fuzss/modresources/main/maven/" }
+    // Prefer NeoForge's copy of Parchment; parchmentmc.org currently times out on GHA.
+    exclusiveContent {
+        forRepositories(
+                maven {
+                    name = 'NeoForged'
+                    url = 'https://maven.neoforged.net/releases'
+                },
+                maven {
+                    name = 'ParchmentMC'
+                    url = 'https://maven.parchmentmc.org'
+                }
+        )
+        filter {
+            includeGroup('org.parchmentmc.data')
+        }
+    }
     exclusiveContent { // Optional Sable Companion API (compileOnly — not required at runtime)
         forRepository {
             maven {

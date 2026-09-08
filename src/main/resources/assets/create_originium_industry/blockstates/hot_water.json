@@ -1,0 +1,52 @@
+{
+  "variants": {
+    "level=0": {
+      "model": "create_originium_industry:block/hot_water"
+    },
+    "level=1": {
+      "model": "create_originium_industry:block/hot_water"
+    },
+    "level=2": {
+      "model": "create_originium_industry:block/hot_water"
+    },
+    "level=3": {
+      "model": "create_originium_industry:block/hot_water"
+    },
+    "level=4": {
+      "model": "create_originium_industry:block/hot_water"
+    },
+    "level=5": {
+      "model": "create_originium_industry:block/hot_water"
+    },
+    "level=6": {
+      "model": "create_originium_industry:block/hot_water"
+    },
+    "level=7": {
+      "model": "create_originium_industry:block/hot_water"
+    },
+    "level=8": {
+      "model": "create_originium_industry:block/hot_water"
+    },
+    "level=9": {
+      "model": "create_originium_industry:block/hot_water"
+    },
+    "level=10": {
+      "model": "create_originium_industry:block/hot_water"
+    },
+    "level=11": {
+      "model": "create_originium_industry:block/hot_water"
+    },
+    "level=12": {
+      "model": "create_originium_industry:block/hot_water"
+    },
+    "level=13": {
+      "model": "create_originium_industry:block/hot_water"
+    },
+    "level=14": {
+      "model": "create_originium_industry:block/hot_water"
+    },
+    "level=15": {
+      "model": "create_originium_industry:block/hot_water"
+    }
+  }
+}

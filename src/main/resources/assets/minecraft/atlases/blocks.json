@@ -10,6 +10,22 @@
     },
     {
       "type": "single",
+      "resource": "create_originium_industry:fluid/filtered_molten_originium_flow"
+    },
+    {
+      "type": "single",
+      "resource": "create_originium_industry:fluid/filtered_molten_originium_still"
+    },
+    {
+      "type": "single",
+      "resource": "create_originium_industry:fluid/cultured_originium_flow"
+    },
+    {
+      "type": "single",
+      "resource": "create_originium_industry:fluid/cultured_originium_still"
+    },
+    {
+      "type": "single",
       "resource": "create_originium_industry:fluid/purest_molten_originium_flow"
     },
     {
@@ -23,6 +39,22 @@
     {
       "type": "single",
       "resource": "create_originium_industry:fluid/originium_catalyst_still"
+    },
+    {
+      "type": "single",
+      "resource": "create_originium_industry:fluid/originium_coolant_flow"
+    },
+    {
+      "type": "single",
+      "resource": "create_originium_industry:fluid/originium_coolant_still"
+    },
+    {
+      "type": "single",
+      "resource": "create_originium_industry:fluid/hot_water_flow"
+    },
+    {
+      "type": "single",
+      "resource": "create_originium_industry:fluid/hot_water_still"
     }
   ]
 }

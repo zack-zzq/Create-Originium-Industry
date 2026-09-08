@@ -64,6 +64,10 @@ runs {
         // Please read: https://stackoverflow.com/questions/2031163/when-to-use-the-different-log-levels
         systemProperty 'forge.logging.console.level', 'debug'
 
+        // NeoForge 1.21.1 GameTestHooks reads neoforge.* (the MDK still sets forge.*)
+        systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+        systemProperty 'neoforge.enableGameTest', 'true'
+
         modSource project.sourceSets.main
     }
 
@@ -78,10 +82,10 @@ runs {
     }
 
     // This run config launches GameTestServer and runs all registered gametests, then exits.
-    // By default, the server will crash when no gametests are provided.
-    // The gametest system is also enabled by default for other run configs under the /test command.
     gameTestServer {
         systemProperty 'forge.enabledGameTestNamespaces', project.mod_id
+        systemProperty 'neoforge.gameTestServer', 'true'
+        argument '--nogui'
     }
 
     data {
@@ -200,6 +204,51 @@ publishing {
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
+}
+
+tasks.named('jar').configure {
+    // GameTests stay on the main compile classpath for runGameTestServer, but
+    // are not shipped in the published artifact.
+    exclude 'com/mealuet/create_originium_industry/gametest/**'
+}
+
+tasks.register('assertNoSableInJar') {
+    group = 'verification'
+    description = 'Fails if the published jar packages Sable or Sable Companion classes.'
+    dependsOn tasks.named('jar')
+    doLast {
+        def jarFile = tasks.named('jar').get().archiveFile.get().asFile
+        def zf = new java.util.zip.ZipFile(jarFile)
+        try {
+            def hits = []
+            zf.entries().each { entry ->
+                def n = entry.name.replace('\\', '/')
+                if (n.startsWith('dev/ryanhcode/sable/') || n.contains('sable-companion')) {
+                    hits << n
+                }
+            }
+            if (!hits.isEmpty()) {
+                throw new GradleException("Published jar packages Sable classes: ${hits}")
+            }
+            def hasWorldSpace = zf.getEntry('com/mealuet/create_originium_industry/compat/WorldSpace.class') != null
+            def hasBridge = zf.getEntry('com/mealuet/create_originium_industry/compat/SableWorldSpace.class') != null
+            def leakedTests = zf.getEntry('com/mealuet/create_originium_industry/gametest/OriDustGameTests.class') != null
+            if (!hasWorldSpace || !hasBridge) {
+                throw new GradleException("Published jar is missing WorldSpace bridge classes")
+            }
+            if (leakedTests) {
+                throw new GradleException("Published jar should not contain GameTest classes")
+            }
+            logger.lifecycle("Verified ${jarFile.name} does not package Sable/Companion (WorldSpace bridge present, GameTests excluded).")
+        } finally {
+            zf.close()
+        }
+    }
+}
+
+tasks.named('check').configure {
+    dependsOn 'assertNoSableInJar'
+    dependsOn 'runGameTestServer'
 }
 
 // IDEA no longer automatically downloads sources/javadoc jars for dependencies, so we need to explicitly enable the behavior.

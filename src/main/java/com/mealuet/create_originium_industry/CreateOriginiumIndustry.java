@@ -57,6 +57,7 @@ public class CreateOriginiumIndustry
         COIFluids.register();
         COIEffects.register(modEventBus);
         COIAttachments.register(modEventBus);
+        COICriteria.register(modEventBus);
         COIWorldGen.register(modEventBus);
 
         modEventBus.addListener(COICapabilities::register);

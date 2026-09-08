@@ -1,6 +1,7 @@
 package com.mealuet.create_originium_industry.core.oridust;
 
 import com.mealuet.create_originium_industry.CreateOriginiumIndustry;
+import com.mealuet.create_originium_industry.advancement.COIAdvancements;
 import com.mealuet.create_originium_industry.compat.WorldSpace;
 import com.mealuet.create_originium_industry.config.COIConfig;
 import com.mealuet.create_originium_industry.index.COIAttachments;
@@ -55,6 +56,7 @@ public class PlayerExposureHandler {
             int gain = positiveGain((dustLevel - threshold) / (double) perLevel * gainMultiplier);
             if (gain > 0) {
                 data.addExposure(gain);
+                COIAdvancements.dustExposure(serverPlayer);
             }
             ProtectionHooks.wearProtectionInDust(serverPlayer);
         } else {

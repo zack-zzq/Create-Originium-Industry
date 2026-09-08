@@ -1,0 +1,58 @@
+{
+  "parent": "create_originium_industry:root",
+  "display": {
+    "icon": {
+      "id": "create_originium_industry:raw_originium"
+    },
+    "title": {
+      "translate": "advancements.create_originium_industry.obtain_raw_originium.title"
+    },
+    "description": {
+      "translate": "advancements.create_originium_industry.obtain_raw_originium.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "has_raw_originium": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "create_originium_industry:raw_originium"
+          }
+        ]
+      }
+    },
+    "has_stone_ore": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "create_originium_industry:raw_originium_ore"
+          }
+        ]
+      }
+    },
+    "has_deepslate_ore": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "create_originium_industry:deepslate_raw_originium_ore"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_raw_originium",
+      "has_stone_ore",
+      "has_deepslate_ore"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

@@ -1,0 +1,24 @@
+{
+  "parent": "create_originium_industry:dust_purified",
+  "display": {
+    "icon": {
+      "id": "create_originium_industry:originium_power_core"
+    },
+    "title": {
+      "translate": "advancements.create_originium_industry.start_power_core.title"
+    },
+    "description": {
+      "translate": "advancements.create_originium_industry.start_power_core.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "started": {
+      "trigger": "create_originium_industry:power_core_started"
+    }
+  },
+  "sends_telemetry_event": false
+}

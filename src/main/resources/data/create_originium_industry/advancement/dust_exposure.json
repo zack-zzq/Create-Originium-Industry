@@ -1,0 +1,24 @@
+{
+  "parent": "create_originium_industry:obtain_raw_originium",
+  "display": {
+    "icon": {
+      "id": "create_originium_industry:originium_dust"
+    },
+    "title": {
+      "translate": "advancements.create_originium_industry.dust_exposure.title"
+    },
+    "description": {
+      "translate": "advancements.create_originium_industry.dust_exposure.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "exposed": {
+      "trigger": "create_originium_industry:dust_exposure"
+    }
+  },
+  "sends_telemetry_event": false
+}

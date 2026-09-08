@@ -45,12 +45,6 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class DustCacheManager {
 
-    /**
-     * Recently written keys stay active for 60 seconds so a mill/filter with
-     * no nearby player still decays and can spread one ring of neighbors.
-     */
-    private static final int RECENT_WRITE_TTL_TICKS = 20 * 60;
-
     /** chunkKey → gameTime of last external write (not diffusion/decay). */
     private static final ConcurrentHashMap<Long, Long> recentlyWritten = new ConcurrentHashMap<>();
 
@@ -114,7 +108,7 @@ public class DustCacheManager {
 
     /**
      * Records an external mutation (machine, filter, death, debug, migration)
-     * so the key stays in the active set for {@link #RECENT_WRITE_TTL_TICKS}.
+     * so the key stays in the active set for {@link COIConfig#RECENT_WRITE_TTL_TICKS}.
      * Diffusion and decay must not call this, or pollution would walk across
      * the entire map one chunk per cycle.
      */
@@ -137,12 +131,12 @@ public class DustCacheManager {
     private static boolean isRecentlyWritten(ServerLevel level, ChunkPos pos) {
         Long writtenAt = recentlyWritten.get(pos.toLong());
         if (writtenAt == null) return false;
-        return level.getGameTime() - writtenAt <= RECENT_WRITE_TTL_TICKS;
+        return level.getGameTime() - writtenAt <= COIConfig.recentWriteTtlTicks();
     }
 
     static Set<ChunkPos> collectActiveChunks(ServerLevel level) {
         Set<ChunkPos> active = new HashSet<>();
-        int radius = COIConfig.INIT_CHUNK_RADIUS.get();
+        int radius = COIConfig.effectiveInitChunkRadius(COIConfig.isDedicated(level.getServer()));
         long now = level.getGameTime();
 
         for (ServerPlayer player : level.players()) {
@@ -154,10 +148,15 @@ public class DustCacheManager {
             }
         }
 
-        recentlyWritten.entrySet().removeIf(entry -> now - entry.getValue() > RECENT_WRITE_TTL_TICKS);
+        int ttl = COIConfig.recentWriteTtlTicks();
+        recentlyWritten.entrySet().removeIf(entry -> now - entry.getValue() > ttl);
+        boolean isolate = COIConfig.isolateMachineSpread(COIConfig.isDedicated(level.getServer()));
         recentlyWritten.forEach((key, writtenAt) -> {
             ChunkPos pos = new ChunkPos(key);
             active.add(pos);
+            if (isolate) {
+                return;
+            }
             for (Direction dir : Direction.Plane.HORIZONTAL) {
                 active.add(new ChunkPos(pos.x + dir.getStepX(), pos.z + dir.getStepZ()));
             }
@@ -212,7 +211,7 @@ public class DustCacheManager {
         recentlyWritten.clear();
         lastActive = ConcurrentHashMap.newKeySet();
         CreateOriginiumIndustry.LOGGER.info("Initializing originium dust SavedData (active-set radius {}).",
-                COIConfig.INIT_CHUNK_RADIUS.get());
+                COIConfig.effectiveInitChunkRadius(COIConfig.isDedicated(event.getServer())));
 
         ServerLevel overworld = event.getServer().getLevel(Level.OVERWORLD);
         if (overworld == null) return;
@@ -220,7 +219,7 @@ public class DustCacheManager {
         // One-shot merge for chunks that are already loaded (spawn / player
         // radius). Remaining chunks migrate lazily on ChunkEvent.Load.
         // v1 does not scan unloaded region files.
-        int radius = COIConfig.INIT_CHUNK_RADIUS.get();
+        int radius = COIConfig.effectiveInitChunkRadius(COIConfig.isDedicated(event.getServer()));
         for (ServerPlayer player : overworld.players()) {
             ChunkPos center = WorldSpace.toDustChunk(player);
             for (int x = -radius; x <= radius; x++) {

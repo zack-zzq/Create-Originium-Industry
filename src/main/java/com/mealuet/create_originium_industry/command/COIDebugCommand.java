@@ -236,9 +236,19 @@ public class COIDebugCommand {
     // ==================== Reactor Commands ====================
 
     private static int reactorStatus(CommandContext<CommandSourceStack> ctx) {
-        // TODO: P6 — read reactor status from targeted block entity
         ctx.getSource().sendSuccess(() -> Component.translatable(
                 "commands.coi_debug.reactor.status"
+        ), false);
+        ctx.getSource().sendSuccess(() -> Component.translatable(
+                "commands.coi_debug.reactor.status.values",
+                COIConfig.REACTOR_CORE_HEAT.get(),
+                String.format("%.2f", COIConfig.REACTOR_MOLTEN_HEAT_CAPACITY.get()),
+                String.format("%.2f", COIConfig.REACTOR_PUREST_HEAT_CAPACITY.get()),
+                String.format("%.2f", COIConfig.REACTOR_COOLING_MULTIPLIER.get()),
+                String.format("%.3f", COIConfig.REACTOR_INSTABILITY_GAIN.get()),
+                String.format("%.1f", COIConfig.REACTOR_MELTDOWN_THRESHOLD.get()),
+                String.valueOf(COIConfig.ENABLE_REACTOR_MELTDOWN.get()),
+                COIConfig.REACTOR_MELTDOWN_DUST_BURST.get()
         ), false);
         return 1;
     }

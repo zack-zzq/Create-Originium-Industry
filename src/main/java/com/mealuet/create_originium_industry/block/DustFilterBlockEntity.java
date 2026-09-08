@@ -1,7 +1,9 @@
 package com.mealuet.create_originium_industry.block;
 
 import com.mealuet.create_originium_industry.compat.WorldSpace;
+import com.mealuet.create_originium_industry.config.COIClientOptions;
 import com.mealuet.create_originium_industry.config.COIConfig;
+import com.mealuet.create_originium_industry.config.UiDetailLevel;
 import com.mealuet.create_originium_industry.core.oridust.DustReason;
 import com.mealuet.create_originium_industry.core.oridust.OriginiumDustManager;
 import com.mealuet.create_originium_industry.index.COIItems;
@@ -53,10 +55,7 @@ public class DustFilterBlockEntity extends KineticBlockEntity {
         int interval = COIConfig.FILTER_ABSORPTION_INTERVAL.get();
         if (level.getGameTime() % interval != 0) return;
 
-        // Speed multiplier: speed/64, clamped to [1, 4]
-        double speedMultiplier = Math.max(1.0, Math.min(4.0, speed / 64.0));
-        int baseRate = COIConfig.FILTER_ABSORPTION_RATE.get();
-        int absorption = Math.max(1, (int) (baseRate * speedMultiplier));
+        int absorption = Math.max(1, (int) (COIConfig.FILTER_ABSORPTION_RATE.get() * speedMultiplier(speed)));
 
         ChunkPos chunkPos = WorldSpace.toDustChunk(serverLevel, worldPosition);
         int currentDust = OriginiumDustManager.getDust(serverLevel, chunkPos);
@@ -119,7 +118,7 @@ public class DustFilterBlockEntity extends KineticBlockEntity {
 
         float speed = Math.abs(getSpeed());
         if (speed > 0) {
-            double speedMultiplier = Math.max(1.0, Math.min(4.0, speed / 64.0));
+            double speedMultiplier = speedMultiplier(speed);
             int effectiveRate = Math.max(1, (int) (COIConfig.FILTER_ABSORPTION_RATE.get() * speedMultiplier));
             player.sendSystemMessage(Component.translatable(
                     "block.create_originium_industry.originium_dust_filter.speed",
@@ -137,6 +136,10 @@ public class DustFilterBlockEntity extends KineticBlockEntity {
     public boolean addToGoggleTooltip(List<Component> tooltip, boolean isPlayerSneaking) {
         super.addToGoggleTooltip(tooltip, isPlayerSneaking);
 
+        if (COIClientOptions.uiDetailLevel() == UiDetailLevel.MINIMAL) {
+            return true;
+        }
+
         if (hasSieve) {
             int maxDurability = COIConfig.FILTER_SIEVE_DURABILITY.get();
             int percent = maxDurability > 0 ? (sieveDurability * 100 / maxDurability) : 0;
@@ -144,6 +147,12 @@ public class DustFilterBlockEntity extends KineticBlockEntity {
                     "block.create_originium_industry.originium_dust_filter.goggle.sieve",
                     percent
             )));
+            if (COIClientOptions.verboseUi()) {
+                tooltip.add(Component.literal("    ").append(Component.translatable(
+                        "block.create_originium_industry.originium_dust_filter.goggle.sieve_detail",
+                        sieveDurability, maxDurability
+                )));
+            }
         } else {
             tooltip.add(Component.literal("    ").append(Component.translatable(
                     "block.create_originium_industry.originium_dust_filter.goggle.no_sieve"
@@ -152,7 +161,7 @@ public class DustFilterBlockEntity extends KineticBlockEntity {
 
         float speed = Math.abs(getSpeed());
         if (speed > 0) {
-            double speedMultiplier = Math.max(1.0, Math.min(4.0, speed / 64.0));
+            double speedMultiplier = speedMultiplier(speed);
             int effectiveRate = Math.max(1, (int) (COIConfig.FILTER_ABSORPTION_RATE.get() * speedMultiplier));
             tooltip.add(Component.literal("    ").append(Component.translatable(
                     "block.create_originium_industry.originium_dust_filter.goggle.rate",
@@ -161,6 +170,16 @@ public class DustFilterBlockEntity extends KineticBlockEntity {
         }
 
         return true;
+    }
+
+    /**
+     * Absorption speed multiplier from kinetic RPM. Floor 1x so any rotation
+     * meets the configured base rate; cap at {@link COIConfig#FILTER_MAX_SPEED_MULTIPLIER}.
+     */
+    public static double speedMultiplier(float speed) {
+        double reference = Math.max(1.0, COIConfig.FILTER_SPEED_REFERENCE.get());
+        double max = COIConfig.FILTER_MAX_SPEED_MULTIPLIER.get();
+        return Math.max(1.0, Math.min(max, Math.abs(speed) / reference));
     }
 
     // ==================== Serialization ====================

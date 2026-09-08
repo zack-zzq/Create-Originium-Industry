@@ -17,7 +17,7 @@ import net.neoforged.neoforge.event.tick.PlayerTickEvent;
  * <b>Exposure</b> (暴露值):
  * <ul>
  *   <li>Increases when player is in a chunk with dust above threshold</li>
- *   <li>Gain rate: {@code (dustLevel - threshold) / dustPerLevel * gainMultiplier}</li>
+ *   <li>Gain rate: {@code (dustLevel - threshold) / dustPerLevel * gainMultiplier * protection}</li>
  *   <li>Decays naturally when in a safe area (dust below threshold)</li>
  *   <li>Drives {@code ori_dust_sickness} effect amplifier</li>
  * </ul>
@@ -46,13 +46,14 @@ public class PlayerExposureHandler {
 
         // --- Update Exposure ---
         if (dustLevel > threshold) {
-            // In a dusty area: gain exposure
             int perLevel = COIConfig.DUST_PER_EFFECT_LEVEL.get();
-            double gainMultiplier = COIConfig.EXPOSURE_GAIN_MULTIPLIER.get();
-            int gain = Math.max(1, (int) ((dustLevel - threshold) / (double) perLevel * gainMultiplier));
-            data.addExposure(gain);
+            double gainMultiplier = COIConfig.EXPOSURE_GAIN_MULTIPLIER.get()
+                    * ProtectionHooks.incomingExposureFactor(serverPlayer);
+            int gain = positiveGain((dustLevel - threshold) / (double) perLevel * gainMultiplier);
+            if (gain > 0) {
+                data.addExposure(gain);
+            }
         } else {
-            // In a clean area: decay exposure
             int decayRate = COIConfig.EXPOSURE_DECAY_RATE.get();
             if (decayRate > 0 && data.getExposure() > 0) {
                 data.addExposure(-decayRate);
@@ -62,27 +63,29 @@ public class PlayerExposureHandler {
         // --- Update Infection ---
         int infectionThreshold = COIConfig.INFECTION_THRESHOLD.get();
         if (data.getExposure() > infectionThreshold) {
-            // Accumulate infection when exposure is high
-            double infectionMultiplier = COIConfig.INFECTION_GAIN_MULTIPLIER.get();
-            int infectionGain = Math.max(1, (int) (infectionMultiplier));
-            data.addInfection(infectionGain);
+            double infectionMultiplier = COIConfig.INFECTION_GAIN_MULTIPLIER.get()
+                    * ProtectionHooks.incomingInfectionFactor(serverPlayer);
+            int infectionGain = positiveGain(infectionMultiplier);
+            if (infectionGain > 0) {
+                data.addInfection(infectionGain);
+            }
         }
 
         // --- Apply Effects ---
         int effectiveExposure = data.getExposure();
 
-        // Infection contributes to effective exposure even in clean areas
-        // (at 50% rate — infection causes lingering symptoms)
         if (data.getInfection() > 0) {
-            effectiveExposure = Math.max(effectiveExposure, data.getInfection() / 2);
+            int fromInfection = (int) (data.getInfection() * COIConfig.INFECTION_SYMPTOM_RATIO.get());
+            effectiveExposure = Math.max(effectiveExposure, fromInfection);
         }
 
-        if (effectiveExposure > 0) {
+        int applyThreshold = COIConfig.EFFECT_APPLY_THRESHOLD.get();
+        if (effectiveExposure >= applyThreshold && effectiveExposure > 0) {
             int maxAmp = COIConfig.MAX_EFFECT_AMPLIFIER.get();
-            // Amplifier based on effective exposure: every 200 exposure = +1 amplifier
-            int amplifier = Math.min(maxAmp, effectiveExposure / 200);
+            int perAmp = Math.max(1, COIConfig.EXPOSURE_PER_AMPLIFIER.get());
+            int amplifier = Math.min(maxAmp, effectiveExposure / perAmp);
 
-            if (amplifier >= 0 && effectiveExposure >= 100) {
+            if (amplifier >= 0) {
                 serverPlayer.addEffect(new MobEffectInstance(
                         COIEffects.ORI_DUST_SICKNESS_EFFECT,
                         checkInterval + 5,
@@ -92,12 +95,22 @@ public class PlayerExposureHandler {
             }
         }
 
-        // --- Debug Logging ---
         if (COIConfig.ENABLE_DEBUG_LOGGING.get() && serverPlayer.tickCount % (checkInterval * 10) == 0) {
             CreateOriginiumIndustry.LOGGER.debug(
                     "[OriDust] Player {} — exposure: {}, infection: {}, chunk dust: {}",
                     serverPlayer.getName().getString(), data.getExposure(), data.getInfection(), dustLevel
             );
         }
+    }
+
+    /**
+     * Converts a possibly-fractional gain into an int. Zero multiplier stays
+     * zero; any positive remainder still applies at least 1.
+     */
+    public static int positiveGain(double raw) {
+        if (raw <= 0.0) {
+            return 0;
+        }
+        return Math.max(1, (int) raw);
     }
 }

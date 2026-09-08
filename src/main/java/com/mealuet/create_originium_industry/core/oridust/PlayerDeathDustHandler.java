@@ -24,17 +24,8 @@ public class PlayerDeathDustHandler {
         if (!COIConfig.ENABLE_DEATH_DUST_BURST.get()) return;
 
         PlayerExposureData data = COIAttachments.getPlayerExposure(serverPlayer);
-        int exposure = data.getExposure();
-        int infection = data.getInfection();
-
-        // Only burst if player had significant exposure or infection
-        if (exposure < 100 && infection < 100) return;
-
-        int burstAmount = COIConfig.DEATH_DUST_BURST_AMOUNT.get();
-
-        // Scale burst by exposure + infection ratio (more contaminated = bigger burst)
-        double scale = Math.min(2.0, (exposure + infection) / 1000.0);
-        int scaledBurst = Math.max(1, (int) (burstAmount * scale));
+        int scaledBurst = computeBurstAmount(data.getExposure(), data.getInfection());
+        if (scaledBurst <= 0) return;
 
         ChunkPos chunkPos = WorldSpace.toDustChunk(serverPlayer);
         OriginiumDustManager.addDust(serverLevel, chunkPos, scaledBurst, DustReason.DEATH_BURST);
@@ -42,9 +33,30 @@ public class PlayerDeathDustHandler {
         if (COIConfig.ENABLE_DEBUG_LOGGING.get()) {
             CreateOriginiumIndustry.LOGGER.info(
                     "[OriDust] Player {} died with exposure={}, infection={}, burst {} dust at chunk [{}, {}]",
-                    serverPlayer.getName().getString(), exposure, infection,
+                    serverPlayer.getName().getString(), data.getExposure(), data.getInfection(),
                     scaledBurst, chunkPos.x, chunkPos.z
             );
         }
+    }
+
+    /**
+     * Dust released on death, or 0 if contamination is below the configured
+     * threshold / the burst amount is 0.
+     */
+    public static int computeBurstAmount(int exposure, int infection) {
+        if (!COIConfig.ENABLE_DEATH_DUST_BURST.get()) {
+            return 0;
+        }
+        int min = COIConfig.DEATH_BURST_MIN_CONTAMINATION.get();
+        if (exposure < min && infection < min) {
+            return 0;
+        }
+        int burstAmount = COIConfig.DEATH_DUST_BURST_AMOUNT.get();
+        if (burstAmount <= 0) {
+            return 0;
+        }
+        double divisor = Math.max(1.0, COIConfig.DEATH_BURST_SCALE_DIVISOR.get());
+        double scale = Math.min(COIConfig.DEATH_BURST_MAX_SCALE.get(), (exposure + infection) / divisor);
+        return Math.max(1, (int) (burstAmount * scale));
     }
 }

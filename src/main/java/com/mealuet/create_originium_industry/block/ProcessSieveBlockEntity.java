@@ -3,10 +3,12 @@ package com.mealuet.create_originium_industry.block;
 import com.mealuet.create_originium_industry.config.COIClientOptions;
 import com.mealuet.create_originium_industry.config.COIConfig;
 import com.mealuet.create_originium_industry.config.UiDetailLevel;
+import com.mealuet.create_originium_industry.core.audio.IndustrialSoundPolicy;
 import com.mealuet.create_originium_industry.core.oridust.ByproductBuffer;
 import com.mealuet.create_originium_industry.core.oridust.DustByproduct;
 import com.mealuet.create_originium_industry.core.oridust.IDustPurifier;
 import com.mealuet.create_originium_industry.core.oridust.SieveKind;
+import com.mealuet.create_originium_industry.index.COISounds;
 import com.simibubi.create.api.equipment.goggles.IHaveGoggleInformation;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
@@ -32,6 +34,10 @@ public class ProcessSieveBlockEntity extends SmartBlockEntity implements IDustPu
 
     private int durability;
     private final ByproductBuffer byproduct = new ByproductBuffer();
+    /**
+     * Capture one-shot throttle. Not serialized.
+     */
+    private long lastFilterSoundTick = Long.MIN_VALUE / 4;
 
     public ProcessSieveBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
@@ -64,6 +70,10 @@ public class ProcessSieveBlockEntity extends SmartBlockEntity implements IDustPu
         durability--;
         int items = byproduct.add(captured, COIConfig.FILTER_BYPRODUCT_DUST_PER_ITEM.get());
         DustByproduct.dropItems(level, worldPosition, items);
+        if (level != null && IndustrialSoundPolicy.shouldPlayCaptureOneShot(level.getGameTime(), lastFilterSoundTick, 20)) {
+            lastFilterSoundTick = level.getGameTime();
+            COISounds.playFilterWork(level, worldPosition);
+        }
         setChanged();
         if (durability <= 0 && level instanceof ServerLevel serverLevel) {
             serverLevel.destroyBlock(worldPosition, false);

@@ -139,7 +139,7 @@ Do not rename these sections once a release has shipped. New sections are fine.
 
 Client spec is `COIConfig.CLIENT_SPEC` (`ModConfig.Type.CLIENT`). Top-level key:
 
-- `client` — accessibility: `reduceFlicker`, `simplifyParticles`, `particleDensity`, `highContrastIndicators`, `uiDetailLevel`, `debugOverlayDetail`, `showSicknessHud`
+- `client` — accessibility: `reduceFlicker`, `simplifyParticles`, `particleDensity`, `highContrastIndicators`, `uiDetailLevel`, `debugOverlayDetail`, `showSicknessHud`; additive SFX: `enableIndustrialSounds`, `soundDensity`
 
 Read client values through `COIClientOptions` so a dedicated server (where the client spec is not loaded) never calls `.get()` on an unloaded spec.
 
@@ -397,6 +397,7 @@ Pattern: `<category>.create_originium_industry.<path>`
 | `infection_stage` | `infection_stage.create_originium_industry.weakness` |
 | `advancements` | `advancements.create_originium_industry.obtain_raw_originium.title` |
 | `ponder` | `create_originium_industry.ponder.<sceneId>.header` / `.text_N` and `.ponder.tag.<id>` |
+| `subtitles` | `subtitles.create_originium_industry.filter_work` |
 
 Ponder copy is registered through `Component.translatable`. Keep `en_us` and `zh_cn` in lockstep; do not rename scene ids once shipped.
 
@@ -440,6 +441,19 @@ Datapack path is the advancement id (`create_originium_industry:<path>`).
 | `start_power_core` | `create_originium_industry:power_core_started` | Power core begins generating |
 
 Criterion trigger ids (`dust_exposure`, `dust_purified`, `power_core_started`) are additive registry ids. Do not rename them.
+
+### Sound events (additive)
+
+`sounds.json` keys match registry paths. Placeholder OGGs are industrial (low metal / steam / grit), not magic.
+
+| Sound id | Role | Subtitle key |
+|---|---|---|
+| `filter_work` | Kinetic filter loop + process-sieve capture one-shot | `subtitles.create_originium_industry.filter_work` |
+| `high_dust` | Client ambience at HIGH / CRITICAL chunk dust | `subtitles.create_originium_industry.high_dust` |
+| `reactor_steady` | Power core generating with S≥0 and instability below warning | `subtitles.create_originium_industry.reactor_steady` |
+| `reactor_alarm` | Power core generating while S<0 or instability ≥ warning | `subtitles.create_originium_industry.reactor_alarm` |
+
+High-dust volume follows `simplifyParticles` / `particleDensity`. `reduceFlicker` holds alarm volume steady instead of pulsing. `enableIndustrialSounds` / `soundDensity` mute or scale the set.
 
 ## Debug surface
 

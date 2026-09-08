@@ -132,6 +132,12 @@ public final class COIConfigGameTests {
         helper.assertValueEqual(COIClientOptions.debugOverlayDetail(), DebugOverlayDetail.OFF, "default overlay");
         helper.assertTrue(COIClientOptions.showSicknessHud(), "sickness HUD on by default");
         helper.assertValueEqual(COIClientOptions.particleCount(10), 4, "0.4 * 10 particles");
+        helper.assertTrue(COIClientOptions.industrialSoundsEnabled(), "sounds on by default");
+        helper.assertValueEqual(COIClientOptions.soundDensity(), 1.0, "default sound density");
+        helper.assertValueEqual(COIClientOptions.machineSoundVolume(), 1.0F, "machine volume");
+        helper.assertValueEqual(COIClientOptions.ambientDustSoundVolume(), 0.4F, "dust ambience follows particleDensity");
+        helper.assertTrue(COIClientOptions.pulseAudio(), "alarm pulses unless reduceFlicker");
+        helper.assertValueEqual(COIClientOptions.soundPeriod(20), 20, "default sound period");
         helper.succeed();
     }
 

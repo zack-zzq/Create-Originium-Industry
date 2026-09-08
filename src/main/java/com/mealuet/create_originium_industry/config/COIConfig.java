@@ -18,7 +18,8 @@ import net.neoforged.neoforge.common.ModConfigSpec;
  * <p>
  * Client spec is registered as {@link net.neoforged.fml.config.ModConfig.Type#CLIENT}
  * and is <em>not</em> loaded on a dedicated server — read it through
- * {@link COIClientOptions}.
+ * {@link COIClientOptions}. Additive client keys {@code enableIndustrialSounds}
+ * and {@code soundDensity} sit beside the original accessibility knobs.
  */
 public class COIConfig {
 
@@ -176,6 +177,8 @@ public class COIConfig {
     public static final ModConfigSpec.EnumValue<UiDetailLevel> UI_DETAIL_LEVEL;
     public static final ModConfigSpec.EnumValue<DebugOverlayDetail> DEBUG_OVERLAY_DETAIL;
     public static final ModConfigSpec.BooleanValue SHOW_SICKNESS_HUD;
+    public static final ModConfigSpec.BooleanValue ENABLE_INDUSTRIAL_SOUNDS;
+    public static final ModConfigSpec.DoubleValue SOUND_DENSITY;
 
     static {
         ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
@@ -672,6 +675,12 @@ public class COIConfig {
         SHOW_SICKNESS_HUD = client
                 .comment("Show a small HUD hint when the player has Originium Exposure Sickness")
                 .define("showSicknessHud", true);
+        ENABLE_INDUSTRIAL_SOUNDS = client
+                .comment("Play Originium Industry factory SFX (filter work, high-dust ambience, reactor). Additive.")
+                .define("enableIndustrialSounds", true);
+        SOUND_DENSITY = client
+                .comment("Master volume scale for those SFX (0 = mute, 1 = full). Additive; stacks with particleDensity for dust ambience.")
+                .defineInRange("soundDensity", 1.0, 0.0, 1.0);
 
         client.pop();
 

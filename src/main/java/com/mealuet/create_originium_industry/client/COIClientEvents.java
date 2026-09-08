@@ -60,6 +60,8 @@ public final class COIClientEvents {
         MobEffectInstance sickness = player.getEffect(COIEffects.ORI_DUST_SICKNESS_EFFECT);
         int sickBase = sickness == null ? 0 : 1 + sickness.getAmplifier();
         int dustBase = dustParticleBase(player);
+        COIIndustrialSounds.tick(mc, player);
+
         int count = COIClientOptions.particleCount(Math.max(sickBase, dustBase));
         if (count <= 0) {
             return;
@@ -114,6 +116,7 @@ public final class COIClientEvents {
     public static void onLoggingOut(ClientPlayerNetworkEvent.LoggingOut event) {
         ClientDustCache.clear();
         ClientExposureCache.clear();
+        COIIndustrialSounds.stopAll();
     }
 
     private static void drawSicknessHud(GuiGraphics graphics, Minecraft mc, LocalPlayer player, MobEffectInstance sickness) {

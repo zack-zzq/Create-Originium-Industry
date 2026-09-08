@@ -126,9 +126,10 @@ water + 培养液 + packed ice → originium coolant
 - Originium alloy casing / core housing placed beside a processing machine cut process emission (10% / 20% per face, cap 50%) before filters run. Both are tagged `reactor_housing` for the power core.
 - Nearby chunk dust and local-player exposure/infection sync to clients at low frequency (dirty set / on-demand window — not the full map)
 - Ponder scenes (hold W on the relevant item): dust generation & diffusion, kinetic filter / sieve recovery, supercooling the purest line, power-core stability `S = C × M − H`. No GUI; copy is `Component.translatable`.
-- Common + client config (`create_originium_industry-common.toml` / `-client.toml`): dust, exposure, infection stages, filter, worldgen, protection gear, alloy parts, reactor stubs, dedicated-server spread policy, accessibility
+- Common + client config (`create_originium_industry-common.toml` / `-client.toml`): dust, exposure, infection stages, filter, worldgen, protection gear, alloy parts, reactor stubs, dedicated-server spread policy, accessibility, industrial SFX
 - `/coi_debug` and the debug wand for inspection
 - Backbone advancements: obtain raw originium → first dust exposure → first filter/sieve capture → first power-core start
+- Industrial SFX (`sounds.json`): filter work, high-dust ambience, reactor steady / alarm. Subtitles in `en_us` / `zh_cn`. Client `enableIndustrialSounds` / `soundDensity` plus `reduceFlicker` / particle knobs.
 
 Dust and pollution are being reworked. Treat `core/oridust` as unstable; **do not rename registry ids** — see [docs/REGISTRY.md](docs/REGISTRY.md).
 
@@ -140,7 +141,7 @@ Dust and pollution are being reworked. Treat `core/oridust` as unstable; **do no
 | **M1** | Dust loop MVP: data-driven emission, filters, dust meter, survival source | In progress (simulation refactor) |
 | **M2** | Purest / alloy expansion: filter + 培养液 + supercooling | Survival path in (`purest_originium`); alloy housing / sieve / sealed canister in |
 | **M3** | Reactor: heat, cooling, instability / meltdown | Alpha in (power core + chambers + S; meltdown = dust, not explosion) |
-| **M4** | Ponder, GameTests, optional compat (e.g. Create: Aeronautics) | Ponder scenes in (dust / filter / supercooling / power core); advancement backbone in |
+| **M4** | Ponder, GameTests, optional compat (e.g. Create: Aeronautics) | Ponder scenes + advancement backbone + industrial SFX in |
 
 M1 must be playable before M3. The reactor depends on dust APIs and the purest fuel chain. Ponder scenes cover dust, filters, supercooling, and the power core.
 

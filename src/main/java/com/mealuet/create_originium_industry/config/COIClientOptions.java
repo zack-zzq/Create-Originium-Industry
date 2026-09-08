@@ -4,8 +4,8 @@ package com.mealuet.create_originium_industry.config;
  * Safe accessors for {@link COIConfig#CLIENT_SPEC}.
  * <p>
  * Client config is not loaded on a dedicated server. Callers (including
- * future particle/HUD code) must use these helpers instead of {@code .get()}
- * so a missing spec never crashes.
+ * particle, HUD, and industrial SFX code) must use these helpers instead of
+ * {@code .get()} so a missing spec never crashes.
  * <p>
  * Defaults match the CLIENT spec so singleplayer looks the same before the
  * first config file is written.
@@ -69,5 +69,54 @@ public final class COIClientOptions {
 
     public static boolean verboseUi() {
         return uiDetailLevel() == UiDetailLevel.VERBOSE;
+    }
+
+    /**
+     * Master industrial-SFX toggle. Missing client spec (dedicated server /
+     * GameTest) keeps sounds conceptually on so helpers stay defined.
+     */
+    public static boolean industrialSoundsEnabled() {
+        return !COIConfig.CLIENT_SPEC.isLoaded() || COIConfig.ENABLE_INDUSTRIAL_SOUNDS.get();
+    }
+
+    /**
+     * 0–1 volume scale for factory loops. 0 when sounds are disabled.
+     */
+    public static double soundDensity() {
+        if (!industrialSoundsEnabled()) {
+            return 0.0;
+        }
+        if (!COIConfig.CLIENT_SPEC.isLoaded()) {
+            return 1.0;
+        }
+        return COIConfig.SOUND_DENSITY.get();
+    }
+
+    public static float machineSoundVolume() {
+        return (float) soundDensity();
+    }
+
+    /**
+     * High-dust ambience: muted by {@link #simplifyParticles()}, scaled by
+     * {@link #particleDensity()} and {@link #soundDensity()}.
+     */
+    public static float ambientDustSoundVolume() {
+        if (!industrialSoundsEnabled() || simplifyParticles()) {
+            return 0.0F;
+        }
+        return (float) (soundDensity() * particleDensity());
+    }
+
+    /**
+     * Alarm / pulse cadence. {@link #reduceFlicker()} holds a steady level
+     * instead of flashing the volume.
+     */
+    public static boolean pulseAudio() {
+        return !reduceFlicker();
+    }
+
+    public static int soundPeriod(int baseTicks) {
+        int base = Math.max(1, baseTicks);
+        return reduceFlicker() ? base * 2 : base;
     }
 }

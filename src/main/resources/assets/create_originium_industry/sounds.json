@@ -1,0 +1,38 @@
+{
+  "filter_work": {
+    "subtitle": "subtitles.create_originium_industry.filter_work",
+    "sounds": [
+      {
+        "name": "create_originium_industry:filter_work",
+        "volume": 0.8
+      }
+    ]
+  },
+  "high_dust": {
+    "subtitle": "subtitles.create_originium_industry.high_dust",
+    "sounds": [
+      {
+        "name": "create_originium_industry:high_dust",
+        "volume": 0.7
+      }
+    ]
+  },
+  "reactor_steady": {
+    "subtitle": "subtitles.create_originium_industry.reactor_steady",
+    "sounds": [
+      {
+        "name": "create_originium_industry:reactor_steady",
+        "volume": 0.75
+      }
+    ]
+  },
+  "reactor_alarm": {
+    "subtitle": "subtitles.create_originium_industry.reactor_alarm",
+    "sounds": [
+      {
+        "name": "create_originium_industry:reactor_alarm",
+        "volume": 0.85
+      }
+    ]
+  }
+}

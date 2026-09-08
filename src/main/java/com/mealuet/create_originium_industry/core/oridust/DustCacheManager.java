@@ -116,6 +116,22 @@ public class DustCacheManager {
         recentlyWritten.put(pos.toLong(), level.getGameTime());
     }
 
+    /**
+     * Drops a recent-write TTL entry without touching SavedData. Used by
+     * perf seed cleanup so GameTests do not inflate later active sets.
+     */
+    public static void unmarkWritten(ChunkPos pos) {
+        recentlyWritten.remove(pos.toLong());
+    }
+
+    public static int lastActiveCount() {
+        return lastActive.size();
+    }
+
+    public static int recentWriteCount() {
+        return recentlyWritten.size();
+    }
+
     public static void persist(ServerLevel level, ChunkPos pos, int newLevel) {
         OriDustSavedData.get(level).set(pos, newLevel);
     }

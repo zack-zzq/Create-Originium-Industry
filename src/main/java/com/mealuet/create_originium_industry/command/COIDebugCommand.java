@@ -5,6 +5,8 @@ import com.mealuet.create_originium_industry.block.PowerCoreBlockEntity;
 import com.mealuet.create_originium_industry.config.COIConfig;
 import com.mealuet.create_originium_industry.compat.WorldSpace;
 import com.mealuet.create_originium_industry.core.oridust.*;
+import com.mealuet.create_originium_industry.core.perf.PerfLoad;
+import com.mealuet.create_originium_industry.core.perf.PerfProbe;
 import com.mealuet.create_originium_industry.index.COIAttachments;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
@@ -41,6 +43,11 @@ import net.minecraft.world.phys.HitResult;
  *   reactor
  *     status                 - View targeted power core (or config knobs)
  *     stabilize              - Force stabilize targeted power core
+ *   perf
+ *     (no args)              - Last dust/reactor/filter/sync samples
+ *     run                    - Force one active-set dust cycle + sync flush
+ *     seed                   - Write a 10×10 dusty factory grid around the player
+ *     clear                  - Clear that seeded grid
  * </pre>
  */
 public class COIDebugCommand {
@@ -76,6 +83,12 @@ public class COIDebugCommand {
                 .then(Commands.literal("reactor")
                     .then(Commands.literal("status").executes(COIDebugCommand::reactorStatus))
                     .then(Commands.literal("stabilize").executes(COIDebugCommand::reactorStabilize))
+                )
+                .then(Commands.literal("perf")
+                    .executes(COIDebugCommand::perfReport)
+                    .then(Commands.literal("run").executes(COIDebugCommand::perfRun))
+                    .then(Commands.literal("seed").executes(COIDebugCommand::perfSeed))
+                    .then(Commands.literal("clear").executes(COIDebugCommand::perfClear))
                 )
         );
     }
@@ -310,6 +323,85 @@ public class COIDebugCommand {
         BlockPos pos = blockHit.getBlockPos();
         BlockEntity be = player.level().getBlockEntity(pos);
         return be instanceof PowerCoreBlockEntity core ? core : null;
+    }
+
+    // ==================== Perf Commands ====================
+
+    private static int perfReport(CommandContext<CommandSourceStack> ctx) {
+        ctx.getSource().sendSuccess(() -> Component.translatable(
+                "commands.coi_debug.perf.header",
+                PerfProbe.STATED_MACHINE_COUNT,
+                PerfProbe.formatMillis(PerfProbe.TARGET_NANOS)
+        ), false);
+        ctx.getSource().sendSuccess(() -> Component.translatable(
+                "commands.coi_debug.perf.dust",
+                String.valueOf(PerfProbe.lastDustActiveChunks()),
+                String.valueOf(DustCacheManager.lastActiveCount()),
+                String.valueOf(DustCacheManager.recentWriteCount()),
+                PerfProbe.formatNanos(PerfProbe.lastDustCycleNanos())
+        ), false);
+        ctx.getSource().sendSuccess(() -> Component.translatable(
+                "commands.coi_debug.perf.machines",
+                String.valueOf(PerfProbe.lastReactorTickCount()),
+                PerfProbe.formatNanos(PerfProbe.lastReactorTickNanos()),
+                String.valueOf(PerfProbe.lastFilterTickCount()),
+                PerfProbe.formatNanos(PerfProbe.lastFilterTickNanos()),
+                PerfProbe.formatNanos(PerfProbe.lastSyncNanos())
+        ), false);
+        ctx.getSource().sendSuccess(() -> Component.translatable(
+                "commands.coi_debug.perf.aligned",
+                PerfProbe.formatNanos(PerfProbe.lastAlignedExtraNanos()),
+                PerfProbe.formatMillis(PerfProbe.TARGET_NANOS)
+        ), false);
+        return 1;
+    }
+
+    private static int perfRun(CommandContext<CommandSourceStack> ctx) {
+        ServerPlayer player = ctx.getSource().getPlayer();
+        if (player == null) {
+            return 0;
+        }
+        ServerLevel level = player.serverLevel();
+        int active = DustDiffusionEngine.runActiveSetCycle(level);
+        DustSyncTracker.flushNow(level);
+        ctx.getSource().sendSuccess(() -> Component.translatable(
+                "commands.coi_debug.perf.run",
+                String.valueOf(active),
+                PerfProbe.formatNanos(PerfProbe.lastDustCycleNanos()),
+                PerfProbe.formatNanos(PerfProbe.lastSyncNanos())
+        ), true);
+        return perfReport(ctx);
+    }
+
+    private static int perfSeed(CommandContext<CommandSourceStack> ctx) {
+        ServerPlayer player = ctx.getSource().getPlayer();
+        if (player == null) {
+            return 0;
+        }
+        ChunkPos center = WorldSpace.toDustChunk(player);
+        int n = PerfLoad.seedMachineDust(player.serverLevel(), center);
+        ctx.getSource().sendSuccess(() -> Component.translatable(
+                "commands.coi_debug.perf.seed",
+                n,
+                String.valueOf(center.x),
+                String.valueOf(center.z)
+        ), true);
+        return 1;
+    }
+
+    private static int perfClear(CommandContext<CommandSourceStack> ctx) {
+        ServerPlayer player = ctx.getSource().getPlayer();
+        if (player == null) {
+            return 0;
+        }
+        ChunkPos center = WorldSpace.toDustChunk(player);
+        PerfLoad.clearMachineDust(player.serverLevel(), center);
+        ctx.getSource().sendSuccess(() -> Component.translatable(
+                "commands.coi_debug.perf.clear",
+                String.valueOf(center.x),
+                String.valueOf(center.z)
+        ), true);
+        return 1;
     }
 
     // ==================== Helpers ====================

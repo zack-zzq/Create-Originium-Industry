@@ -3,6 +3,7 @@ package com.mealuet.create_originium_industry.core.oridust;
 import com.mealuet.create_originium_industry.CreateOriginiumIndustry;
 import com.mealuet.create_originium_industry.compat.WorldSpace;
 import com.mealuet.create_originium_industry.config.COIConfig;
+import com.mealuet.create_originium_industry.core.perf.PerfProbe;
 import com.mealuet.create_originium_industry.index.COIAttachments;
 import com.mealuet.create_originium_industry.network.DustSyncPayload;
 import com.mealuet.create_originium_industry.network.ExposureSyncPayload;
@@ -121,6 +122,20 @@ public final class DustSyncTracker {
     }
 
     static void flush(ServerLevel overworld) {
+        long start = System.nanoTime();
+        try {
+            flushInner(overworld);
+        } finally {
+            PerfProbe.recordSync(System.nanoTime() - start);
+        }
+    }
+
+    /** GameTest / debug: run one client-sync flush immediately. */
+    public static void flushNow(ServerLevel overworld) {
+        flush(overworld);
+    }
+
+    private static void flushInner(ServerLevel overworld) {
         if (COIConfig.syncDustToClients()) {
             LongOpenHashSet dirtySnapshot;
             synchronized (dirtyChunks) {

@@ -6,6 +6,7 @@ import com.mealuet.create_originium_industry.config.COIConfig;
 import com.mealuet.create_originium_industry.config.UiDetailLevel;
 import com.mealuet.create_originium_industry.core.oridust.DustReason;
 import com.mealuet.create_originium_industry.core.oridust.OriginiumDustManager;
+import com.mealuet.create_originium_industry.core.perf.PerfProbe;
 import com.mealuet.create_originium_industry.core.purest.MeltdownPolicy;
 import com.mealuet.create_originium_industry.core.reactor.ReactorFluidHandler;
 import com.mealuet.create_originium_industry.core.reactor.ReactorFluids;
@@ -234,6 +235,15 @@ public class PowerCoreBlockEntity extends GeneratingKineticBlockEntity {
      * Server simulation step. GameTests may call this directly.
      */
     public void tickReactor(ServerLevel serverLevel) {
+        long start = System.nanoTime();
+        try {
+            tickReactorInner(serverLevel);
+        } finally {
+            PerfProbe.addReactor(serverLevel.getGameTime(), System.nanoTime() - start);
+        }
+    }
+
+    private void tickReactorInner(ServerLevel serverLevel) {
         boolean running = isRunning();
         double chamber = attachedChamberCooling();
         StabilityMath.Snapshot snap = StabilityMath.compute(

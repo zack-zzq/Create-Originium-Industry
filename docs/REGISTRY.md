@@ -395,6 +395,7 @@ Pattern: `<category>.create_originium_industry.<path>`
 | `commands` | `commands.coi_debug.dust.get` |
 | `hud` | `hud.create_originium_industry.sickness` |
 | `infection_stage` | `infection_stage.create_originium_industry.weakness` |
+| `advancements` | `advancements.create_originium_industry.obtain_raw_originium.title` |
 
 `en_us` and `zh_cn` must stay in lockstep.
 
@@ -411,6 +412,20 @@ New ids are fine. Do not reuse a frozen id for a different object.
 Expected (not frozen until registered):
 
 - Ponder / JEI lang keys
+
+### Advancements (additive)
+
+Datapack path is the advancement id (`create_originium_industry:<path>`).
+
+| Advancement id | Trigger | Notes |
+|---|---|---|
+| `root` | `minecraft:tick` | Tab root |
+| `obtain_raw_originium` | `minecraft:inventory_changed` | Raw item **or** either ore block |
+| `dust_exposure` | `create_originium_industry:dust_exposure` | First dust-fog exposure gain |
+| `dust_purified` | `create_originium_industry:dust_purified` | Kinetic filter ambient absorb or nearby sieve/filter capture |
+| `start_power_core` | `create_originium_industry:power_core_started` | Power core begins generating |
+
+Criterion trigger ids (`dust_exposure`, `dust_purified`, `power_core_started`) are additive registry ids. Do not rename them.
 
 ## Debug surface
 

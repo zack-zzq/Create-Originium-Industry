@@ -1,5 +1,6 @@
 package com.mealuet.create_originium_industry.block;
 
+import com.mealuet.create_originium_industry.advancement.COIAdvancements;
 import com.mealuet.create_originium_industry.compat.WorldSpace;
 import com.mealuet.create_originium_industry.config.COIClientOptions;
 import com.mealuet.create_originium_industry.config.COIConfig;
@@ -108,6 +109,7 @@ public class DustFilterBlockEntity extends KineticBlockEntity implements IDustPu
         }
         OriginiumDustManager.addDust(level, chunkPos, -actual, DustReason.FILTER);
         acceptCapturedDust(actual);
+        COIAdvancements.dustPurified(level, purifierPos);
         return actual;
     }
 

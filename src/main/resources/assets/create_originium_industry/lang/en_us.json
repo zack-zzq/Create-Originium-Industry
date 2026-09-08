@@ -157,5 +157,16 @@
   "infection_stage.create_originium_industry.weakness": "Weakness",
   "infection_stage.create_originium_industry.restricted": "Restricted",
   "infection_stage.create_originium_industry.growth": "Growth",
-  "infection_stage.create_originium_industry.bargain": "Bargain"
+  "infection_stage.create_originium_industry.bargain": "Bargain",
+
+  "advancements.create_originium_industry.root.title": "Originium Industry",
+  "advancements.create_originium_industry.root.description": "Tame a dangerous industrial ore in a mechanical factory.",
+  "advancements.create_originium_industry.obtain_raw_originium.title": "First Contact",
+  "advancements.create_originium_industry.obtain_raw_originium.description": "Obtain raw originium. Processing it will kick up dust.",
+  "advancements.create_originium_industry.dust_exposure.title": "Dust in the Lungs",
+  "advancements.create_originium_industry.dust_exposure.description": "Stand in originium fog. Filters and masks come next.",
+  "advancements.create_originium_industry.dust_purified.title": "Clean Air, Sort Of",
+  "advancements.create_originium_industry.dust_purified.description": "A spinning filter or process sieve captured dust into originium dust.",
+  "advancements.create_originium_industry.start_power_core.title": "It Turns",
+  "advancements.create_originium_industry.start_power_core.description": "Start an originium power core. Housing, coolant, and a cooling chamber keep it alive."
 }

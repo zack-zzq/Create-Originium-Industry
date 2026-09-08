@@ -1,5 +1,6 @@
 package com.mealuet.create_originium_industry.block;
 
+import com.mealuet.create_originium_industry.advancement.COIAdvancements;
 import com.mealuet.create_originium_industry.config.COIClientOptions;
 import com.mealuet.create_originium_industry.config.COIConfig;
 import com.mealuet.create_originium_industry.config.UiDetailLevel;
@@ -265,14 +266,18 @@ public class PowerCoreBlockEntity extends GeneratingKineticBlockEntity {
             }
             consumeFuelTick();
             instability = StabilityMath.nextInstability(instability, stability);
-            leakUnstableDust(serverLevel);
             if (COIConfig.reactorMeltdownEnabled()
                     && instability >= COIConfig.reactorMeltdownThreshold()) {
                 triggerMeltdown(serverLevel);
+            } else {
+                leakUnstableDust(serverLevel);
             }
         }
 
         boolean generating = isGenerating();
+        if (generating && !lastGenerating) {
+            COIAdvancements.powerCoreStarted(serverLevel, worldPosition);
+        }
         if (generating != lastGenerating || structureDirty) {
             lastGenerating = generating;
             structureDirty = false;

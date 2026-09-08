@@ -157,5 +157,16 @@
   "infection_stage.create_originium_industry.weakness": "虚弱",
   "infection_stage.create_originium_industry.restricted": "受限",
   "infection_stage.create_originium_industry.growth": "增生",
-  "infection_stage.create_originium_industry.bargain": "代价交换"
+  "infection_stage.create_originium_industry.bargain": "代价交换",
+
+  "advancements.create_originium_industry.root.title": "源石工业",
+  "advancements.create_originium_industry.root.description": "在机械工厂里驯化一种高危能源矿物。",
+  "advancements.create_originium_industry.obtain_raw_originium.title": "初见粗制源石",
+  "advancements.create_originium_industry.obtain_raw_originium.description": "获得粗制源石。加工时会扬起尘雾。",
+  "advancements.create_originium_industry.dust_exposure.title": "第一次尘雾",
+  "advancements.create_originium_industry.dust_exposure.description": "走进源石尘雾。接下来该准备滤网和面罩。",
+  "advancements.create_originium_industry.dust_purified.title": "滤网起作用了",
+  "advancements.create_originium_industry.dust_purified.description": "滤网机或加工滤网把粉尘收成了源石尘。",
+  "advancements.create_originium_industry.start_power_core.title": "动力核心启动",
+  "advancements.create_originium_industry.start_power_core.description": "第一次让源石动力核心转起来。外壳、冷却液和冷却室缺一不可。"
 }

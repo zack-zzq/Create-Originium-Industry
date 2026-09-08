@@ -127,6 +127,7 @@ water + 培养液 + packed ice → originium coolant
 - Nearby chunk dust and local-player exposure/infection sync to clients at low frequency (dirty set / on-demand window — not the full map)
 - Common + client config (`create_originium_industry-common.toml` / `-client.toml`): dust, exposure, infection stages, filter, worldgen, protection gear, alloy parts, reactor stubs, dedicated-server spread policy, accessibility
 - `/coi_debug` and the debug wand for inspection
+- Backbone advancements: obtain raw originium → first dust exposure → first filter/sieve capture → first power-core start
 
 Dust and pollution are being reworked. Treat `core/oridust` as unstable; **do not rename registry ids** — see [docs/REGISTRY.md](docs/REGISTRY.md).
 
@@ -138,7 +139,7 @@ Dust and pollution are being reworked. Treat `core/oridust` as unstable; **do no
 | **M1** | Dust loop MVP: data-driven emission, filters, dust meter, survival source | In progress (simulation refactor) |
 | **M2** | Purest / alloy expansion: filter + 培养液 + supercooling | Survival path in (`purest_originium`); alloy housing / sieve / sealed canister in |
 | **M3** | Reactor: heat, cooling, instability / meltdown | Alpha in (power core + chambers + S; meltdown = dust, not explosion) |
-| **M4** | Ponder, GameTests, optional compat (e.g. Create: Aeronautics) | Not started |
+| **M4** | Ponder, GameTests, optional compat (e.g. Create: Aeronautics) | Advancement backbone in; Ponder still open |
 
 M1 must be playable before M3. The reactor depends on dust APIs and the purest fuel chain.
 

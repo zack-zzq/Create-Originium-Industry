@@ -1,5 +1,6 @@
 package com.mealuet.create_originium_industry.core.oridust;
 
+import com.mealuet.create_originium_industry.advancement.COIAdvancements;
 import com.simibubi.create.content.processing.basin.BasinBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -69,7 +70,11 @@ public final class DustPurification {
         if (level == null || pos == null) {
             return PurificationResult.unchanged(Math.max(0, incoming));
         }
-        return reduceEmission(incoming, findNearby(level, pos));
+        PurificationResult result = reduceEmission(incoming, findNearby(level, pos));
+        if (result.captured() > 0) {
+            COIAdvancements.dustPurified(level, pos);
+        }
+        return result;
     }
 
     /**

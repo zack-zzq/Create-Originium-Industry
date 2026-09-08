@@ -1,0 +1,24 @@
+{
+  "display": {
+    "icon": {
+      "id": "create_originium_industry:originium"
+    },
+    "title": {
+      "translate": "advancements.create_originium_industry.root.title"
+    },
+    "description": {
+      "translate": "advancements.create_originium_industry.root.description"
+    },
+    "background": "minecraft:textures/gui/advancements/backgrounds/stone.png",
+    "frame": "task",
+    "show_toast": false,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "tick": {
+      "trigger": "minecraft:tick"
+    }
+  },
+  "sends_telemetry_event": false
+}

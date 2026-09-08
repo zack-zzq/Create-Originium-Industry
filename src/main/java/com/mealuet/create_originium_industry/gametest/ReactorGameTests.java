@@ -136,6 +136,7 @@ public final class ReactorGameTests {
 
         helper.assertTrue(core.shutdown(), "meltdown shuts down");
         helper.assertValueEqual(core.fuelCount(), 0, "purest fuel consumed");
+        // Meltdown dump is the dust event for this tick; unstable leak is skipped.
         helper.assertValueEqual(OriginiumDustManager.getDust(level, chunk), 5000, "dust pressure");
         helper.assertValueEqual(core.coolantTank().getFluidAmount(), 0, "coolant dumped to heat");
         helper.assertValueEqual(core.waterTank().getFluidAmount(), 0, "water dumped to heat");

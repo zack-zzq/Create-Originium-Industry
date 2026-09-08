@@ -1,5 +1,6 @@
 package com.mealuet.create_originium_industry.command;
 
+import com.mealuet.create_originium_industry.advancement.COIAdvancements;
 import com.mealuet.create_originium_industry.block.PowerCoreBlockEntity;
 import com.mealuet.create_originium_industry.config.COIConfig;
 import com.mealuet.create_originium_industry.compat.WorldSpace;
@@ -220,6 +221,9 @@ public class COIDebugCommand {
         PlayerExposureData data = COIAttachments.getPlayerExposure(player);
         data.setExposure(amount);
         DustSyncTracker.markExposureDirty(player);
+        if (amount > 0) {
+            COIAdvancements.dustExposure(player);
+        }
 
         ctx.getSource().sendSuccess(() -> Component.translatable(
                 "commands.coi_debug.exposure.set", amount

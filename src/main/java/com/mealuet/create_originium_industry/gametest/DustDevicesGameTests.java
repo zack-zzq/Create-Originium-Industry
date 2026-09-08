@@ -197,6 +197,8 @@ public final class DustDevicesGameTests {
         helper.assertTrue(COIBlocks.DUST_NOZZLE.asItem() != net.minecraft.world.item.Items.AIR, "nozzle item");
         helper.assertTrue(COIBlocks.DUST_METER.asItem() != net.minecraft.world.item.Items.AIR, "meter item");
         helper.assertTrue(COIItems.ORIGINIUM_DUST.get() != net.minecraft.world.item.Items.AIR, "dust item");
+        helper.assertTrue(COIItems.RAW_ORIGINIUM.get() != net.minecraft.world.item.Items.AIR, "raw originium item");
+        helper.assertTrue(COIBlocks.RAW_ORIGINIUM_ORE.asItem() != net.minecraft.world.item.Items.AIR, "ore item");
         helper.succeed();
     }
 

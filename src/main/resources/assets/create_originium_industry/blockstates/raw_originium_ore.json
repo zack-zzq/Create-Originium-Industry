@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "create_originium_industry:block/raw_originium_ore"
+    }
+  }
+}

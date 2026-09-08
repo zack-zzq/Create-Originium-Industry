@@ -73,6 +73,9 @@ public final class COIConfigGameTests {
         helper.assertValueEqual(COIConfig.PROCESS_SIEVE_EMISSION_CAPTURE.get(), 0.4, "processSieveEmissionCapture");
         helper.assertValueEqual(COIConfig.NOZZLE_TRANSFER_AMOUNT.get(), 80, "nozzleTransferAmount");
         helper.assertValueEqual(COIConfig.METER_COMPARATOR_FULL_DUST.get(), 8000, "meterComparatorFullDust");
+        helper.assertTrue(COIConfig.ENABLE_RAW_ORIGINIUM_ORE.get(), "enableRawOriginiumOre");
+        helper.assertValueEqual(COIConfig.RAW_ORIGINIUM_VEIN_SIZE.get(), 4, "veinSize");
+        helper.assertValueEqual(COIConfig.RAW_ORIGINIUM_VEINS_PER_CHUNK.get(), 4, "veinsPerChunk");
         helper.assertTrue(COIConfig.ENABLE_PROTECTION.get(), "enableProtection");
         helper.assertValueEqual(COIConfig.PROTECTION_EXPOSURE_REDUCTION.get(), 0.5, "protectionExposureReduction");
         helper.assertValueEqual(COIConfig.DEATH_EXPOSURE_RETAIN.get(), 0.0, "deathExposureRetain");

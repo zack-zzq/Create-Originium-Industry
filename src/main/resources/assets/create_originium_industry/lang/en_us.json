@@ -20,6 +20,8 @@
   "block.create_originium_industry.originium_dust_sieve": "Originium Dust Sieve",
   "block.create_originium_industry.originium_dust_nozzle": "Originium Dust Nozzle",
   "block.create_originium_industry.originium_dust_meter": "Originium Dust Meter",
+  "block.create_originium_industry.raw_originium_ore": "Raw Originium Ore",
+  "block.create_originium_industry.deepslate_raw_originium_ore": "Deepslate Raw Originium Ore",
   "item.create_originium_industry.originium_debug_wand": "Originium Debug Wand",
 
   "item.create_originium_industry.molten_originium_bucket": "Molten Originium Bucket",

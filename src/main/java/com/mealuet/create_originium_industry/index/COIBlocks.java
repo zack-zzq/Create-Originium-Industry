@@ -6,8 +6,10 @@ import com.mealuet.create_originium_industry.block.DustMeterBlock;
 import com.mealuet.create_originium_industry.block.DustNozzleBlock;
 import com.mealuet.create_originium_industry.block.ProcessSieveBlock;
 import com.tterrag.registrate.util.entry.BlockEntry;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
-import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
+import net.minecraft.world.level.material.MapColor;
 
 /**
  * Block registrations for Create: Originium Industry.
@@ -59,6 +61,37 @@ public class COIBlocks {
                     .strength(3.0f)
                     .sound(SoundType.METAL)
                     .noOcclusion()
+            )
+            .simpleItem()
+            .register();
+
+    /**
+     * Overworld stone ore. New id — does not replace the frozen {@code raw_originium} item.
+     * Drops {@code raw_originium} (silk touch keeps the block).
+     */
+    public static final BlockEntry<Block> RAW_ORIGINIUM_ORE = CreateOriginiumIndustry.REGISTRATE
+            .block("raw_originium_ore", Block::new)
+            .properties(p -> p
+                    .mapColor(MapColor.STONE)
+                    .instrument(NoteBlockInstrument.BASEDRUM)
+                    .requiresCorrectToolForDrops()
+                    .strength(3.0f, 3.0f)
+                    .sound(SoundType.STONE)
+            )
+            .simpleItem()
+            .register();
+
+    /**
+     * Deepslate variant of {@link #RAW_ORIGINIUM_ORE}. Same drops, higher hardness.
+     */
+    public static final BlockEntry<Block> DEEPSLATE_RAW_ORIGINIUM_ORE = CreateOriginiumIndustry.REGISTRATE
+            .block("deepslate_raw_originium_ore", Block::new)
+            .properties(p -> p
+                    .mapColor(MapColor.DEEPSLATE)
+                    .instrument(NoteBlockInstrument.BASEDRUM)
+                    .requiresCorrectToolForDrops()
+                    .strength(4.5f, 3.0f)
+                    .sound(SoundType.DEEPSLATE)
             )
             .simpleItem()
             .register();

@@ -34,7 +34,7 @@ stable unless a migration is documented here first.
 
 | Registry id | zh_cn | en_us | Notes |
 |---|---|---|---|
-| `raw_originium` | 粗制源石 | Raw Originium | No worldgen yet |
+| `raw_originium` | 粗制源石 | Raw Originium | Mined from Overworld ore |
 | `originium_shard` | 源石碎片 | Originium Shard | |
 | `originium` | 源石 | Originium | |
 | `originium_dust` | 源石尘 | Originium Dust | Item form; chunk pollution is separate |
@@ -57,6 +57,8 @@ stable unless a migration is documented here first.
 | `originium_dust_sieve` | Process sieve attachment (block + BE share this path with the item). BE NBT: `SieveDurability`, additive `CapturedDust` |
 | `originium_dust_nozzle` | Encased Fan nozzle (block + BE share this path with the item). BE NBT: `LastMoved`, `HasFlow` |
 | `originium_dust_meter` | Dust gauge. BE NBT: `Dust`, `Risk`, `ProtectionPercent` (client packet snapshot of server chunk dust) |
+| `raw_originium_ore` | Overworld stone ore. Drops frozen item `raw_originium` (silk touch keeps the block). Iron pickaxe. |
+| `deepslate_raw_originium_ore` | Deepslate variant of the same ore / drops |
 
 ### Fluids
 
@@ -103,6 +105,7 @@ Common config spec is `COIConfig.COMMON_SPEC`. Top-level keys:
 - `dust_filter`
 - `dust_nozzle` *(additive)*
 - `dust_meter` *(additive)*
+- `worldgen` *(additive; raw originium ore frequency / height)*
 - `protection` *(additive; respirator + canister)*
 - `infection` *(additive; stage thresholds)*
 - `reactor` *(additive; M3 stub knobs)*
@@ -116,6 +119,20 @@ Client spec is `COIConfig.CLIENT_SPEC` (`ModConfig.Type.CLIENT`). Top-level key:
 - `client` — accessibility: `reduceFlicker`, `simplifyParticles`, `particleDensity`, `highContrastIndicators`, `uiDetailLevel`, `debugOverlayDetail`, `showSicknessHud`
 
 Read client values through `COIClientOptions` so a dedicated server (where the client spec is not loaded) never calls `.get()` on an unloaded spec.
+
+### Worldgen (raw originium ore)
+
+Shipped datapack ids (overridable):
+
+| Path | Role |
+|---|---|
+| `worldgen/configured_feature/raw_originium_ore` | Feature type `create_originium_industry:raw_originium_ore` (vein size / air-discard from config) |
+| `worldgen/placed_feature/raw_originium_ore` | Count + triangle height from config (`raw_originium_count` / `raw_originium_height`) |
+| `neoforge/biome_modifier/add_raw_originium_ore` | `neoforge:add_features` into `#minecraft:is_overworld`, step `underground_ores` |
+
+`worldgen` config keys: `enableRawOriginiumOre`, `veinSize` (4), `veinsPerChunk` (4), `minY` (-64), `maxY` (16), `discardChanceOnAirExposure` (0.7). Scarcer than vanilla diamond small (7 veins). Existing chunks are not rewritten; only new generation is affected.
+
+To disable via datapack without touching config, replace the biome modifier with `{ "type": "neoforge:none" }`. Replacing the placed feature JSON drops the config knobs unless you keep the `raw_originium_count` / `raw_originium_height` placement types.
 
 ## Frozen recipe ids
 
@@ -218,6 +235,11 @@ infection. `ori_dust_sickness` stays the exposure-layer effect.
 |---|---|---|
 | `c:ingots/originium_alloy_ingot` | `originium_alloy_ingot` | Frozen (non-standard path, already used) |
 | `c:ingots/originium_alloy` | `originium_alloy_ingot` | Conventional alias; keep both |
+| `c:ores` / `c:ores/originium` | `raw_originium_ore`, `deepslate_raw_originium_ore` | Additive |
+| `c:ores_in_ground/stone` | `raw_originium_ore` | Additive |
+| `c:ores_in_ground/deepslate` | `deepslate_raw_originium_ore` | Additive |
+| `c:ore_rates/singular` | both ore blocks | Additive |
+| `c:raw_materials` / `c:raw_materials/originium` | `raw_originium` | Additive |
 | `c:fluid/molten_originium` | `molten_originium` | Frozen |
 | `c:fluid/purest_molten_originium` | `purest_molten_originium` | Frozen |
 | `c:fluid/originium_catalyst` | `originium_catalyst` | Frozen |
@@ -231,6 +253,7 @@ infection. `ori_dust_sickness` stays the exposure-layer effect.
 | `item/originium_protection` | protection gear that reduces exposure/infection | present (`originium_respirator`, `originium_filter_canister`) |
 | `block/dust_sources` | blocks that emit dust | present (empty; future COI machines) |
 | `block/dust_filters` | blocks that remove/modify dust | present (`originium_dust_filter`, `originium_dust_sieve`, `originium_dust_nozzle`) |
+| `block/raw_originium_ores` | stone + deepslate raw originium ore | present |
 | `fluid/originium_fluids` | all originium fluids | present |
 
 Do not put `originium_debug_wand` in material tags. Alloy ingot is an ingot,
@@ -265,7 +288,6 @@ New ids are fine. Do not reuse a frozen id for a different object.
 
 Expected (not frozen until registered):
 
-- Originium ore / worldgen features
 - Purification intermediates for the purest line
 - Reactor blocks / block entities
 - Ponder / JEI lang keys

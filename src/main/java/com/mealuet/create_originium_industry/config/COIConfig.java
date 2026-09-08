@@ -9,8 +9,8 @@ import net.neoforged.neoforge.common.ModConfigSpec;
  * Existing top-level COMMON sections are frozen: {@code dust_diffusion},
  * {@code dust_production}, {@code player_exposure}, {@code feature_toggles},
  * {@code dust_filter}, {@code debug}. Additive sections: {@code protection},
- * {@code infection}, {@code reactor}, {@code multiplayer}, {@code dust_nozzle}, {@code dust_meter}.
- * New keys are additive only.
+ * {@code infection}, {@code reactor}, {@code multiplayer}, {@code dust_nozzle},
+ * {@code dust_meter}, {@code worldgen}. New keys are additive only.
  * <p>
  * Client spec is registered as {@link net.neoforged.fml.config.ModConfig.Type#CLIENT}
  * and is <em>not</em> loaded on a dedicated server — read it through
@@ -91,6 +91,14 @@ public class COIConfig {
     // --- Dust meter ---
     public static final ModConfigSpec.IntValue METER_COMPARATOR_FULL_DUST;
     public static final ModConfigSpec.IntValue METER_SYNC_INTERVAL;
+
+    // --- Worldgen (raw originium ore) ---
+    public static final ModConfigSpec.BooleanValue ENABLE_RAW_ORIGINIUM_ORE;
+    public static final ModConfigSpec.IntValue RAW_ORIGINIUM_VEIN_SIZE;
+    public static final ModConfigSpec.IntValue RAW_ORIGINIUM_VEINS_PER_CHUNK;
+    public static final ModConfigSpec.IntValue RAW_ORIGINIUM_MIN_Y;
+    public static final ModConfigSpec.IntValue RAW_ORIGINIUM_MAX_Y;
+    public static final ModConfigSpec.DoubleValue RAW_ORIGINIUM_DISCARD_CHANCE;
 
     // --- Protection ---
     public static final ModConfigSpec.BooleanValue ENABLE_PROTECTION;
@@ -361,6 +369,36 @@ public class COIConfig {
 
         builder.pop();
 
+        // ==================== Worldgen ====================
+        builder.comment(
+                "Overworld raw originium ore. Uncommon on purpose (dangerous industrial mineral).",
+                "Additive section; missing keys use the defaults below and do not rewrite old saves.",
+                "Datapack authors can replace worldgen/placed_feature/raw_originium_ore.json or set",
+                "neoforge/biome_modifier/add_raw_originium_ore.json to type neoforge:none.",
+                "Config knobs apply only while the shipped placed feature (config_count / config_height) is used."
+        ).push("worldgen");
+
+        ENABLE_RAW_ORIGINIUM_ORE = builder
+                .comment("Master switch for Overworld raw originium ore generation")
+                .define("enableRawOriginiumOre", true);
+        RAW_ORIGINIUM_VEIN_SIZE = builder
+                .comment("Blocks attempted per vein (vanilla diamond small = 4). Keep small for rarity.")
+                .defineInRange("veinSize", 4, 1, 16);
+        RAW_ORIGINIUM_VEINS_PER_CHUNK = builder
+                .comment("Vein attempts per chunk (vanilla diamond small = 7). Default 4 is intentionally scarcer.")
+                .defineInRange("veinsPerChunk", 4, 0, 32);
+        RAW_ORIGINIUM_MIN_Y = builder
+                .comment("Inclusive min Y for the triangle height band (swapped with maxY if inverted)")
+                .defineInRange("minY", -64, -64, 320);
+        RAW_ORIGINIUM_MAX_Y = builder
+                .comment("Inclusive max Y for the triangle height band. Default 16 keeps most veins in deepslate")
+                .defineInRange("maxY", 16, -64, 320);
+        RAW_ORIGINIUM_DISCARD_CHANCE = builder
+                .comment("Chance to skip a vein block exposed to air (0 = cave walls keep ore, 1 = fully buried)")
+                .defineInRange("discardChanceOnAirExposure", 0.7, 0.0, 1.0);
+
+        builder.pop();
+
         // ==================== Protection ====================
         builder.comment(
                 "Protection equipment. Tagged items (originium_respirator, originium_filter_canister,",
@@ -585,5 +623,35 @@ public class COIConfig {
 
     public static int meterSyncInterval() {
         return COMMON_SPEC.isLoaded() ? METER_SYNC_INTERVAL.get() : 10;
+    }
+
+    public static boolean rawOriginiumOreEnabled() {
+        return !COMMON_SPEC.isLoaded() || ENABLE_RAW_ORIGINIUM_ORE.get();
+    }
+
+    public static int rawOriginiumVeinSize() {
+        return COMMON_SPEC.isLoaded() ? RAW_ORIGINIUM_VEIN_SIZE.get() : 4;
+    }
+
+    public static int rawOriginiumVeinsPerChunk() {
+        return COMMON_SPEC.isLoaded() ? RAW_ORIGINIUM_VEINS_PER_CHUNK.get() : 4;
+    }
+
+    public static int rawOriginiumMinY() {
+        int min = COMMON_SPEC.isLoaded() ? RAW_ORIGINIUM_MIN_Y.get() : -64;
+        int max = COMMON_SPEC.isLoaded() ? RAW_ORIGINIUM_MAX_Y.get() : 16;
+        return Math.min(min, max);
+    }
+
+    public static int rawOriginiumMaxY() {
+        int min = COMMON_SPEC.isLoaded() ? RAW_ORIGINIUM_MIN_Y.get() : -64;
+        int max = COMMON_SPEC.isLoaded() ? RAW_ORIGINIUM_MAX_Y.get() : 16;
+        int hi = Math.max(min, max);
+        int lo = Math.min(min, max);
+        return hi == lo ? lo + 1 : hi;
+    }
+
+    public static float rawOriginiumDiscardChance() {
+        return COMMON_SPEC.isLoaded() ? RAW_ORIGINIUM_DISCARD_CHANCE.get().floatValue() : 0.7f;
     }
 }

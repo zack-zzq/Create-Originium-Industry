@@ -20,6 +20,8 @@
   "block.create_originium_industry.originium_dust_sieve": "源石尘滤网",
   "block.create_originium_industry.originium_dust_nozzle": "源石尘分散滤网",
   "block.create_originium_industry.originium_dust_meter": "源石尘计",
+  "block.create_originium_industry.raw_originium_ore": "粗制源石矿",
+  "block.create_originium_industry.deepslate_raw_originium_ore": "深板岩粗制源石矿",
   "item.create_originium_industry.originium_debug_wand": "源石调试器",
 
   "item.create_originium_industry.molten_originium_bucket": "熔融源石桶",

@@ -1,0 +1,17 @@
+{
+  "feature": "create_originium_industry:raw_originium_ore",
+  "placement": [
+    {
+      "type": "create_originium_industry:raw_originium_count"
+    },
+    {
+      "type": "minecraft:in_square"
+    },
+    {
+      "type": "create_originium_industry:raw_originium_height"
+    },
+    {
+      "type": "minecraft:biome"
+    }
+  ]
+}

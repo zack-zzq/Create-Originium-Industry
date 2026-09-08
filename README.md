@@ -14,7 +14,7 @@ A [Create](https://github.com/Creators-of-Create/Create) addon about a new indus
 
 v1 is a closed loop, not a pile of extra materials: **dust pollution → purification → reactor**.
 
-⚠ Still **WIP**. Survival is not complete (no worldgen, no purest-originium line, no reactor).
+⚠ Still **WIP**. Survival processing exists; the purest-originium line and reactor are not in yet.
 
 ## Requirements
 
@@ -57,6 +57,10 @@ Two industrial routes:
 | `originium_dust_sieve` | Originium Dust Sieve | 源石尘滤网 |
 | `originium_dust_nozzle` | Originium Dust Nozzle | 源石尘分散滤网 |
 | `originium_dust_meter` | Originium Dust Meter | 源石尘计 |
+| `raw_originium_ore` | Raw Originium Ore | 粗制源石矿 |
+| `deepslate_raw_originium_ore` | Deepslate Raw Originium Ore | 深板岩粗制源石矿 |
+
+### Fluids
 
 | Id | English | 中文 |
 |---|---|---|
@@ -67,7 +71,7 @@ Two industrial routes:
 ### Processing (Create)
 
 ```
-raw originium
+raw originium (mined from uncommon Overworld ore, iron pickaxe)
   ├─ milling / crushing → originium shards
   └─ (heated mix 4 shards) → originium
         └─ superheated mix → molten originium
@@ -79,6 +83,7 @@ redstone + sugar + lapis + water (heated mix) → originium catalyst (培养液)
 ### Systems (in progress)
 
 - Per-chunk originium dust, diffusion, and decay (overworld)
+- Uncommon Overworld raw originium ore (`raw_originium_ore` / `deepslate_raw_originium_ore`, config `worldgen.*`)
 - Create mill / crush / mix hooks that emit dust via `IOridustProducer` (datapack `coi_dust_emission` JSON; config overrides frozen recipe ids). Heated shard mix and superheated melt emit more than cold milling; `catalyst_mixing` is heated but ships amount 0 (no originium feedstock). No furnace/fan recipes.
 - Player exposure, Originium Exposure Sickness, and a 4-stage infection course (weakness → restricted → growth → bargain)
 - Protection gear (`originium_respirator` + `originium_filter_canister`) tagged `originium_protection`; wearing a full set halves exposure gain. Spent gear drops `originium_dust`.
@@ -87,7 +92,7 @@ redstone + sugar + lapis + water (heated mix) → originium catalyst (培养液)
 - Basin / process sieve (`originium_dust_sieve`) attaches to a Basin, mill, mixer, or crushing controller and captures process emission as byproduct (no GUI, no RPM)
 - Encased Fan nozzle (`originium_dust_nozzle`) redirects chunk dust downwind without voiding it
 - Dust meter (`originium_dust_meter`) shows chunk concentration, risk tier, and a protection hint (goggles / right-click / comparator); BE snapshot is enough for the placing player without full #17 net sync
-- Common + client config (`create_originium_industry-common.toml` / `-client.toml`): dust, exposure, infection stages, filter, protection gear, reactor stubs, dedicated-server spread policy, accessibility
+- Common + client config (`create_originium_industry-common.toml` / `-client.toml`): dust, exposure, infection stages, filter, worldgen, protection gear, reactor stubs, dedicated-server spread policy, accessibility
 - `/coi_debug` and the debug wand for inspection
 
 Dust and pollution are being reworked. Treat `core/oridust` as unstable; **do not rename registry ids** — see [docs/REGISTRY.md](docs/REGISTRY.md).

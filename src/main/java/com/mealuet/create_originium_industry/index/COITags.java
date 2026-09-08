@@ -35,6 +35,8 @@ public class COITags {
         public static final TagKey<Block> DUST_SOURCES = tag("dust_sources");
         /** Blocks that can filter/remove originium dust from a chunk */
         public static final TagKey<Block> DUST_FILTERS = tag("dust_filters");
+        /** Stone / deepslate raw originium ore blocks */
+        public static final TagKey<Block> RAW_ORIGINIUM_ORES = tag("raw_originium_ores");
 
         private static TagKey<Block> tag(String name) {
             return TagKey.create(Registries.BLOCK,

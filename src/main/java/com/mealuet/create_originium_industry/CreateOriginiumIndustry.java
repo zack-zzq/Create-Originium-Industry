@@ -54,6 +54,7 @@ public class CreateOriginiumIndustry
         COIFluids.register();
         COIEffects.register(modEventBus);
         COIAttachments.register(modEventBus);
+        COIWorldGen.register(modEventBus);
 
         // --- Game Event Handlers ---
         NeoForge.EVENT_BUS.register(DustCacheManager.class);

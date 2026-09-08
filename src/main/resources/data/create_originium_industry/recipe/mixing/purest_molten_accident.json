@@ -1,0 +1,17 @@
+{
+  "type": "create:mixing",
+  "heat_requirement": "superheated",
+  "ingredients": [
+    {
+      "type": "fluid_stack",
+      "amount": 100,
+      "fluid": "create_originium_industry:cultured_originium"
+    }
+  ],
+  "results": [
+    {
+      "amount": 100,
+      "id": "create_originium_industry:purest_molten_originium"
+    }
+  ]
+}

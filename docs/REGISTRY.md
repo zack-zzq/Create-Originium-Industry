@@ -39,13 +39,16 @@ stable unless a migration is documented here first.
 | `originium` | 源石 | Originium | |
 | `originium_dust` | 源石尘 | Originium Dust | Item form; chunk pollution is separate |
 | `originium_alloy_ingot` | 源石合金锭 | Originium Alloy Ingot | Also tagged under `c:ingots` |
-| `purest_originium` | 至纯源石 | Purest Originium | Item exists; no survival recipe yet |
+| `purest_originium` | 至纯源石 | Purest Originium | Survival: filter → 培养液 culture → supercool |
 | `originium_dust_sieve` | 源石尘滤网 | Originium Dust Sieve | Placeable Basin/process attachment; also inserted into the kinetic filter |
 | `originium_dust_nozzle` | 源石尘分散滤网 | Originium Dust Nozzle | Encased Fan attachment (block + BlockItem, same id) |
+| `originium_cooling_chamber` | 源石冷却室 | Originium Cooling Chamber | Basin-only supercooling attachment |
 | `originium_debug_wand` | 源石调试器 | Originium Debug Wand | Debug-only; do not add survival recipes |
 | `originium_respirator` | 源石防护面罩 | Originium Respirator | Head-slot Equipable; tagged `originium_protection` |
 | `originium_filter_canister` | 源石滤毒罐 | Originium Filter Canister | Chest-slot Equipable; tagged `originium_protection` |
 | `molten_originium_bucket` | 熔融源石桶 | Molten Originium Bucket | Generated with the fluid |
+| `filtered_molten_originium_bucket` | 过滤熔融源石桶 | Filtered Molten Originium Bucket | Generated with the fluid |
+| `cultured_originium_bucket` | 培养源石液桶 | Cultured Originium Bucket | Filtered molten + 培养液 |
 | `purest_molten_originium_bucket` | 至纯熔融源石桶 | Purest Molten Originium Bucket | Generated with the fluid |
 | `originium_catalyst_bucket` | 培养液桶 | Originium Catalyst Bucket | Display = 培养液; id stays catalyst |
 
@@ -57,6 +60,7 @@ stable unless a migration is documented here first.
 | `originium_dust_sieve` | Process sieve attachment (block + BE share this path with the item). BE NBT: `SieveDurability`, additive `CapturedDust` |
 | `originium_dust_nozzle` | Encased Fan nozzle (block + BE share this path with the item). BE NBT: `LastMoved`, `HasFlow` |
 | `originium_dust_meter` | Dust gauge. BE NBT: `Dust`, `Risk`, `ProtectionPercent` (client packet snapshot; goggles prefer nearby `VisibleDust` cache) |
+| `originium_cooling_chamber` | Basin supercooling attachment (block + BE). BE NBT: `ChamberDurability`, additive `version` (1) |
 | `raw_originium_ore` | Overworld stone ore. Drops frozen item `raw_originium` (silk touch keeps the block). Iron pickaxe. |
 | `deepslate_raw_originium_ore` | Deepslate variant of the same ore / drops |
 
@@ -65,7 +69,9 @@ stable unless a migration is documented here first.
 | Registry id | zh_cn | en_us | Notes |
 |---|---|---|---|
 | `molten_originium` | 熔融源石 | Molten Originium | Density fluid |
-| `purest_molten_originium` | 至纯熔融源石 | Purest Molten Originium | No production recipe yet |
+| `filtered_molten_originium` | 过滤熔融源石 | Filtered Molten Originium | Sieve-gated mixing from molten |
+| `cultured_originium` | 培养源石液 | Cultured Originium | Heated mix of filtered molten + 培养液 |
+| `purest_molten_originium` | 至纯熔融源石 | Purest Molten Originium | **Late intermediate / accident state** — not the clean-route output. Superheating cultured originium (or remelting the purest item) produces this fluid. Recover with a cooling chamber + blue ice. M3 reactor fuel/accident dumps use this; **meltdown does not explode**. |
 | `originium_catalyst` | 培养液 | Originium Catalyst | **Never rename.** Display name is 培养液 |
 
 Still / flowing textures live at `textures/fluid/<id>_still.png` and
@@ -110,6 +116,7 @@ Common config spec is `COIConfig.COMMON_SPEC`. Top-level keys:
 - `infection` *(additive; stage thresholds)*
 - `reactor` *(additive; M3 stub knobs)*
 - `multiplayer` *(additive; dedicated-server spread policy + nearby client dust sync)*
+- `purest_line` *(additive; cooling-chamber durability)*
 - `debug`
 
 Do not rename these sections once a release has shipped. New sections are fine.
@@ -152,6 +159,13 @@ Datapack path is the recipe id (`create_originium_industry:<path>`).
 | `crafting/originium_dust_filter` | `minecraft:crafting_shaped` | kinetic filter |
 | `crafting/originium_respirator` | `minecraft:crafting_shaped` | head-slot dust mask |
 | `crafting/originium_filter_canister` | `minecraft:crafting_shaped` | chest-slot filter tank |
+| `crafting/originium_cooling_chamber` | `minecraft:crafting_shaped` | basin cooling chamber (alloy + blue ice + copper casing) |
+| `mixing/filtered_molten_originium` | `create:mixing` + basin sieve | filtered molten from molten |
+| `mixing/cultured_originium` | `create:mixing` + heated | cultured originium from filtered + 培养液 |
+| `mixing/purest_originium_supercooling` | `create:mixing` + cooling chamber, **no blaze heat**, packed ice | purest originium item |
+| `mixing/purest_molten_accident` | `create:mixing` + superheated | accident: cultured → purest molten |
+| `mixing/purest_originium_melting` | `create:mixing` + superheated | late remelt: purest item → purest molten |
+| `mixing/purest_molten_supercooling` | `create:mixing` + cooling chamber, **no blaze heat**, blue ice | recover purest item from accident fluid |
 
 Dust production for frozen recipe ids is keyed in datapack JSON under
 `data/create_originium_industry/coi_dust_emission/` (recipe / item / item_tag +
@@ -170,6 +184,12 @@ Heat tiers (intentional):
 | `mixing/originium_mixing` | superheated | 200 |
 | `mixing/molten_originium_iron_ingot_mixing` | none (already molten) | 60 |
 | `mixing/catalyst_mixing` | heated | **0** |
+| `mixing/filtered_molten_originium` | none (sieve-gated) | 80 |
+| `mixing/cultured_originium` | heated | 40 |
+| `mixing/purest_originium_supercooling` | none (chamber, reject heat) | 30 |
+| `mixing/purest_molten_accident` | superheated | 250 |
+| `mixing/purest_originium_melting` | superheated | 200 |
+| `mixing/purest_molten_supercooling` | none (chamber, reject heat) | 80 |
 
 **Intentional omissions**
 
@@ -229,6 +249,31 @@ infection. `ori_dust_sickness` stays the exposure-layer effect.
 `create_originium_industry:example/datapack_only` is a shipped mapping (amount
 33) for GameTests / pack authors. It is **not** a real recipe.
 
+### Purest line (basin attachments)
+
+Clean route: **basin sieve** filters molten originium → heated mix with 培养液
+(`originium_catalyst`, never renamed) → **cooling chamber** + packed ice and
+**no blaze heat** → `purest_originium`. Dust still emits on every step
+(sieve converts captured emission to `originium_dust`).
+
+`purest_molten_originium` is **not** that output. Superheating the cultured
+fluid (or remelting the purest item) yields the accident / late intermediate
+fluid. Recover it with a cooling chamber + blue ice. M3 meltdown should dump
+this fluid and chunk dust — never explode blocks or spawn TNT
+(`MeltdownPolicy.explodesBlocks()` is false).
+
+Create mixing JSON cannot express the sieve / chamber / no-heat gates. Extra
+matching lives at `data/<namespace>/coi_basin_process/*.json`:
+
+```json
+{ "recipe": "create_originium_industry:mixing/filtered_molten_originium", "require_sieve": true }
+{ "recipe": "create_originium_industry:mixing/purest_originium_supercooling", "require_cooling_chamber": true, "reject_heat": true }
+```
+
+`reject_heat` fails when the block under the Basin is a fading/kindled/seething
+blaze burner. Unlock timing: superheat (melt) + alloy ingot + blue ice for the
+chamber craft; packed ice per supercool.
+
 ## Tags
 
 ### Published (`c` namespace)
@@ -245,6 +290,8 @@ infection. `ori_dust_sickness` stays the exposure-layer effect.
 | `c:fluid/molten_originium` | `molten_originium` | Frozen |
 | `c:fluid/purest_molten_originium` | `purest_molten_originium` | Frozen |
 | `c:fluid/originium_catalyst` | `originium_catalyst` | Frozen |
+| `c:fluid/filtered_molten_originium` | `filtered_molten_originium` | Additive |
+| `c:fluid/cultured_originium` | `cultured_originium` | Additive |
 
 ### Declared in `COITags` (`create_originium_industry` namespace)
 
@@ -256,7 +303,7 @@ infection. `ori_dust_sickness` stays the exposure-layer effect.
 | `block/dust_sources` | blocks that emit dust | present (empty; future COI machines) |
 | `block/dust_filters` | blocks that remove/modify dust | present (`originium_dust_filter`, `originium_dust_sieve`, `originium_dust_nozzle`) |
 | `block/raw_originium_ores` | stone + deepslate raw originium ore | present |
-| `fluid/originium_fluids` | all originium fluids | present |
+| `fluid/originium_fluids` | all originium fluids | present (includes filtered + cultured) |
 
 Do not put `originium_debug_wand` in material tags. Alloy ingot is an ingot,
 not an `originium_materials` member (see `COITags` comment).
@@ -290,7 +337,6 @@ New ids are fine. Do not reuse a frozen id for a different object.
 
 Expected (not frozen until registered):
 
-- Purification intermediates for the purest line
 - Reactor blocks / block entities
 - Ponder / JEI lang keys
 

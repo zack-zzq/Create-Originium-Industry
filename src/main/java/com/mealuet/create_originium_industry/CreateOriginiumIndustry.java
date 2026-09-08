@@ -8,6 +8,7 @@ import com.mealuet.create_originium_industry.core.oridust.DustEmissionIndex;
 import com.mealuet.create_originium_industry.core.oridust.DustSyncTracker;
 import com.mealuet.create_originium_industry.core.oridust.PlayerDeathDustHandler;
 import com.mealuet.create_originium_industry.core.oridust.PlayerExposureHandler;
+import com.mealuet.create_originium_industry.core.purest.BasinProcessIndex;
 import com.mealuet.create_originium_industry.index.*;
 import com.mealuet.create_originium_industry.network.COINetwork;
 import com.mojang.logging.LogUtils;
@@ -63,6 +64,7 @@ public class CreateOriginiumIndustry
         NeoForge.EVENT_BUS.register(DustDiffusionEngine.class);
         NeoForge.EVENT_BUS.register(DustSyncTracker.class);
         NeoForge.EVENT_BUS.register(DustEmissionIndex.class);
+        NeoForge.EVENT_BUS.register(BasinProcessIndex.class);
         NeoForge.EVENT_BUS.register(PlayerExposureHandler.class);
         NeoForge.EVENT_BUS.register(PlayerDeathDustHandler.class);
         NeoForge.EVENT_BUS.register(COICommands.class);

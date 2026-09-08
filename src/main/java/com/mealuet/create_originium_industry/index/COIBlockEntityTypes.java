@@ -1,6 +1,7 @@
 package com.mealuet.create_originium_industry.index;
 
 import com.mealuet.create_originium_industry.CreateOriginiumIndustry;
+import com.mealuet.create_originium_industry.block.CoolingChamberBlockEntity;
 import com.mealuet.create_originium_industry.block.DustFilterBlockEntity;
 import com.mealuet.create_originium_industry.block.DustMeterBlockEntity;
 import com.mealuet.create_originium_industry.block.DustNozzleBlockEntity;
@@ -25,6 +26,11 @@ public class COIBlockEntityTypes {
     public static final BlockEntityEntry<DustNozzleBlockEntity> DUST_NOZZLE = CreateOriginiumIndustry.REGISTRATE
             .blockEntity("originium_dust_nozzle", DustNozzleBlockEntity::new)
             .validBlock(COIBlocks.DUST_NOZZLE)
+            .register();
+
+    public static final BlockEntityEntry<CoolingChamberBlockEntity> COOLING_CHAMBER = CreateOriginiumIndustry.REGISTRATE
+            .blockEntity("originium_cooling_chamber", CoolingChamberBlockEntity::new)
+            .validBlock(COIBlocks.COOLING_CHAMBER)
             .register();
 
     public static final BlockEntityEntry<DustMeterBlockEntity> DUST_METER = CreateOriginiumIndustry.REGISTRATE

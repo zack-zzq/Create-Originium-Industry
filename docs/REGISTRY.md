@@ -42,7 +42,9 @@ stable unless a migration is documented here first.
 | `purest_originium` | 至纯源石 | Purest Originium | Survival: filter → 培养液 culture → supercool |
 | `originium_dust_sieve` | 源石尘滤网 | Originium Dust Sieve | Placeable Basin/process attachment; also inserted into the kinetic filter |
 | `originium_dust_nozzle` | 源石尘分散滤网 | Originium Dust Nozzle | Encased Fan attachment (block + BlockItem, same id) |
-| `originium_cooling_chamber` | 源石冷却室 | Originium Cooling Chamber | Basin-only supercooling attachment |
+| `originium_cooling_chamber` | 源石冷却室 | Originium Cooling Chamber | Basin supercooling + reactor cooling attachment |
+| `originium_super_cooling_chamber` | 源石超级冷却室 | Originium Super Cooling Chamber | Super snow-golem cooling attachment |
+| `originium_power_core` | 源石动力核心 | Originium Power Core | M3 kinetic generator (BlockItem) |
 | `originium_debug_wand` | 源石调试器 | Originium Debug Wand | Debug-only; do not add survival recipes |
 | `originium_respirator` | 源石防护面罩 | Originium Respirator | Head-slot Equipable; tagged `originium_protection` |
 | `originium_filter_canister` | 源石滤毒罐 | Originium Filter Canister | Chest-slot Equipable; tagged `originium_protection` |
@@ -55,6 +57,8 @@ stable unless a migration is documented here first.
 | `cultured_originium_bucket` | 培养源石液桶 | Cultured Originium Bucket | Filtered molten + 培养液 |
 | `purest_molten_originium_bucket` | 至纯熔融源石桶 | Purest Molten Originium Bucket | Generated with the fluid |
 | `originium_catalyst_bucket` | 培养液桶 | Originium Catalyst Bucket | Display = 培养液; id stays catalyst |
+| `originium_coolant_bucket` | 源石冷却液桶 | Originium Coolant Bucket | Generated with the fluid |
+| `hot_water_bucket` | 热水桶 | Hot Water Bucket | Generated with the fluid |
 
 ### Blocks and block entities
 
@@ -67,7 +71,9 @@ stable unless a migration is documented here first.
 | `originium_core_housing` | Denser M3 shell. Same tags as the casing; stronger per-face emission seal. No BE. |
 | `originium_dust_nozzle` | Encased Fan nozzle (block + BE share this path with the item). BE NBT: `LastMoved`, `HasFlow` |
 | `originium_dust_meter` | Dust gauge. BE NBT: `Dust`, `Risk`, `ProtectionPercent` (client packet snapshot; goggles prefer nearby `VisibleDust` cache) |
-| `originium_cooling_chamber` | Basin supercooling attachment (block + BE). BE NBT: `ChamberDurability`, additive `version` (1) |
+| `originium_cooling_chamber` | Basin supercooling + reactor cooling attachment (block + BE). BE NBT: `ChamberDurability`, additive `version` (1) |
+| `originium_super_cooling_chamber` | Super snow-golem cooling. Shares `originium_cooling_chamber` BE type. New id. |
+| `originium_power_core` | Kinetic generator (block + BE). BE NBT: `version` (1), `FuelCount`, `FuelTicks`, `Instability`, `Shutdown`, `Heat`/`Capacity`/`Cooling`/`Stability`, `Coolant`/`Water`/`HotWater` tanks |
 | `raw_originium_ore` | Overworld stone ore. Drops frozen item `raw_originium` (silk touch keeps the block). Iron pickaxe. |
 | `deepslate_raw_originium_ore` | Deepslate variant of the same ore / drops |
 
@@ -80,6 +86,8 @@ stable unless a migration is documented here first.
 | `cultured_originium` | 培养源石液 | Cultured Originium | Heated mix of filtered molten + 培养液 |
 | `purest_molten_originium` | 至纯熔融源石 | Purest Molten Originium | **Late intermediate / accident state** — not the clean-route output. Superheating cultured originium (or remelting the purest item) produces this fluid. Recover with a cooling chamber + blue ice. M3 reactor fuel/accident dumps use this; **meltdown does not explode**. |
 | `originium_catalyst` | 培养液 | Originium Catalyst | **Never rename.** Display name is 培养液 |
+| `originium_coolant` | 源石冷却液 | Originium Coolant | Reactor heat-capacity fluid (C). Mix water + 培养液 + packed ice |
+| `hot_water` | 热水 | Hot Water | Unstable conversion / meltdown heat dump. Not an originium fluid |
 
 Still / flowing textures live at `textures/fluid/<id>_still.png` and
 `textures/fluid/<id>_flow.png`.
@@ -121,7 +129,7 @@ Common config spec is `COIConfig.COMMON_SPEC`. Top-level keys:
 - `worldgen` *(additive; raw originium ore frequency / height)*
 - `protection` *(additive; respirator + canister)*
 - `infection` *(additive; stage thresholds)*
-- `reactor` *(additive; M3 stub knobs)*
+- `reactor` *(additive; M3 power-core knobs. Frozen keys keep names; coolant/chamber/RPM keys added beside them)*
 - `multiplayer` *(additive; dedicated-server spread policy + nearby client dust sync)*
 - `purest_line` *(additive; cooling-chamber durability)*
 - `alloy_parts` *(additive; housing seal, alloy sieve, sealed canister bonus)*
@@ -173,6 +181,8 @@ Datapack path is the recipe id (`create_originium_industry:<path>`).
 | `item_application/originium_alloy_sieve` | `create:item_application` | same sieve upgrade |
 | `crafting/originium_sealed_canister` | `minecraft:crafting_shaped` | filter canister + alloy casing + alloy ingot |
 | `crafting/originium_core_housing` | `minecraft:crafting_shaped` | 4 alloy casings + cooling chamber |
+| `crafting/originium_power_core` | `minecraft:crafting_shaped` | 3 core housing + purest originium + shaft |
+| `crafting/originium_super_cooling_chamber` | `minecraft:crafting_shaped` | cooling chamber + snow blocks + pumpkin + packed ice |
 | `crafting/originium_cooling_chamber` | `minecraft:crafting_shaped` | basin cooling chamber (alloy + blue ice + copper casing) |
 | `mixing/filtered_molten_originium` | `create:mixing` + basin sieve | filtered molten from molten |
 | `mixing/cultured_originium` | `create:mixing` + heated | cultured originium from filtered + 培养液 |
@@ -180,6 +190,7 @@ Datapack path is the recipe id (`create_originium_industry:<path>`).
 | `mixing/purest_molten_accident` | `create:mixing` + superheated | accident: cultured → purest molten |
 | `mixing/purest_originium_melting` | `create:mixing` + superheated | late remelt: purest item → purest molten |
 | `mixing/purest_molten_supercooling` | `create:mixing` + cooling chamber, **no blaze heat**, blue ice | recover purest item from accident fluid |
+| `mixing/originium_coolant` | `create:mixing` | water + 培养液 + packed ice → originium coolant |
 
 Dust production for frozen recipe ids is keyed in datapack JSON under
 `data/create_originium_industry/coi_dust_emission/` (recipe / item / item_tag +
@@ -279,7 +290,29 @@ Clean route: **basin sieve** filters molten originium → heated mix with 培养
 fluid (or remelting the purest item) yields the accident / late intermediate
 fluid. Recover it with a cooling chamber + blue ice. M3 meltdown should dump
 this fluid and chunk dust — never explode blocks or spawn TNT
-(`MeltdownPolicy.explodesBlocks()` is false).
+(`MeltdownPolicy.explodesBlocks()` is false). The power core follows the
+same contract: meltdown dumps `meltdownDustBurst` into the chunk and
+consumes remaining `purest_originium`.
+
+### Power core (M3)
+
+`originium_power_core` is a Create kinetic generator. Adjacent
+`#create_originium_industry:reactor_housing` is required to run. Insert
+`purest_originium` by right-click (no GUI). Internal tanks hold coolant /
+water / hot water; pipes and buckets work through a fluid capability.
+
+Stability: **S = C × M − H**.
+
+- **H** = `coreHeatValue` × (`purestHeatCapacity` when fueled)
+- **C** = Σ tank mB × per-mB heat capacity (`coolantHeatPerMb` / `waterHeatPerMb` / `hotWaterHeatPerMb`)
+- **M** = `coolingMultiplier` × attached chamber cooling (`normalChamberCooling` / `superChamberCooling`)
+- **S > 0** stable: fluids convert toward coolant
+- **S ≈ 0** (`|S| ≤ stabilityEpsilon`) borderline
+- **S < 0** unstable: fluids convert toward hot water; dust leaks into the chunk
+- Instability accumulates via `instabilityGainPerTick` / `instabilityDecayPerTick`. At `meltdownThreshold` (if `enableReactorMeltdown`) the core shuts down and dumps dust.
+
+The basin `originium_cooling_chamber` also attaches to the core (normal
+tier). `originium_super_cooling_chamber` is the snow-golem super tier.
 
 Create mixing JSON cannot express the sieve / chamber / no-heat gates. Extra
 matching lives at `data/<namespace>/coi_basin_process/*.json`:
@@ -324,6 +357,8 @@ Housing runs in `DustSubmission` on `MACHINE_PROCESSING` **before** purifiers.
 | `c:fluid/molten_originium` | `molten_originium` | Frozen |
 | `c:fluid/purest_molten_originium` | `purest_molten_originium` | Frozen |
 | `c:fluid/originium_catalyst` | `originium_catalyst` | Frozen |
+| `c:fluid/originium_coolant` | `originium_coolant` | Additive |
+| `c:fluid/hot_water` | `hot_water` | Additive |
 | `c:fluid/filtered_molten_originium` | `filtered_molten_originium` | Additive |
 | `c:fluid/cultured_originium` | `cultured_originium` | Additive |
 
@@ -339,8 +374,9 @@ Housing runs in `DustSubmission` on `MACHINE_PROCESSING` **before** purifiers.
 | `block/dust_filters` | blocks that remove/modify dust | present (`originium_dust_filter`, `originium_dust_sieve`, `originium_alloy_sieve`, `originium_dust_nozzle`) |
 | `block/pollution_resistant` | adjacent housing that seals process emission | present (`originium_alloy_casing`, `originium_core_housing`) |
 | `block/reactor_housing` | M3 shell contract | present (same as pollution_resistant) |
+| `block/reactor_cooling` | Power-core cooling attachments | present (cooling chamber + super chamber) |
 | `block/raw_originium_ores` | stone + deepslate raw originium ore | present |
-| `fluid/originium_fluids` | all originium fluids | present (includes filtered + cultured) |
+| `fluid/originium_fluids` | all originium fluids | present (includes filtered + cultured + coolant; not hot water) |
 
 Do not put `originium_debug_wand` in material tags. Alloy ingot is an ingot,
 not an `originium_materials` member (see `COITags` comment).
@@ -374,13 +410,11 @@ New ids are fine. Do not reuse a frozen id for a different object.
 
 Expected (not frozen until registered):
 
-- Reactor blocks / block entities (power core; housing ids above are the shell contract)
 - Ponder / JEI lang keys
 
 ## Debug surface
 
 - Command: `/coi_debug` (OP 2, gated by `debug.enableDebugCommands`)
 - Item: `originium_debug_wand`
-- Reactor subcommands are stubs until the reactor exists; keep the command
-  names (`reactor status`, `reactor stabilize`) if possible so docs and packs
-  do not churn.
+- Reactor subcommands read a targeted power core (`reactor status`, `reactor stabilize`).
+  Command names stay frozen.

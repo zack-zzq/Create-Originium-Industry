@@ -3,6 +3,7 @@
     "create_originium_industry:raw_originium_ore",
     "create_originium_industry:deepslate_raw_originium_ore",
     "create_originium_industry:originium_alloy_casing",
-    "create_originium_industry:originium_core_housing"
+    "create_originium_industry:originium_core_housing",
+    "create_originium_industry:originium_power_core"
   ]
 }

@@ -14,7 +14,7 @@ A [Create](https://github.com/Creators-of-Create/Create) addon about a new indus
 
 v1 is a closed loop, not a pile of extra materials: **dust pollution → purification → reactor**.
 
-⚠ Still **WIP**. Survival processing includes the purest-originium line; the reactor is not in yet.
+⚠ Still **WIP**. Survival processing includes the purest-originium line; the reactor Alpha (power core + cooling + stability) is in.
 
 ## Requirements
 
@@ -45,7 +45,8 @@ Two industrial routes:
 | `purest_originium` | Purest Originium | 至纯源石 |
 | `originium_dust_sieve` | Originium Dust Sieve | 源石尘滤网 (Basin/process attachment; also kinetic-filter insert) |
 | `originium_dust_nozzle` | Originium Dust Nozzle | 源石尘分散滤网 (Encased Fan attachment) |
-| `originium_cooling_chamber` | Originium Cooling Chamber | 源石冷却室 (Basin supercooling attachment) |
+| `originium_cooling_chamber` | Originium Cooling Chamber | 源石冷却室 (Basin supercooling + reactor cooling attachment) |
+| `originium_super_cooling_chamber` | Originium Super Cooling Chamber | 源石超级冷却室 (snow-golem super cooling attachment) |
 | `originium_respirator` | Originium Respirator | 源石防护面罩 (head slot) |
 | `originium_filter_canister` | Originium Filter Canister | 源石滤毒罐 (chest slot) |
 | `originium_sealed_canister` | Originium Sealed Canister | 源石密封滤毒罐 (alloy chest upgrade) |
@@ -60,6 +61,8 @@ Two industrial routes:
 | `originium_dust_nozzle` | Originium Dust Nozzle | 源石尘分散滤网 |
 | `originium_dust_meter` | Originium Dust Meter | 源石尘计 |
 | `originium_cooling_chamber` | Originium Cooling Chamber | 源石冷却室 |
+| `originium_super_cooling_chamber` | Originium Super Cooling Chamber | 源石超级冷却室 |
+| `originium_power_core` | Originium Power Core | 源石动力核心 |
 | `originium_alloy_casing` | Originium Alloy Casing | 源石合金壳体 |
 | `originium_alloy_sieve` | Originium Alloy Sieve | 源石合金滤网 |
 | `originium_core_housing` | Originium Core Housing | 源石核心外壳 |
@@ -75,6 +78,8 @@ Two industrial routes:
 | `cultured_originium` | Cultured Originium | 培养源石液 |
 | `purest_molten_originium` | Purest Molten Originium | 至纯熔融源石 (accident / late remelt, not the clean output) |
 | `originium_catalyst` | Originium Catalyst | **培养液** (id stays `originium_catalyst`) |
+| `originium_coolant` | Originium Coolant | 源石冷却液 (reactor C; mix water + 培养液 + packed ice) |
+| `hot_water` | Hot Water | 热水 (unstable conversion / meltdown heat dump) |
 
 ### Processing (Create)
 
@@ -99,6 +104,9 @@ andesite casing + originium alloy → originium alloy casing
 originium dust sieve + originium alloy → originium alloy sieve
 filter canister + alloy casing + alloy ingot → originium sealed canister
 4 alloy casings + cooling chamber → originium core housing
+3 core housing + purest originium + shaft → originium power core
+cooling chamber + snow blocks + pumpkin + packed ice → originium super cooling chamber
+water + 培养液 + packed ice → originium coolant
 ```
 
 ### Systems (in progress)
@@ -113,8 +121,9 @@ filter canister + alloy casing + alloy ingot → originium sealed canister
 - Basin / process sieve (`originium_dust_sieve`) attaches to a Basin, mill, mixer, or crushing controller and captures process emission as byproduct (no GUI, no RPM). Alloy sieve is the same attachment with higher capture/durability.
 - Encased Fan nozzle (`originium_dust_nozzle`) redirects chunk dust downwind without voiding it
 - Dust meter (`originium_dust_meter`) shows chunk concentration, risk tier, and a protection hint (goggles / right-click / comparator)
-- Basin cooling chamber (`originium_cooling_chamber`) attaches to a Basin only (no GUI). Supercooling recipes refuse an active blaze burner. Chamber craft needs alloy + blue ice.
-- Originium alloy casing / core housing placed beside a processing machine cut process emission (10% / 20% per face, cap 50%) before filters run. Both are tagged `reactor_housing` for M3.
+- Basin cooling chamber (`originium_cooling_chamber`) attaches to a Basin (supercooling recipes, no blaze heat) **or** a power core (stability M). Super snow-golem chamber (`originium_super_cooling_chamber`) is the higher-M tier.
+- Originium power core (`originium_power_core`) is a Create kinetic generator. Adjacent `reactor_housing` is required. Right-click purest originium to fuel; buckets / pipes move coolant, water, and hot water. Stability `S = C * M - H`. `S>=0` converts toward coolant; `S<0` converts toward hot water and leaks dust. Meltdown dumps chunk dust and consumes remaining fuel — **no explosion / TNT**.
+- Originium alloy casing / core housing placed beside a processing machine cut process emission (10% / 20% per face, cap 50%) before filters run. Both are tagged `reactor_housing` for the power core.
 - Nearby chunk dust and local-player exposure/infection sync to clients at low frequency (dirty set / on-demand window — not the full map)
 - Common + client config (`create_originium_industry-common.toml` / `-client.toml`): dust, exposure, infection stages, filter, worldgen, protection gear, alloy parts, reactor stubs, dedicated-server spread policy, accessibility
 - `/coi_debug` and the debug wand for inspection
@@ -128,7 +137,7 @@ Dust and pollution are being reworked. Treat `core/oridust` as unstable; **do no
 | **M0** | Tech cleanup: freeze ids, docs, metadata, config skeleton | Done |
 | **M1** | Dust loop MVP: data-driven emission, filters, dust meter, survival source | In progress (simulation refactor) |
 | **M2** | Purest / alloy expansion: filter + 培养液 + supercooling | Survival path in (`purest_originium`); alloy housing / sieve / sealed canister in |
-| **M3** | Reactor: heat, cooling, instability / meltdown | Stub only (`/coi_debug reactor`; meltdown = dust, not explosion) |
+| **M3** | Reactor: heat, cooling, instability / meltdown | Alpha in (power core + chambers + S; meltdown = dust, not explosion) |
 | **M4** | Ponder, GameTests, optional compat (e.g. Create: Aeronautics) | Not started |
 
 M1 must be playable before M3. The reactor depends on dust APIs and the purest fuel chain.

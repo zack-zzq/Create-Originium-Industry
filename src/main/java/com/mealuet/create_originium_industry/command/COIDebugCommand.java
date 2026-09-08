@@ -1,5 +1,6 @@
 package com.mealuet.create_originium_industry.command;
 
+import com.mealuet.create_originium_industry.block.PowerCoreBlockEntity;
 import com.mealuet.create_originium_industry.config.COIConfig;
 import com.mealuet.create_originium_industry.compat.WorldSpace;
 import com.mealuet.create_originium_industry.core.oridust.*;
@@ -9,10 +10,14 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
 
 /**
  * Debug commands for Create: Originium Industry development and testing.
@@ -33,8 +38,8 @@ import net.minecraft.world.level.ChunkPos;
  *   infection
  *     set <amount>           - Set player infection (P3)
  *   reactor
- *     status                 - View reactor status (P6)
- *     stabilize              - Force stabilize reactor (P6)
+ *     status                 - View targeted power core (or config knobs)
+ *     stabilize              - Force stabilize targeted power core
  * </pre>
  */
 public class COIDebugCommand {
@@ -242,9 +247,24 @@ public class COIDebugCommand {
     // ==================== Reactor Commands ====================
 
     private static int reactorStatus(CommandContext<CommandSourceStack> ctx) {
-        ctx.getSource().sendSuccess(() -> Component.translatable(
-                "commands.coi_debug.reactor.status"
-        ), false);
+        PowerCoreBlockEntity core = targetedCore(ctx);
+        if (core != null) {
+            var snap = core.snapshot();
+            ctx.getSource().sendSuccess(() -> Component.translatable(
+                    "commands.coi_debug.reactor.live",
+                    String.format("%.1f", snap.stability()),
+                    String.format("%.1f", snap.heat()),
+                    String.format("%.1f", snap.capacity()),
+                    String.format("%.1f", snap.cooling()),
+                    String.format("%.2f", core.instability()),
+                    core.fuelCount(),
+                    String.valueOf(core.shutdown())
+            ), false);
+        } else {
+            ctx.getSource().sendSuccess(() -> Component.translatable(
+                    "commands.coi_debug.reactor.status"
+            ), false);
+        }
         ctx.getSource().sendSuccess(() -> Component.translatable(
                 "commands.coi_debug.reactor.status.values",
                 COIConfig.REACTOR_CORE_HEAT.get(),
@@ -260,11 +280,32 @@ public class COIDebugCommand {
     }
 
     private static int reactorStabilize(CommandContext<CommandSourceStack> ctx) {
-        // TODO: P6 — force stabilize targeted reactor
+        PowerCoreBlockEntity core = targetedCore(ctx);
+        if (core == null) {
+            ctx.getSource().sendSuccess(() -> Component.translatable(
+                    "commands.coi_debug.reactor.none"
+            ), false);
+            return 0;
+        }
+        core.forceStabilize();
         ctx.getSource().sendSuccess(() -> Component.translatable(
                 "commands.coi_debug.reactor.stabilize"
-        ), false);
+        ), true);
         return 1;
+    }
+
+    private static PowerCoreBlockEntity targetedCore(CommandContext<CommandSourceStack> ctx) {
+        ServerPlayer player = ctx.getSource().getPlayer();
+        if (player == null) {
+            return null;
+        }
+        HitResult hit = player.pick(20.0, 0.0f, false);
+        if (!(hit instanceof BlockHitResult blockHit) || blockHit.getType() == HitResult.Type.MISS) {
+            return null;
+        }
+        BlockPos pos = blockHit.getBlockPos();
+        BlockEntity be = player.level().getBlockEntity(pos);
+        return be instanceof PowerCoreBlockEntity core ? core : null;
     }
 
     // ==================== Helpers ====================

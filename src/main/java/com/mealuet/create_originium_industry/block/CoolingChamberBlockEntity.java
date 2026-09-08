@@ -1,8 +1,8 @@
 package com.mealuet.create_originium_industry.block;
 
 import com.mealuet.create_originium_industry.config.COIClientOptions;
-import com.mealuet.create_originium_industry.config.COIConfig;
 import com.mealuet.create_originium_industry.config.UiDetailLevel;
+import com.mealuet.create_originium_industry.core.reactor.CoolingKind;
 import com.simibubi.create.api.equipment.goggles.IHaveGoggleInformation;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
@@ -30,7 +30,15 @@ public class CoolingChamberBlockEntity extends SmartBlockEntity implements IHave
 
     public CoolingChamberBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
-        this.durability = COIConfig.coolingChamberDurability();
+        this.durability = coolingKind().durability();
+    }
+
+    public CoolingKind coolingKind() {
+        return CoolingKind.fromBlock(getBlockState().getBlock());
+    }
+
+    public double coolingFactor() {
+        return isChamberActive() ? coolingKind().coolingFactor() : 0.0;
     }
 
     @Override
@@ -49,7 +57,7 @@ public class CoolingChamberBlockEntity extends SmartBlockEntity implements IHave
      * GameTest helper: full durability without placing via item.
      */
     public void activateForGameTest() {
-        this.durability = COIConfig.coolingChamberDurability();
+        this.durability = coolingKind().durability();
         setChanged();
     }
 
@@ -65,7 +73,7 @@ public class CoolingChamberBlockEntity extends SmartBlockEntity implements IHave
     }
 
     public void sendStatusMessage(ServerPlayer player) {
-        int max = COIConfig.coolingChamberDurability();
+        int max = coolingKind().durability();
         int percent = max > 0 ? (durability * 100 / max) : 0;
         player.sendSystemMessage(Component.translatable(
                 "block.create_originium_industry.originium_cooling_chamber.status",
@@ -78,7 +86,7 @@ public class CoolingChamberBlockEntity extends SmartBlockEntity implements IHave
         if (COIClientOptions.uiDetailLevel() == UiDetailLevel.MINIMAL) {
             return true;
         }
-        int max = COIConfig.coolingChamberDurability();
+        int max = coolingKind().durability();
         int percent = max > 0 ? (durability * 100 / max) : 0;
         tooltip.add(Component.literal("    ").append(Component.translatable(
                 "block.create_originium_industry.originium_cooling_chamber.goggle.durability",
@@ -91,7 +99,9 @@ public class CoolingChamberBlockEntity extends SmartBlockEntity implements IHave
             )));
         }
         tooltip.add(Component.literal("    ").append(Component.translatable(
-                "block.create_originium_industry.originium_cooling_chamber.goggle.hint"
+                coolingKind() == CoolingKind.SUPER
+                        ? "block.create_originium_industry.originium_super_cooling_chamber.goggle.hint"
+                        : "block.create_originium_industry.originium_cooling_chamber.goggle.hint"
         )));
         return true;
     }

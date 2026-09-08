@@ -5,7 +5,10 @@ import com.mealuet.create_originium_industry.block.CoolingChamberBlock;
 import com.mealuet.create_originium_industry.block.DustFilterBlock;
 import com.mealuet.create_originium_industry.block.DustMeterBlock;
 import com.mealuet.create_originium_industry.block.DustNozzleBlock;
+import com.mealuet.create_originium_industry.block.PowerCoreBlock;
 import com.mealuet.create_originium_industry.block.ProcessSieveBlock;
+import com.mealuet.create_originium_industry.config.COIConfig;
+import com.simibubi.create.api.stress.BlockStressValues;
 import com.tterrag.registrate.util.entry.BlockEntry;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
@@ -110,6 +113,38 @@ public class COIBlocks {
                     .sound(SoundType.COPPER)
                     .noOcclusion()
             )
+            .simpleItem()
+            .register();
+
+    /**
+     * Super snow-golem cooling chamber. New id — not a rename of the basin chamber.
+     * Same attachment BE; higher {@code M} on a power core.
+     */
+    public static final BlockEntry<CoolingChamberBlock> SUPER_COOLING_CHAMBER = CreateOriginiumIndustry.REGISTRATE
+            .block("originium_super_cooling_chamber", CoolingChamberBlock::new)
+            .properties(p -> p
+                    .strength(1.8f)
+                    .sound(SoundType.COPPER)
+                    .noOcclusion()
+            )
+            .simpleItem()
+            .register();
+
+    /**
+     * M3 originium power core. Create kinetic generator. Requires adjacent
+     * {@code reactor_housing} and cooling-chamber attachments.
+     */
+    public static final BlockEntry<PowerCoreBlock> POWER_CORE = CreateOriginiumIndustry.REGISTRATE
+            .block("originium_power_core", PowerCoreBlock::new)
+            .properties(p -> p
+                    .mapColor(MapColor.COLOR_BLACK)
+                    .strength(5.0f, 12.0f)
+                    .sound(SoundType.METAL)
+                    .requiresCorrectToolForDrops()
+                    .noOcclusion()
+            )
+            .onRegister(BlockStressValues.setGeneratorSpeed(32))
+            .onRegister(block -> BlockStressValues.CAPACITIES.register(block, COIConfig::reactorStressCapacity))
             .simpleItem()
             .register();
 

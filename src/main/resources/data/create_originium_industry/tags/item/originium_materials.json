@@ -1,0 +1,9 @@
+{
+  "values": [
+    "create_originium_industry:raw_originium",
+    "create_originium_industry:originium_shard",
+    "create_originium_industry:originium",
+    "create_originium_industry:originium_dust",
+    "create_originium_industry:purest_originium"
+  ]
+}

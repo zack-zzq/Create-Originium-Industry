@@ -122,9 +122,34 @@ Datapack path is the recipe id (`create_originium_industry:<path>`).
 
 Dust production for frozen recipe ids is keyed in datapack JSON under
 `data/create_originium_industry/coi_dust_emission/` (recipe / item / item_tag +
-`amount`). `COIConfig` `dust_production.*` values **override** those five frozen
-ids so existing server.toml knobs keep working. Other recipe ids use the
-datapack amount only. **Keep these ids working** (or data-gen aliases).
+`amount`). `COIConfig` `dust_production.*` values **override** the five
+processing ids (mill / crush / heated shard mix / superheated melt / alloy mix)
+so existing server.toml knobs keep working. Other recipe ids use the datapack
+amount only. **Keep these ids working** (or data-gen aliases).
+
+Heat tiers (intentional):
+
+| Recipe | Heat | Default dust |
+|---|---|---|
+| `milling/raw_originium_milling` | none | 80 |
+| `crushing/raw_originium_crushing` | none | 100 |
+| `mixing/originium_shard_mixing` | heated | 120 |
+| `mixing/originium_mixing` | superheated | 200 |
+| `mixing/molten_originium_iron_ingot_mixing` | none (already molten) | 60 |
+| `mixing/catalyst_mixing` | heated | **0** |
+
+**Intentional omissions**
+
+- `mixing/catalyst_mixing` ships `amount: 0`. It is heated, but the feedstock is
+  redstone / sugar / lapis / water — no originium — so it must not pollute.
+- No furnace, smoker, blast-furnace, or encased-fan processing recipes exist
+  for originium; there are no extra mixins for those machines.
+- Create 6.0.4 stores the *recipe type* on `ProcessingRecipe.id` (`create:mixing`,
+  `create:milling`, `create:crushing`), not the datapack id. Machine mixins pass
+  the live `Recipe` and `DustProductionHelper` resolves `RecipeHolder.id()`.
+- Unmapped processing recipes that still consume originium items/fluids emit via
+  a heat-aware fallback (superheated → melting amount, heated → shard-mix amount,
+  originium fluid → alloy amount, else tagged-item amount).
 
 JSON files live at `data/<namespace>/coi_dust_emission/*.json`:
 
@@ -136,7 +161,9 @@ JSON files live at `data/<namespace>/coi_dust_emission/*.json`:
 
 Machines submit through `IOridustProducer` (`DustSubmission`). Devices that
 reduce emission or absorb chunk dust implement `IDustPurifier` (the kinetic
-filter does; Basin sieve attachments will too).
+filter does; Basin sieve attachments will too). A spinning filter with a sieve
+on the emit block or a neighbouring face captures a configured fraction and
+converts it to `originium_dust` (remainder stays in `ByproductBuffer`).
 
 `create_originium_industry:example/datapack_only` is a shipped mapping (amount
 33) for GameTests / pack authors. It is **not** a real recipe.

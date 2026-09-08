@@ -9,6 +9,11 @@
   "item.create_originium_industry.purest_originium": "Purest Originium",
   "item.create_originium_industry.originium_dust_sieve": "Originium Dust Sieve",
   "item.create_originium_industry.originium_dust_nozzle": "Originium Dust Nozzle",
+
+  "block.create_originium_industry.originium_dust_filter": "Originium Dust Filter",
+  "block.create_originium_industry.originium_dust_sieve": "Originium Dust Sieve",
+  "block.create_originium_industry.originium_dust_nozzle": "Originium Dust Nozzle",
+  "block.create_originium_industry.originium_dust_meter": "Originium Dust Meter",
   "item.create_originium_industry.originium_debug_wand": "Originium Debug Wand",
 
   "item.create_originium_industry.molten_originium_bucket": "Molten Originium Bucket",
@@ -58,6 +63,24 @@
   "block.create_originium_industry.originium_dust_filter.sieve_inserted": "Inserted originium dust sieve",
   "block.create_originium_industry.originium_dust_filter.already_has_sieve": "A sieve is already installed",
   "block.create_originium_industry.originium_dust_filter.sieve_removed": "Removed originium dust sieve",
+
+  "block.create_originium_industry.originium_dust_sieve.status": "Process sieve durability: %s / %s (%s%%)",
+  "block.create_originium_industry.originium_dust_sieve.capture": "Captures %s%% of neighbouring process emission",
+  "block.create_originium_industry.originium_dust_sieve.goggle.durability": "Sieve: %s%%",
+  "block.create_originium_industry.originium_dust_sieve.goggle.detail": "Sieve remaining: %s / %s",
+  "block.create_originium_industry.originium_dust_sieve.goggle.capture": "Emission capture: %s%%",
+
+  "block.create_originium_industry.originium_dust_nozzle.no_airflow": "No Encased Fan airflow",
+  "block.create_originium_industry.originium_dust_nozzle.status": "Airflow %s — last moved %s dust downwind",
+  "block.create_originium_industry.originium_dust_nozzle.goggle.no_airflow": "No airflow",
+  "block.create_originium_industry.originium_dust_nozzle.goggle.flow": "Redirecting %s dust/cycle",
+
+  "block.create_originium_industry.originium_dust_meter.status": "Chunk dust: %s  %s",
+  "block.create_originium_industry.originium_dust_meter.protection.none": "No protection nearby — full exposure",
+  "block.create_originium_industry.originium_dust_meter.protection.active": "Nearby protection: %s%% less exposure",
+  "block.create_originium_industry.originium_dust_meter.goggle.dust": "Concentration: %s",
+  "block.create_originium_industry.originium_dust_meter.goggle.protection": "Protection: -%s%% exposure",
+  "block.create_originium_industry.originium_dust_meter.goggle.no_protection": "No protection (full exposure)",
 
   "dust_level.create_originium_industry.safe": "§a[Safe]",
   "dust_level.create_originium_industry.low": "§e[Low Risk]",

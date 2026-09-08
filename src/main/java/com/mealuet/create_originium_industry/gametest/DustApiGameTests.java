@@ -158,7 +158,7 @@ public final class DustApiGameTests {
         DustFilterBlockEntity filter = helper.getBlockEntity(filterRel);
         helper.assertTrue(filter != null, "filter BE present");
         helper.assertTrue(filter instanceof IDustPurifier, "filter is IDustPurifier");
-        filter.insertSieve(new ItemStack(COIItems.ORIGINIUM_DUST_SIEVE.get()));
+        filter.insertSieve(new ItemStack(COIBlocks.DUST_SIEVE.asItem()));
         helper.assertFalse(filter.isPurifierActive(), "no rotation → inactive");
         helper.assertTrue(
                 helper.getBlockState(filterRel).is(COITags.Blocks.DUST_FILTERS),

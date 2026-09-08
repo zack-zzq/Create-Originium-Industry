@@ -8,7 +8,9 @@ import net.neoforged.neoforge.common.ModConfigSpec;
  * <p>
  * Existing top-level COMMON sections are frozen: {@code dust_diffusion},
  * {@code dust_production}, {@code player_exposure}, {@code feature_toggles},
- * {@code dust_filter}, {@code debug}. New keys are additive only.
+ * {@code dust_filter}, {@code debug}. Additive sections: {@code protection},
+ * {@code reactor}, {@code multiplayer}, {@code dust_nozzle}, {@code dust_meter}.
+ * New keys are additive only.
  * <p>
  * Client spec is registered as {@link net.neoforged.fml.config.ModConfig.Type#CLIENT}
  * and is <em>not</em> loaded on a dedicated server — read it through
@@ -76,6 +78,17 @@ public class COIConfig {
     public static final ModConfigSpec.DoubleValue FILTER_SPEED_REFERENCE;
     public static final ModConfigSpec.DoubleValue FILTER_EMISSION_CAPTURE;
     public static final ModConfigSpec.IntValue FILTER_BYPRODUCT_DUST_PER_ITEM;
+    public static final ModConfigSpec.DoubleValue PROCESS_SIEVE_EMISSION_CAPTURE;
+
+    // --- Dust nozzle (Encased Fan attachment) ---
+    public static final ModConfigSpec.IntValue NOZZLE_TRANSFER_AMOUNT;
+    public static final ModConfigSpec.IntValue NOZZLE_TRANSFER_INTERVAL;
+    public static final ModConfigSpec.DoubleValue NOZZLE_MAX_SPEED_MULTIPLIER;
+    public static final ModConfigSpec.DoubleValue NOZZLE_SPEED_REFERENCE;
+
+    // --- Dust meter ---
+    public static final ModConfigSpec.IntValue METER_COMPARATOR_FULL_DUST;
+    public static final ModConfigSpec.IntValue METER_SYNC_INTERVAL;
 
     // --- Protection (hooks; no gear registered yet) ---
     public static final ModConfigSpec.BooleanValue ENABLE_PROTECTION;
@@ -290,6 +303,45 @@ public class COIConfig {
         FILTER_BYPRODUCT_DUST_PER_ITEM = builder
                 .comment("Captured dust units per originium_dust item (0 = no byproduct; remainder is stored on the filter, never duplicated)")
                 .defineInRange("filterByproductDustPerItem", 100, 0, 10000);
+        PROCESS_SIEVE_EMISSION_CAPTURE = builder
+                .comment("Fraction of neighbouring machine emission a placed originium_dust_sieve captures (passive Basin/process attachment, no RPM)")
+                .defineInRange("processSieveEmissionCapture", 0.4, 0.0, 1.0);
+
+        builder.pop();
+
+        // ==================== Dust Nozzle ====================
+        builder.comment(
+                "Encased Fan nozzle (originium_dust_nozzle). Redirects chunk dust downwind;",
+                "never voids dust. Additive section."
+        ).push("dust_nozzle");
+
+        NOZZLE_TRANSFER_AMOUNT = builder
+                .comment("Dust units moved to the downwind chunk per cycle at reference RPM")
+                .defineInRange("nozzleTransferAmount", 80, 1, 10000);
+        NOZZLE_TRANSFER_INTERVAL = builder
+                .comment("Ticks between nozzle redirects (20 = 1 second)")
+                .defineInRange("nozzleTransferInterval", 20, 5, 200);
+        NOZZLE_MAX_SPEED_MULTIPLIER = builder
+                .comment("Maximum transfer multiplier from Encased Fan RPM")
+                .defineInRange("nozzleMaxSpeedMultiplier", 4.0, 1.0, 16.0);
+        NOZZLE_SPEED_REFERENCE = builder
+                .comment("Fan RPM at which the transfer multiplier reaches 1x")
+                .defineInRange("nozzleSpeedReference", 64.0, 1.0, 256.0);
+
+        builder.pop();
+
+        // ==================== Dust Meter ====================
+        builder.comment(
+                "Dust meter block. Reads server chunk dust onto the block entity for goggles",
+                "and comparator output. Additive section."
+        ).push("dust_meter");
+
+        METER_COMPARATOR_FULL_DUST = builder
+                .comment("Chunk dust that maps to comparator signal 15")
+                .defineInRange("meterComparatorFullDust", 8000, 1, 100000);
+        METER_SYNC_INTERVAL = builder
+                .comment("Ticks between meter block-entity snapshots (goggle / comparator)")
+                .defineInRange("meterSyncInterval", 10, 1, 200);
 
         builder.pop();
 
@@ -482,5 +534,13 @@ public class COIConfig {
 
     public static boolean isDedicated(MinecraftServer server) {
         return server != null && !server.isSingleplayer();
+    }
+
+    public static int processSieveDurability() {
+        return COMMON_SPEC.isLoaded() ? FILTER_SIEVE_DURABILITY.get() : 500;
+    }
+
+    public static int meterSyncInterval() {
+        return COMMON_SPEC.isLoaded() ? METER_SYNC_INTERVAL.get() : 10;
     }
 }

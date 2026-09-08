@@ -70,6 +70,9 @@ public final class COIConfigGameTests {
         helper.assertValueEqual(COIConfig.DEATH_BURST_MIN_CONTAMINATION.get(), 100, "deathBurstMinContamination");
         helper.assertValueEqual(COIConfig.FILTER_MAX_SPEED_MULTIPLIER.get(), 4.0, "filterMaxSpeedMultiplier");
         helper.assertValueEqual(COIConfig.FILTER_SPEED_REFERENCE.get(), 64.0, "filterSpeedReference");
+        helper.assertValueEqual(COIConfig.PROCESS_SIEVE_EMISSION_CAPTURE.get(), 0.4, "processSieveEmissionCapture");
+        helper.assertValueEqual(COIConfig.NOZZLE_TRANSFER_AMOUNT.get(), 80, "nozzleTransferAmount");
+        helper.assertValueEqual(COIConfig.METER_COMPARATOR_FULL_DUST.get(), 8000, "meterComparatorFullDust");
         helper.assertTrue(COIConfig.ENABLE_PROTECTION.get(), "enableProtection");
         helper.assertValueEqual(COIConfig.PROTECTION_EXPOSURE_REDUCTION.get(), 0.5, "protectionExposureReduction");
         helper.succeed();

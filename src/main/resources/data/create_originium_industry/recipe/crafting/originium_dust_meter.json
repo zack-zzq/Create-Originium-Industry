@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": {
+      "item": "minecraft:compass"
+    },
+    "A": {
+      "item": "create:andesite_casing"
+    },
+    "O": {
+      "item": "create_originium_industry:originium_shard"
+    }
+  },
+  "pattern": [
+    "C",
+    "A",
+    "O"
+  ],
+  "result": {
+    "count": 1,
+    "id": "create_originium_industry:originium_dust_meter"
+  }
+}

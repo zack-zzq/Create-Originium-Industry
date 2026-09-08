@@ -5,10 +5,11 @@ import com.mealuet.create_originium_industry.config.COIClientOptions;
 import com.mealuet.create_originium_industry.config.COIConfig;
 import com.mealuet.create_originium_industry.config.UiDetailLevel;
 import com.mealuet.create_originium_industry.core.oridust.ByproductBuffer;
+import com.mealuet.create_originium_industry.core.oridust.DustByproduct;
 import com.mealuet.create_originium_industry.core.oridust.DustReason;
 import com.mealuet.create_originium_industry.core.oridust.IDustPurifier;
 import com.mealuet.create_originium_industry.core.oridust.OriginiumDustManager;
-import com.mealuet.create_originium_industry.index.COIItems;
+import com.mealuet.create_originium_industry.index.COIBlocks;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
@@ -16,7 +17,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.Containers;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -88,7 +88,7 @@ public class DustFilterBlockEntity extends KineticBlockEntity implements IDustPu
         }
         consumeSieveCycle();
         int items = byproduct.add(captured, COIConfig.FILTER_BYPRODUCT_DUST_PER_ITEM.get());
-        dropByproduct(items);
+        DustByproduct.dropItems(level, worldPosition, items);
         setChanged();
         return items;
     }
@@ -120,23 +120,6 @@ public class DustFilterBlockEntity extends KineticBlockEntity implements IDustPu
         }
     }
 
-    private void dropByproduct(int items) {
-        if (items <= 0 || level == null || level.isClientSide) {
-            return;
-        }
-        int remaining = items;
-        int max = COIItems.ORIGINIUM_DUST.get().getDefaultMaxStackSize();
-        while (remaining > 0) {
-            int n = Math.min(max, remaining);
-            Containers.dropItemStack(level,
-                    worldPosition.getX() + 0.5,
-                    worldPosition.getY() + 0.5,
-                    worldPosition.getZ() + 0.5,
-                    new ItemStack(COIItems.ORIGINIUM_DUST.get(), n));
-            remaining -= n;
-        }
-    }
-
     // ==================== Sieve Management ====================
 
     public boolean hasSieve() {
@@ -156,7 +139,7 @@ public class DustFilterBlockEntity extends KineticBlockEntity implements IDustPu
      */
     public void activatePurifierForGameTest() {
         if (!hasSieve) {
-            insertSieve(new ItemStack(COIItems.ORIGINIUM_DUST_SIEVE.get()));
+            insertSieve(new ItemStack(COIBlocks.DUST_SIEVE.asItem()));
         }
         testSpinning = true;
         setSpeed(64f);
@@ -164,7 +147,7 @@ public class DustFilterBlockEntity extends KineticBlockEntity implements IDustPu
     }
 
     public void insertSieve(ItemStack sieveStack) {
-        if (sieveStack.getItem() == COIItems.ORIGINIUM_DUST_SIEVE.get()) {
+        if (sieveStack.getItem() == COIBlocks.DUST_SIEVE.asItem()) {
             this.hasSieve = true;
             this.sieveDurability = COIConfig.FILTER_SIEVE_DURABILITY.get();
             setChanged();
@@ -178,7 +161,7 @@ public class DustFilterBlockEntity extends KineticBlockEntity implements IDustPu
             sieveDurability = 0;
             setChanged();
             // Return a sieve item (regardless of remaining durability for simplicity)
-            return new ItemStack(COIItems.ORIGINIUM_DUST_SIEVE.get(), 1);
+            return new ItemStack(COIBlocks.DUST_SIEVE.asItem(), 1);
         }
         return ItemStack.EMPTY;
     }

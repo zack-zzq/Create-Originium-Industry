@@ -53,6 +53,10 @@ public class COITags {
          * the power core can require this tag without renaming ids.
          */
         public static final TagKey<Block> REACTOR_HOUSING = tag("reactor_housing");
+        /**
+         * Cooling chambers that contribute {@code M} when attached to a power core.
+         */
+        public static final TagKey<Block> REACTOR_COOLING = tag("reactor_cooling");
 
         private static TagKey<Block> tag(String name) {
             return TagKey.create(Registries.BLOCK,

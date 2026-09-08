@@ -12,6 +12,8 @@ public class COIFluids {
     public static final FluidEntry<BaseFlowingFluid.Flowing> CULTURED_ORIGINIUM = createLightFluid("cultured_originium");
     public static final FluidEntry<BaseFlowingFluid.Flowing> PUREST_MOLTEN_ORIGINIUM = createDensityFluid("purest_molten_originium");
     public static final FluidEntry<BaseFlowingFluid.Flowing> ORIGINIUM_CATALYST = createLightFluid("originium_catalyst");
+    public static final FluidEntry<BaseFlowingFluid.Flowing> ORIGINIUM_COOLANT = createLightFluid("originium_coolant");
+    public static final FluidEntry<BaseFlowingFluid.Flowing> HOT_WATER = createLightFluid("hot_water");
 
     public static void register() {}
 }

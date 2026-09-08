@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "create_originium_industry:item/hot_water_bucket"
+  }
+}

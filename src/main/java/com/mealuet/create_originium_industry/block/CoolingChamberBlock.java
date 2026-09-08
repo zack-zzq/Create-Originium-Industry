@@ -21,8 +21,8 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 /**
- * Basin attachment that enables supercooling recipes. No GUI: right-click
- * reports remaining durability. Supercooling also rejects active blaze heat.
+ * Basin attachment that enables supercooling recipes, and a reactor cooling
+ * attachment when placed on an originium power core. No GUI.
  */
 public class CoolingChamberBlock extends WrenchableDirectionalBlock implements IBE<CoolingChamberBlockEntity> {
 
@@ -42,12 +42,12 @@ public class CoolingChamberBlock extends WrenchableDirectionalBlock implements I
     public BlockState getStateForPlacement(BlockPlaceContext context) {
         Direction clicked = context.getClickedFace();
         BlockPos support = context.getClickedPos().relative(clicked.getOpposite());
-        if (ProcessAttachments.isBasinSupport(context.getLevel(), support)) {
+        if (ProcessAttachments.isCoolingSupport(context.getLevel(), support)) {
             return defaultBlockState().setValue(FACING, clicked);
         }
         for (Direction direction : context.getNearestLookingDirections()) {
             BlockPos other = context.getClickedPos().relative(direction.getOpposite());
-            if (ProcessAttachments.isBasinSupport(context.getLevel(), other)) {
+            if (ProcessAttachments.isCoolingSupport(context.getLevel(), other)) {
                 return defaultBlockState().setValue(FACING, direction);
             }
         }
@@ -57,7 +57,7 @@ public class CoolingChamberBlock extends WrenchableDirectionalBlock implements I
     @Override
     public boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
         Direction support = state.getValue(FACING).getOpposite();
-        return ProcessAttachments.isBasinSupport(level, pos.relative(support));
+        return ProcessAttachments.isCoolingSupport(level, pos.relative(support));
     }
 
     @Override

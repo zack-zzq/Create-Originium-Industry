@@ -11,6 +11,9 @@ import net.neoforged.neoforge.common.ModConfigSpec;
  * {@code dust_filter}, {@code debug}. Additive sections: {@code protection},
  * {@code infection}, {@code reactor}, {@code multiplayer}, {@code dust_nozzle},
  * {@code dust_meter}, {@code worldgen}, {@code purest_line}, {@code alloy_parts}.
+ * New keys are additive only. Frozen {@code reactor} keys keep their names;
+ * M3 adds coolant/chamber/RPM knobs beside them.
+ * {@code dust_meter}, {@code worldgen}, {@code purest_line}, {@code alloy_parts}.
  * New keys are additive only.
  * <p>
  * Client spec is registered as {@link net.neoforged.fml.config.ModConfig.Type#CLIENT}
@@ -116,7 +119,7 @@ public class COIConfig {
     public static final ModConfigSpec.IntValue INFECTION_STAGE_GROWTH;
     public static final ModConfigSpec.IntValue INFECTION_STAGE_BARGAIN;
 
-    // --- Reactor (M3 stub knobs) ---
+    // --- Reactor ---
     public static final ModConfigSpec.IntValue REACTOR_CORE_HEAT;
     public static final ModConfigSpec.DoubleValue REACTOR_MOLTEN_HEAT_CAPACITY;
     public static final ModConfigSpec.DoubleValue REACTOR_PUREST_HEAT_CAPACITY;
@@ -127,6 +130,18 @@ public class COIConfig {
     public static final ModConfigSpec.DoubleValue REACTOR_MELTDOWN_THRESHOLD;
     public static final ModConfigSpec.IntValue REACTOR_MELTDOWN_DUST_BURST;
     public static final ModConfigSpec.IntValue REACTOR_COOLANT_MIN_FLOW;
+    public static final ModConfigSpec.DoubleValue REACTOR_COOLANT_HEAT_PER_MB;
+    public static final ModConfigSpec.DoubleValue REACTOR_WATER_HEAT_PER_MB;
+    public static final ModConfigSpec.DoubleValue REACTOR_HOT_WATER_HEAT_PER_MB;
+    public static final ModConfigSpec.DoubleValue REACTOR_NORMAL_CHAMBER_COOLING;
+    public static final ModConfigSpec.DoubleValue REACTOR_SUPER_CHAMBER_COOLING;
+    public static final ModConfigSpec.DoubleValue REACTOR_STABILITY_EPSILON;
+    public static final ModConfigSpec.IntValue REACTOR_TANK_CAPACITY;
+    public static final ModConfigSpec.IntValue REACTOR_FUEL_TICKS_PER_ITEM;
+    public static final ModConfigSpec.IntValue REACTOR_GENERATED_RPM;
+    public static final ModConfigSpec.DoubleValue REACTOR_STRESS_CAPACITY;
+    public static final ModConfigSpec.IntValue REACTOR_UNSTABLE_DUST;
+    public static final ModConfigSpec.IntValue SUPER_COOLING_CHAMBER_DURABILITY;
 
     // --- Multiplayer pollution ---
     public static final ModConfigSpec.EnumValue<PollutionSpreadStrategy> POLLUTION_SPREAD_STRATEGY;
@@ -468,41 +483,77 @@ public class COIConfig {
 
         // ==================== Reactor ====================
         builder.comment(
-                "Reactor gameplay is not implemented yet (M3). These knobs are the contract",
-                "future heat/cooling/meltdown code will read. /coi_debug reactor status prints them.",
-                "enableReactorMeltdown lives under feature_toggles (frozen key)."
+                "M3 originium power core. Frozen keys keep their names; new keys are additive.",
+                "Stability S = C * M - H. enableReactorMeltdown lives under feature_toggles.",
+                "Meltdown dumps chunk dust and consumes remaining purest fuel — it does not explode."
         ).push("reactor");
 
         REACTOR_CORE_HEAT = builder
-                .comment("Core heat units produced per tick at nominal load (stub)")
+                .comment("Core heat units produced per tick at nominal load (H base)")
                 .defineInRange("coreHeatValue", 1000, 1, 1_000_000);
         REACTOR_MOLTEN_HEAT_CAPACITY = builder
-                .comment("Heat capacity multiplier for molten originium coolant/fuel (stub)")
+                .comment("Heat-load multiplier when the core is not running on purest fuel")
                 .defineInRange("moltenHeatCapacity", 1.0, 0.01, 100.0);
         REACTOR_PUREST_HEAT_CAPACITY = builder
-                .comment("Heat capacity multiplier for purest molten originium (hotter fuel, stub)")
+                .comment("Heat-load multiplier for purest originium (hotter fuel)")
                 .defineInRange("purestHeatCapacity", 2.5, 0.01, 100.0);
         REACTOR_COOLING_MULTIPLIER = builder
-                .comment("Global cooling effectiveness (stub)")
+                .comment("Global cooling effectiveness applied to attached chambers (M)")
                 .defineInRange("coolingMultiplier", 1.0, 0.0, 10.0);
         REACTOR_INSTABILITY_GAIN = builder
-                .comment("Instability gained per tick when cooling is insufficient (stub)")
+                .comment("Instability gained per tick when S < 0")
                 .defineInRange("instabilityGainPerTick", 0.01, 0.0, 10.0);
         REACTOR_INSTABILITY_DECAY = builder
-                .comment("Instability lost per tick when adequately cooled (stub)")
+                .comment("Instability lost per tick when S > 0")
                 .defineInRange("instabilityDecayPerTick", 0.005, 0.0, 10.0);
         REACTOR_INSTABILITY_WARNING = builder
-                .comment("Instability at which warning indicators should fire (stub)")
+                .comment("Instability at which goggles / comparator warn")
                 .defineInRange("instabilityWarningThreshold", 50.0, 0.0, 10000.0);
         REACTOR_MELTDOWN_THRESHOLD = builder
-                .comment("Instability that triggers meltdown when feature_toggles.enableReactorMeltdown is true (stub)")
+                .comment("Instability that triggers meltdown when feature_toggles.enableReactorMeltdown is true")
                 .defineInRange("meltdownThreshold", 100.0, 1.0, 10000.0);
         REACTOR_MELTDOWN_DUST_BURST = builder
-                .comment("Chunk dust released on meltdown (stub)")
+                .comment("Chunk dust released on meltdown (no explosion)")
                 .defineInRange("meltdownDustBurst", 5000, 0, 100000);
         REACTOR_COOLANT_MIN_FLOW = builder
-                .comment("Minimum coolant flow (mB/t) treated as adequate cooling (stub)")
+                .comment("Fluid conversion budget (mB/t) along coolant ↔ water ↔ hot water")
                 .defineInRange("coolantMinimumFlow", 10, 0, 10000);
+        REACTOR_COOLANT_HEAT_PER_MB = builder
+                .comment("Heat capacity C contributed per mB of originium coolant")
+                .defineInRange("coolantHeatPerMb", 1.0, 0.0, 10.0);
+        REACTOR_WATER_HEAT_PER_MB = builder
+                .comment("Heat capacity C contributed per mB of water")
+                .defineInRange("waterHeatPerMb", 0.625, 0.0, 10.0);
+        REACTOR_HOT_WATER_HEAT_PER_MB = builder
+                .comment("Heat capacity C contributed per mB of hot water")
+                .defineInRange("hotWaterHeatPerMb", 0.2, 0.0, 10.0);
+        REACTOR_NORMAL_CHAMBER_COOLING = builder
+                .comment("M contribution of one originium_cooling_chamber attached to the core")
+                .defineInRange("normalChamberCooling", 1.0, 0.0, 10.0);
+        REACTOR_SUPER_CHAMBER_COOLING = builder
+                .comment("M contribution of one originium_super_cooling_chamber")
+                .defineInRange("superChamberCooling", 2.5, 0.0, 10.0);
+        REACTOR_STABILITY_EPSILON = builder
+                .comment("Absolute |S| treated as borderline (S ≈ 0)")
+                .defineInRange("stabilityEpsilon", 1.0, 0.0, 1000.0);
+        REACTOR_TANK_CAPACITY = builder
+                .comment("mB capacity of each internal coolant / water / hot-water tank")
+                .defineInRange("tankCapacityMb", 4000, 100, 64000);
+        REACTOR_FUEL_TICKS_PER_ITEM = builder
+                .comment("Ticks one purest originium item keeps the core running")
+                .defineInRange("fuelTicksPerItem", 1200, 1, 72000);
+        REACTOR_GENERATED_RPM = builder
+                .comment("Create RPM generated while the core is running")
+                .defineInRange("generatedRpm", 32, 1, 256);
+        REACTOR_STRESS_CAPACITY = builder
+                .comment("Create stress capacity (SU at 1 RPM) while generating")
+                .defineInRange("stressCapacity", 256.0, 0.0, 16384.0);
+        REACTOR_UNSTABLE_DUST = builder
+                .comment("Chunk dust leaked per second while S < 0 (risk byproduct into the dust loop)")
+                .defineInRange("unstableDustPerSecond", 10, 0, 10000);
+        SUPER_COOLING_CHAMBER_DURABILITY = builder
+                .comment("Basin supercool operations a super cooling chamber survives (reactor cooling does not wear it)")
+                .defineInRange("superCoolingChamberDurability", 800, 1, 10000);
 
         builder.pop();
 
@@ -690,6 +741,98 @@ public class COIConfig {
 
     public static int coolingChamberDurability() {
         return COMMON_SPEC.isLoaded() ? COOLING_CHAMBER_DURABILITY.get() : 250;
+    }
+
+    public static int superCoolingChamberDurability() {
+        return COMMON_SPEC.isLoaded() ? SUPER_COOLING_CHAMBER_DURABILITY.get() : 800;
+    }
+
+    public static double reactorCoreHeat() {
+        return COMMON_SPEC.isLoaded() ? REACTOR_CORE_HEAT.get() : 1000;
+    }
+
+    public static double reactorMoltenHeatCapacity() {
+        return COMMON_SPEC.isLoaded() ? REACTOR_MOLTEN_HEAT_CAPACITY.get() : 1.0;
+    }
+
+    public static double reactorPurestHeatCapacity() {
+        return COMMON_SPEC.isLoaded() ? REACTOR_PUREST_HEAT_CAPACITY.get() : 2.5;
+    }
+
+    public static double reactorCoolingMultiplier() {
+        return COMMON_SPEC.isLoaded() ? REACTOR_COOLING_MULTIPLIER.get() : 1.0;
+    }
+
+    public static double reactorInstabilityGain() {
+        return COMMON_SPEC.isLoaded() ? REACTOR_INSTABILITY_GAIN.get() : 0.01;
+    }
+
+    public static double reactorInstabilityDecay() {
+        return COMMON_SPEC.isLoaded() ? REACTOR_INSTABILITY_DECAY.get() : 0.005;
+    }
+
+    public static double reactorInstabilityWarning() {
+        return COMMON_SPEC.isLoaded() ? REACTOR_INSTABILITY_WARNING.get() : 50.0;
+    }
+
+    public static double reactorMeltdownThreshold() {
+        return COMMON_SPEC.isLoaded() ? REACTOR_MELTDOWN_THRESHOLD.get() : 100.0;
+    }
+
+    public static int reactorMeltdownDustBurst() {
+        return COMMON_SPEC.isLoaded() ? REACTOR_MELTDOWN_DUST_BURST.get() : 5000;
+    }
+
+    public static int reactorCoolantMinimumFlow() {
+        return COMMON_SPEC.isLoaded() ? REACTOR_COOLANT_MIN_FLOW.get() : 10;
+    }
+
+    public static double reactorCoolantHeatPerMb() {
+        return COMMON_SPEC.isLoaded() ? REACTOR_COOLANT_HEAT_PER_MB.get() : 1.0;
+    }
+
+    public static double reactorWaterHeatPerMb() {
+        return COMMON_SPEC.isLoaded() ? REACTOR_WATER_HEAT_PER_MB.get() : 0.625;
+    }
+
+    public static double reactorHotWaterHeatPerMb() {
+        return COMMON_SPEC.isLoaded() ? REACTOR_HOT_WATER_HEAT_PER_MB.get() : 0.2;
+    }
+
+    public static double reactorNormalChamberCooling() {
+        return COMMON_SPEC.isLoaded() ? REACTOR_NORMAL_CHAMBER_COOLING.get() : 1.0;
+    }
+
+    public static double reactorSuperChamberCooling() {
+        return COMMON_SPEC.isLoaded() ? REACTOR_SUPER_CHAMBER_COOLING.get() : 2.5;
+    }
+
+    public static double reactorStabilityEpsilon() {
+        return COMMON_SPEC.isLoaded() ? REACTOR_STABILITY_EPSILON.get() : 1.0;
+    }
+
+    public static int reactorTankCapacity() {
+        return COMMON_SPEC.isLoaded() ? REACTOR_TANK_CAPACITY.get() : 4000;
+    }
+
+    public static int reactorFuelTicksPerItem() {
+        return COMMON_SPEC.isLoaded() ? REACTOR_FUEL_TICKS_PER_ITEM.get() : 1200;
+    }
+
+    public static float reactorGeneratedRpm() {
+        return COMMON_SPEC.isLoaded() ? REACTOR_GENERATED_RPM.get().floatValue() : 32f;
+    }
+
+    public static double reactorStressCapacity() {
+        return COMMON_SPEC.isLoaded() ? REACTOR_STRESS_CAPACITY.get() : 256.0;
+    }
+
+    public static int reactorUnstableDustPerSecond() {
+        return COMMON_SPEC.isLoaded() ? REACTOR_UNSTABLE_DUST.get() : 10;
+    }
+
+    public static boolean reactorMeltdownEnabled() {
+        return !COMMON_SPEC.isLoaded() || ENABLE_REACTOR_MELTDOWN.get();
     }
 
     public static int meterSyncInterval() {

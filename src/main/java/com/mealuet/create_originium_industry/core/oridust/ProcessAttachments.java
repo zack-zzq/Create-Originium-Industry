@@ -1,5 +1,6 @@
 package com.mealuet.create_originium_industry.core.oridust;
 
+import com.mealuet.create_originium_industry.index.COIBlocks;
 import com.mealuet.create_originium_industry.index.COITags;
 import com.simibubi.create.content.kinetics.crusher.CrushingWheelControllerBlock;
 import com.simibubi.create.content.kinetics.millstone.MillstoneBlock;
@@ -12,7 +13,7 @@ import net.minecraft.world.level.block.Block;
 /**
  * Blocks a process sieve may attach to: Create Basin / mill / mixer / crush,
  * plus datapack {@code dust_sources}.
- * The cooling chamber is Basin-only ({@link #isBasinSupport}).
+ * Cooling chambers attach to a Basin or an originium power core.
  */
 public final class ProcessAttachments {
 
@@ -20,6 +21,14 @@ public final class ProcessAttachments {
 
     public static boolean isBasinSupport(LevelReader level, BlockPos pos) {
         return level != null && pos != null && BasinBlock.isBasin(level, pos);
+    }
+
+    public static boolean isReactorSupport(LevelReader level, BlockPos pos) {
+        return level != null && pos != null && level.getBlockState(pos).is(COIBlocks.POWER_CORE.get());
+    }
+
+    public static boolean isCoolingSupport(LevelReader level, BlockPos pos) {
+        return isBasinSupport(level, pos) || isReactorSupport(level, pos);
     }
 
     public static boolean isSupport(LevelReader level, BlockPos pos) {

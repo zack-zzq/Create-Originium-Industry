@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "P": {
+      "item": "minecraft:carved_pumpkin"
+    },
+    "S": {
+      "item": "minecraft:snow_block"
+    },
+    "C": {
+      "item": "create_originium_industry:originium_cooling_chamber"
+    },
+    "I": {
+      "item": "minecraft:packed_ice"
+    }
+  },
+  "pattern": [
+    " P ",
+    "SCS",
+    " I "
+  ],
+  "result": {
+    "count": 1,
+    "id": "create_originium_industry:originium_super_cooling_chamber"
+  }
+}

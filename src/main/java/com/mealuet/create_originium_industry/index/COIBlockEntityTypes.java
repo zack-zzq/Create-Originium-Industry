@@ -5,6 +5,7 @@ import com.mealuet.create_originium_industry.block.CoolingChamberBlockEntity;
 import com.mealuet.create_originium_industry.block.DustFilterBlockEntity;
 import com.mealuet.create_originium_industry.block.DustMeterBlockEntity;
 import com.mealuet.create_originium_industry.block.DustNozzleBlockEntity;
+import com.mealuet.create_originium_industry.block.PowerCoreBlockEntity;
 import com.mealuet.create_originium_industry.block.ProcessSieveBlockEntity;
 import com.tterrag.registrate.util.entry.BlockEntityEntry;
 
@@ -30,7 +31,12 @@ public class COIBlockEntityTypes {
 
     public static final BlockEntityEntry<CoolingChamberBlockEntity> COOLING_CHAMBER = CreateOriginiumIndustry.REGISTRATE
             .blockEntity("originium_cooling_chamber", CoolingChamberBlockEntity::new)
-            .validBlock(COIBlocks.COOLING_CHAMBER)
+            .validBlocks(COIBlocks.COOLING_CHAMBER, COIBlocks.SUPER_COOLING_CHAMBER)
+            .register();
+
+    public static final BlockEntityEntry<PowerCoreBlockEntity> POWER_CORE = CreateOriginiumIndustry.REGISTRATE
+            .blockEntity("originium_power_core", PowerCoreBlockEntity::new)
+            .validBlock(COIBlocks.POWER_CORE)
             .register();
 
     public static final BlockEntityEntry<DustMeterBlockEntity> DUST_METER = CreateOriginiumIndustry.REGISTRATE

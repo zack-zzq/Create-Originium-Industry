@@ -1,7 +1,9 @@
-package com.mealuet.create_originium_industry.core.oridust;
+package com.mealuet.create_originium_industry.core.oridust.internal;
 
 import com.mealuet.create_originium_industry.CreateOriginiumIndustry;
 import com.mealuet.create_originium_industry.config.COIConfig;
+import com.mealuet.create_originium_industry.core.oridust.OriDustSavedData;
+import com.mealuet.create_originium_industry.core.oridust.OriginiumDustManager;
 import com.mealuet.create_originium_industry.core.perf.PerfProbe;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;

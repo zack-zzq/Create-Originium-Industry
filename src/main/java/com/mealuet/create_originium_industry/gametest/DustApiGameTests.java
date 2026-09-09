@@ -12,7 +12,9 @@ import com.mealuet.create_originium_industry.core.oridust.DustReason;
 import com.mealuet.create_originium_industry.core.oridust.DustSubmission;
 import com.mealuet.create_originium_industry.core.oridust.IDustPurifier;
 import com.mealuet.create_originium_industry.core.oridust.IOridustProducer;
+import com.mealuet.create_originium_industry.core.oridust.InfectionStage;
 import com.mealuet.create_originium_industry.core.oridust.OriginiumDustManager;
+import com.mealuet.create_originium_industry.core.oridust.PlayerExposure;
 import com.mealuet.create_originium_industry.core.oridust.PurificationResult;
 import com.mealuet.create_originium_industry.index.COIBlocks;
 import com.mealuet.create_originium_industry.index.COIItems;
@@ -22,9 +24,11 @@ import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.GameType;
 import net.neoforged.neoforge.gametest.GameTestHolder;
 import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 
@@ -173,6 +177,22 @@ public final class DustApiGameTests {
         helper.assertValueEqual(deposited, 100, "idle filter at the emit pos does not capture");
         helper.assertValueEqual(OriginiumDustManager.getDust(level, chunk), 100, "full submit");
         helper.assertValueEqual(filter.absorbAmbient(level, emitPos, 50), 0, "idle absorb");
+        helper.succeed();
+    }
+
+    @GameTest(template = "empty", batch = "dust_api")
+    public static void playerExposureAccessorsRoundTrip(GameTestHelper helper) {
+        Player player = helper.makeMockPlayer(GameType.SURVIVAL);
+        helper.assertValueEqual(PlayerExposure.getExposure(player), 0, "fresh exposure");
+        helper.assertValueEqual(PlayerExposure.getInfection(player), 0, "fresh infection");
+        helper.assertValueEqual(PlayerExposure.getStage(player), InfectionStage.NONE, "fresh stage");
+
+        PlayerExposure.setExposure(player, 640);
+        PlayerExposure.setInfection(player, 2500);
+        helper.assertValueEqual(PlayerExposure.getExposure(player), 640, "set exposure");
+        helper.assertValueEqual(PlayerExposure.getInfection(player), 2500, "set infection");
+        helper.assertValueEqual(PlayerExposure.getStage(player), InfectionStage.GROWTH, "stage from infection");
+        helper.assertValueEqual(PlayerExposure.of(player).getExposure(), 640, "of() shares attachment");
         helper.succeed();
     }
 

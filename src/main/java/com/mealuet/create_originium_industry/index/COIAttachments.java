@@ -17,7 +17,7 @@ public class COIAttachments {
 
     /**
      * Legacy chunk attachment ({@link OriDustData#SCHEMA_VERSION}). Kept so old
-     * saves deserialize; {@link com.mealuet.create_originium_industry.core.oridust.DustCacheManager}
+     * saves deserialize; {@link com.mealuet.create_originium_industry.core.oridust.Oridust#migrateLoadedChunk}
      * migrates values into {@link com.mealuet.create_originium_industry.core.oridust.OriDustSavedData} and zeros the attachment.
      * New dust writes do not use this store.
      */
@@ -29,7 +29,7 @@ public class COIAttachments {
     /**
      * Per-player exposure/infection ({@link PlayerExposureData#SCHEMA_VERSION}).
      * {@code copyOnDeath} copies the attachment;
-     * {@link com.mealuet.create_originium_industry.core.oridust.PlayerDeathDustHandler}
+     * {@link com.mealuet.create_originium_industry.core.oridust.PlayerExposureData#applyDeathRetention}
      * then applies {@code deathExposureRetain} / {@code deathInfectionRetain}.
      */
     public static final Supplier<AttachmentType<PlayerExposureData>> PLAYER_EXPOSURE_TYPE = ATTACHMENT_TYPES.register(

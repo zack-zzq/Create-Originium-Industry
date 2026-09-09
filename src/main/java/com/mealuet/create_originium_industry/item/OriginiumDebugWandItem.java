@@ -2,9 +2,8 @@ package com.mealuet.create_originium_industry.item;
 
 import com.mealuet.create_originium_industry.core.oridust.DustLevel;
 import com.mealuet.create_originium_industry.core.oridust.OriginiumDustManager;
-import com.mealuet.create_originium_industry.core.oridust.PlayerExposureData;
+import com.mealuet.create_originium_industry.core.oridust.PlayerExposure;
 import com.mealuet.create_originium_industry.compat.WorldSpace;
-import com.mealuet.create_originium_industry.index.COIAttachments;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -45,9 +44,8 @@ public class OriginiumDebugWandItem extends Item {
         int dust = OriginiumDustManager.getDust(serverPlayer.serverLevel(), chunkPos);
         DustLevel dustLevel = DustLevel.fromDust(dust);
 
-        PlayerExposureData data = COIAttachments.getPlayerExposure(serverPlayer);
-        int exposure = data.getExposure();
-        int infection = data.getInfection();
+        int exposure = PlayerExposure.getExposure(serverPlayer);
+        int infection = PlayerExposure.getInfection(serverPlayer);
 
         serverPlayer.sendSystemMessage(Component.translatable(
                 "item.create_originium_industry.originium_debug_wand.player_info",
@@ -55,7 +53,7 @@ public class OriginiumDebugWandItem extends Item {
         ).append(" ").append(Component.translatable(dustLevel.getLangKey())));
         serverPlayer.sendSystemMessage(Component.translatable(
                 "item.create_originium_industry.originium_debug_wand.infection_stage",
-                Component.translatable(data.getInfectionStage().getLangKey())
+                Component.translatable(PlayerExposure.getStage(serverPlayer).getLangKey())
         ));
 
         return InteractionResultHolder.success(player.getItemInHand(hand));

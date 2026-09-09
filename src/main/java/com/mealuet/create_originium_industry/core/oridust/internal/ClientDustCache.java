@@ -1,4 +1,4 @@
-package com.mealuet.create_originium_industry.core.oridust;
+package com.mealuet.create_originium_industry.core.oridust.internal;
 
 import net.minecraft.world.level.ChunkPos;
 

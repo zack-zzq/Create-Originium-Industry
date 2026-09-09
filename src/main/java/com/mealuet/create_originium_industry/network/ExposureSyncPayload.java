@@ -1,7 +1,7 @@
 package com.mealuet.create_originium_industry.network;
 
 import com.mealuet.create_originium_industry.CreateOriginiumIndustry;
-import com.mealuet.create_originium_industry.core.oridust.ClientExposureCache;
+import com.mealuet.create_originium_industry.core.oridust.VisibleDust;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -35,6 +35,6 @@ public record ExposureSyncPayload(int exposure, int infection) implements Custom
     }
 
     public static void handle(ExposureSyncPayload payload, IPayloadContext context) {
-        context.enqueueWork(() -> ClientExposureCache.apply(payload.exposure, payload.infection));
+        context.enqueueWork(() -> VisibleDust.applyClientExposure(payload.exposure, payload.infection));
     }
 }

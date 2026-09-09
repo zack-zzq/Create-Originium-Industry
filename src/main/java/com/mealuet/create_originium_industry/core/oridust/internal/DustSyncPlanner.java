@@ -1,4 +1,4 @@
-package com.mealuet.create_originium_industry.core.oridust;
+package com.mealuet.create_originium_industry.core.oridust.internal;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.longs.Long2IntMap;

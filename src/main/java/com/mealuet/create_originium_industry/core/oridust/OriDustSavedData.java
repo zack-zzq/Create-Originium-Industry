@@ -16,6 +16,7 @@ import net.minecraft.world.level.saveddata.SavedData;
 
 /**
  * Overworld {@link SavedData} store for originium dust.
+ * Persist contract — gameplay writes go through {@link OriginiumDustManager}.
  * <p>
  * This is the sole source of truth for dust levels. Keys are logical
  * {@link ChunkPos#toLong()} values (Sable/Aeronautics remaps plot-grid

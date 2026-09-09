@@ -3,6 +3,8 @@ package com.mealuet.create_originium_industry.core.oridust;
 import com.mealuet.create_originium_industry.CreateOriginiumIndustry;
 import com.mealuet.create_originium_industry.compat.WorldSpace;
 import com.mealuet.create_originium_industry.config.COIConfig;
+import com.mealuet.create_originium_industry.core.oridust.internal.DustCacheManager;
+import com.mealuet.create_originium_industry.core.oridust.internal.DustSyncTracker;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
@@ -13,10 +15,9 @@ import net.minecraft.world.phys.Vec3;
  * Central public API for the originium dust system.
  * <p>
  * All external code (commands, machine hooks, reactor, filters) should use this
- * manager instead of directly accessing {@link DustCacheManager},
- * {@link OriDustSavedData}, or {@link DustDiffusionEngine}. This ensures
- * consistent logging, clamping, logical WorldSpace keys, and a single
- * SavedData store.
+ * manager instead of {@link OriDustSavedData} or
+ * {@code core.oridust.internal} tick engines. This ensures consistent logging,
+ * clamping, logical WorldSpace keys, and a single SavedData store.
  *
  * <h3>Usage examples:</h3>
  * <pre>
@@ -160,8 +161,9 @@ public final class OriginiumDustManager {
     /**
      * Applies a clamped dust value without marking the chunk as recently written.
      * Used by diffusion/decay so the active set cannot walk across the whole map.
+     * Machine hooks and commands should use {@link #addDust} / {@link #setDust}.
      */
-    static void applySimulated(ServerLevel level, ChunkPos pos, int newDust) {
+    public static void applySimulated(ServerLevel level, ChunkPos pos, int newDust) {
         int current = OriDustSavedData.get(level).get(pos);
         int clamped = OriDustSavedData.get(level).set(pos, newDust);
         if (clamped != current) {

@@ -4,7 +4,6 @@ import com.mealuet.create_originium_industry.compat.WorldSpace;
 import com.mealuet.create_originium_industry.config.COIClientOptions;
 import com.mealuet.create_originium_industry.config.COIConfig;
 import com.mealuet.create_originium_industry.config.UiDetailLevel;
-import com.mealuet.create_originium_industry.core.oridust.ClientDustCache;
 import com.mealuet.create_originium_industry.core.oridust.DustLevel;
 import com.mealuet.create_originium_industry.core.oridust.OriginiumDustManager;
 import com.mealuet.create_originium_industry.core.oridust.ProtectionHooks;
@@ -187,7 +186,7 @@ public class DustMeterBlockEntity extends SmartBlockEntity implements IHaveGoggl
         riskId = tag.contains(NBT_RISK) ? tag.getString(NBT_RISK) : DustLevel.SAFE.getId();
         protectionPercent = tag.getInt(NBT_PROTECTION);
         if (clientPacket && hasLevel() && level != null && level.isClientSide) {
-            ClientDustCache.apply(
+            VisibleDust.applyClientDust(
                     new long[] {WorldSpace.toDustChunk(level, worldPosition).toLong()},
                     new int[] {syncedDust}
             );

@@ -14,7 +14,7 @@ A [Create](https://github.com/Creators-of-Create/Create) addon about a new indus
 
 v1 is a closed loop, not a pile of extra materials: **dust pollution → purification → reactor**.
 
-Pre-release **`0.0.10-dev`**. The loop is playable: Overworld ore, the dust factory, protection gear, the purest / alloy lines, and the power-core reactor (meltdown dumps dust and leaks `purest_molten_originium` — **no TNT / explosion**). Balance and the internal `core/oridust` API may still change; **registry ids stay frozen**.
+Pre-release **`0.0.11-dev`**. The loop is playable: Overworld ore, the dust factory, protection gear, the purest / alloy lines, and the power-core reactor (meltdown dumps dust and leaks `purest_molten_originium` — **no TNT / explosion**). The dust Java API (`OriginiumDustManager`, producer/purifier, `PlayerExposure`) is the stable surface; **registry ids stay frozen**.
 
 ## Requirements
 
@@ -36,7 +36,7 @@ Two industrial routes:
 1. **Alloy route** — molten originium + iron → originium alloy ingot (safer structural material).
 2. **Purest route** — basin sieve filters molten originium, heated mix with culture solution (培养液) produces cultured originium, then a cooling-chamber attachment + packed ice (no blaze heat) supercools it to purest originium. Superheating the culture by accident (or remelting the item) yields `purest_molten_originium` — a late intermediate / accident fluid, not the clean-route output. Meltdown will dump dust and that fluid; it does not explode.
 
-## What's in this version (`0.0.10-dev`)
+## What's in this version (`0.0.11-dev`)
 
 ### Items
 
@@ -142,14 +142,17 @@ water + 培养液 + packed ice → originium coolant
 - Advancements: obtain raw originium → first dust exposure → first filter/sieve capture → first power-core start. Side milestones: first alloy, first protection gear, first infection stage, first power-core meltdown.
 - Industrial SFX (`sounds.json`): filter work, high-dust ambience, reactor steady / alarm. Subtitles in `en_us` / `zh_cn`. Client `enableIndustrialSounds` / `soundDensity` plus `reduceFlicker` / particle knobs.
 
-Treat `core/oridust` as an **unstable implementation** (class names and helpers may move). **Do not rename registry ids** — see [docs/REGISTRY.md](docs/REGISTRY.md).
+The dust Java API is stable: `OriginiumDustManager`, `IOridustProducer` /
+`IDustPurifier`, `PlayerExposure`, and `VisibleDust`. Tick engines and client
+caches live in `core.oridust.internal` and are not a compatibility contract.
+**Do not rename registry ids** — see [docs/REGISTRY.md](docs/REGISTRY.md).
 
 ## Roadmap
 
 | Phase | Name | Status |
 |---|---|---|
 | **M0** | Tech cleanup: freeze ids, docs, metadata, config skeleton | Done |
-| **M1** | Dust loop: data-driven emission, filters, dust meter, survival ore | Shipped (playable). `core/oridust` internals remain unstable |
+| **M1** | Dust loop: data-driven emission, filters, dust meter, survival ore | Shipped. Dust Java API stabilized (`#59`) |
 | **M2** | Purest / alloy: filter + 培养液 + supercooling, housing / sieve / sealed canister | Shipped |
 | **M3** | Reactor: heat, cooling, instability / meltdown | Shipped (power core + chambers + `S`; meltdown = dust + purest molten leak, not explosion) |
 | **M4** | Ponder, GameTests, optional compat | Shipped for this pillar: Ponder, JEI pages, Aeronautics/Sable soft-dep, advancement tree, industrial SFX, dust/reactor perf baseline |
@@ -158,7 +161,7 @@ The reactor depends on the dust APIs and the purest fuel chain. Ponder scenes co
 
 ## Documentation for contributors
 
-- [Registry, lang keys, and save compatibility](docs/REGISTRY.md) — what must not be renamed
+- [Registry, lang keys, and save compatibility](docs/REGISTRY.md) — frozen ids and the `core/oridust` Java API boundary
 - [Dust / reactor performance baseline](docs/PERF.md) — F3+L / Spark / GameTest timing, 100-machine load, 2 ms/tick budget
 - Issues: [github.com/zack-zzq/Create-Originium-Industry/issues](https://github.com/zack-zzq/Create-Originium-Industry/issues)
 

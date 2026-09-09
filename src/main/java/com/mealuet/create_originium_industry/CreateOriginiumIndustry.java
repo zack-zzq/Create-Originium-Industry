@@ -2,12 +2,7 @@ package com.mealuet.create_originium_industry;
 
 import com.mealuet.create_originium_industry.command.COICommands;
 import com.mealuet.create_originium_industry.config.COIConfig;
-import com.mealuet.create_originium_industry.core.oridust.DustCacheManager;
-import com.mealuet.create_originium_industry.core.oridust.DustDiffusionEngine;
-import com.mealuet.create_originium_industry.core.oridust.DustEmissionIndex;
-import com.mealuet.create_originium_industry.core.oridust.DustSyncTracker;
-import com.mealuet.create_originium_industry.core.oridust.PlayerDeathDustHandler;
-import com.mealuet.create_originium_industry.core.oridust.PlayerExposureHandler;
+import com.mealuet.create_originium_industry.core.oridust.Oridust;
 import com.mealuet.create_originium_industry.core.purest.BasinProcessIndex;
 import com.mealuet.create_originium_industry.index.*;
 import com.mealuet.create_originium_industry.network.COINetwork;
@@ -65,13 +60,8 @@ public class CreateOriginiumIndustry
         modEventBus.addListener(COIBlocks::onModConfig);
 
         // --- Game Event Handlers ---
-        NeoForge.EVENT_BUS.register(DustCacheManager.class);
-        NeoForge.EVENT_BUS.register(DustDiffusionEngine.class);
-        NeoForge.EVENT_BUS.register(DustSyncTracker.class);
-        NeoForge.EVENT_BUS.register(DustEmissionIndex.class);
+        Oridust.registerGameEvents(NeoForge.EVENT_BUS);
         NeoForge.EVENT_BUS.register(BasinProcessIndex.class);
-        NeoForge.EVENT_BUS.register(PlayerExposureHandler.class);
-        NeoForge.EVENT_BUS.register(PlayerDeathDustHandler.class);
         NeoForge.EVENT_BUS.register(COICommands.class);
 
         modEventBus.addListener(this::addCreative);

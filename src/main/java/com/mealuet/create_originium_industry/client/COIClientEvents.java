@@ -4,8 +4,6 @@ import com.mealuet.create_originium_industry.config.COIClientOptions;
 import com.mealuet.create_originium_industry.config.COIConfig;
 import com.mealuet.create_originium_industry.config.DebugOverlayDetail;
 import com.mealuet.create_originium_industry.config.UiDetailLevel;
-import com.mealuet.create_originium_industry.core.oridust.ClientDustCache;
-import com.mealuet.create_originium_industry.core.oridust.ClientExposureCache;
 import com.mealuet.create_originium_industry.core.oridust.DustLevel;
 import com.mealuet.create_originium_industry.core.oridust.VisibleDust;
 import com.mealuet.create_originium_industry.index.COIEffects;
@@ -114,8 +112,7 @@ public final class COIClientEvents {
 
     @SubscribeEvent
     public static void onLoggingOut(ClientPlayerNetworkEvent.LoggingOut event) {
-        ClientDustCache.clear();
-        ClientExposureCache.clear();
+        VisibleDust.clearClientCaches();
         COIIndustrialSounds.stopAll();
     }
 

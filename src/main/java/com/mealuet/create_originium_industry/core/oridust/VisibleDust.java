@@ -2,7 +2,8 @@ package com.mealuet.create_originium_industry.core.oridust;
 
 import com.mealuet.create_originium_industry.compat.WorldSpace;
 import com.mealuet.create_originium_industry.config.COIConfig;
-import com.mealuet.create_originium_industry.index.COIAttachments;
+import com.mealuet.create_originium_industry.core.oridust.internal.ClientDustCache;
+import com.mealuet.create_originium_industry.core.oridust.internal.ClientExposureCache;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
@@ -51,14 +52,14 @@ public final class VisibleDust {
 
     public static int exposure(Player player) {
         if (!player.level().isClientSide) {
-            return COIAttachments.getPlayerExposure(player).getExposure();
+            return PlayerExposure.getExposure(player);
         }
         return ClientExposureCache.exposure();
     }
 
     public static int infection(Player player) {
         if (!player.level().isClientSide) {
-            return COIAttachments.getPlayerExposure(player).getInfection();
+            return PlayerExposure.getInfection(player);
         }
         return ClientExposureCache.infection();
     }
@@ -73,5 +74,27 @@ public final class VisibleDust {
      */
     public static boolean dustSyncEnabled() {
         return COIConfig.syncDustToClients();
+    }
+
+    /**
+     * Apply a nearby dust sync packet to the local client cache.
+     */
+    public static void applyClientDust(long[] keys, int[] values) {
+        ClientDustCache.apply(keys, values);
+    }
+
+    /**
+     * Apply a local-player exposure sync packet to the client cache.
+     */
+    public static void applyClientExposure(int exposure, int infection) {
+        ClientExposureCache.apply(exposure, infection);
+    }
+
+    /**
+     * Drop client dust / exposure caches (logout or GameTests).
+     */
+    public static void clearClientCaches() {
+        ClientDustCache.clear();
+        ClientExposureCache.clear();
     }
 }

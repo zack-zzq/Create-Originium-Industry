@@ -3,8 +3,8 @@ package com.mealuet.create_originium_industry.gametest;
 import com.mealuet.create_originium_industry.CreateOriginiumIndustry;
 import com.mealuet.create_originium_industry.compat.WorldSpace;
 import com.mealuet.create_originium_industry.config.COIConfig;
-import com.mealuet.create_originium_industry.core.oridust.DustCacheManager;
 import com.mealuet.create_originium_industry.core.oridust.DustProductionHelper;
+import com.mealuet.create_originium_industry.core.oridust.Oridust;
 import com.mealuet.create_originium_industry.core.oridust.DustReason;
 import com.mealuet.create_originium_industry.core.oridust.OriDustData;
 import com.mealuet.create_originium_industry.core.oridust.OriDustSavedData;
@@ -171,13 +171,13 @@ public final class OriDustGameTests {
 
         OriDustData legacy = chunk.getData(COIAttachments.CHUNK_DUST_TYPE);
         legacy.setDustLevel(300);
-        DustCacheManager.migrateLoadedChunk(overworld, chunk);
+        Oridust.migrateLoadedChunk(overworld, chunk);
         helper.assertValueEqual(overworldSaved.get(unique), 500, "loaded-chunk migrate add");
         helper.assertValueEqual(legacy.getDustLevel(), 0, "attachment zeroed after migrate");
         helper.assertTrue(overworldSaved.isMigrated(unique), "chunk marked migrated after load path");
 
         legacy.setDustLevel(300);
-        DustCacheManager.migrateLoadedChunk(overworld, chunk);
+        Oridust.migrateLoadedChunk(overworld, chunk);
         helper.assertValueEqual(overworldSaved.get(unique), 500, "second migrate of leftover attachment does not double-count");
         helper.assertValueEqual(legacy.getDustLevel(), 0, "attachment still zero after second migrate");
         helper.succeed();
@@ -205,7 +205,7 @@ public final class OriDustGameTests {
 
     /**
      * Picks a logical chunk that is not already in the Overworld store, so a
-     * reused GameTest world cannot skip {@link DustCacheManager#migrateLoadedChunk}.
+     * reused GameTest world cannot skip {@link Oridust#migrateLoadedChunk}.
      */
     private static ChunkPos unusedChunk(OriDustSavedData saved) {
         for (int i = 0; i < 2048; i++) {

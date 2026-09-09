@@ -1,8 +1,9 @@
-package com.mealuet.create_originium_industry.core.oridust;
+package com.mealuet.create_originium_industry.core.oridust.internal;
 
 import com.mealuet.create_originium_industry.CreateOriginiumIndustry;
 import com.mealuet.create_originium_industry.compat.WorldSpace;
 import com.mealuet.create_originium_industry.config.COIConfig;
+import com.mealuet.create_originium_industry.core.oridust.OriDustSavedData;
 import com.mealuet.create_originium_industry.index.COIAttachments;
 import net.minecraft.core.Direction;
 import net.minecraft.server.MinecraftServer;
@@ -50,16 +51,9 @@ public class DustCacheManager {
 
     private DustCacheManager() {}
 
-    // --- Public API (thin wrappers over SavedData) ---
-
-    public static int getDustLevel(ServerLevel level, ChunkPos pos) {
-        return OriDustSavedData.get(level).get(pos);
-    }
-
     /**
-     * Prefer {@link #getDustLevel(ServerLevel, ChunkPos)}. Kept so
-     * existing call sites that only have a ChunkPos still resolve against the
-     * Overworld store once the server is running.
+     * Resolves a logical chunk against the Overworld store once the server
+     * is running. Prefer {@link com.mealuet.create_originium_industry.core.oridust.OriginiumDustManager#getDust(ServerLevel, ChunkPos)}.
      */
     public static int getDustLevel(ChunkPos pos) {
         MinecraftServer server = serverOrNull();
@@ -69,10 +63,6 @@ public class DustCacheManager {
         return OriDustSavedData.get(overworld).get(pos);
     }
 
-    public static boolean isInActiveSet(ServerLevel level, ChunkPos pos) {
-        return lastActiveSetContains(pos) || isRecentlyWritten(level, pos);
-    }
-
     /**
      * Historical name: used to mean "chunk is loaded in the attachment cache".
      * Now means the chunk is in the current diffusion active set (or was
@@ -80,13 +70,6 @@ public class DustCacheManager {
      */
     public static boolean isChunkLoaded(ChunkPos pos) {
         return lastActive.contains(pos.toLong()) || recentlyWritten.containsKey(pos.toLong());
-    }
-
-    public static boolean isEmpty() {
-        MinecraftServer server = serverOrNull();
-        if (server == null) return true;
-        ServerLevel overworld = server.getLevel(Level.OVERWORLD);
-        return overworld == null || OriDustSavedData.get(overworld).isEmpty();
     }
 
     /**
@@ -132,23 +115,9 @@ public class DustCacheManager {
         return recentlyWritten.size();
     }
 
-    public static void persist(ServerLevel level, ChunkPos pos, int newLevel) {
-        OriDustSavedData.get(level).set(pos, newLevel);
-    }
-
     // --- Active set ---
 
     private static volatile java.util.Set<Long> lastActive = ConcurrentHashMap.newKeySet();
-
-    private static boolean lastActiveSetContains(ChunkPos pos) {
-        return lastActive.contains(pos.toLong());
-    }
-
-    private static boolean isRecentlyWritten(ServerLevel level, ChunkPos pos) {
-        Long writtenAt = recentlyWritten.get(pos.toLong());
-        if (writtenAt == null) return false;
-        return level.getGameTime() - writtenAt <= COIConfig.recentWriteTtlTicks();
-    }
 
     static Set<ChunkPos> collectActiveChunks(ServerLevel level) {
         Set<ChunkPos> active = new HashSet<>();

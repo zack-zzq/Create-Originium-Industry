@@ -1,8 +1,10 @@
-package com.mealuet.create_originium_industry.core.oridust;
+package com.mealuet.create_originium_industry.core.oridust.internal;
 
 import com.mealuet.create_originium_industry.CreateOriginiumIndustry;
 import com.mealuet.create_originium_industry.compat.WorldSpace;
 import com.mealuet.create_originium_industry.config.COIConfig;
+import com.mealuet.create_originium_industry.core.oridust.OriDustSavedData;
+import com.mealuet.create_originium_industry.core.oridust.PlayerExposureData;
 import com.mealuet.create_originium_industry.core.perf.PerfProbe;
 import com.mealuet.create_originium_industry.index.COIAttachments;
 import com.mealuet.create_originium_industry.network.DustSyncPayload;

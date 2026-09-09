@@ -1,7 +1,7 @@
 package com.mealuet.create_originium_industry.core.perf;
 
-import com.mealuet.create_originium_industry.core.oridust.DustCacheManager;
 import com.mealuet.create_originium_industry.core.oridust.DustReason;
+import com.mealuet.create_originium_industry.core.oridust.Oridust;
 import com.mealuet.create_originium_industry.core.oridust.OriginiumDustManager;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.ChunkPos;
@@ -45,7 +45,7 @@ public final class PerfLoad {
     public static void clearMachineDust(ServerLevel level, ChunkPos center) {
         for (ChunkPos pos : machineChunks(center)) {
             OriginiumDustManager.clearDust(level, pos, DustReason.DEBUG);
-            DustCacheManager.unmarkWritten(pos);
+            Oridust.unmarkWritten(pos);
         }
     }
 }

@@ -2,8 +2,8 @@ package com.mealuet.create_originium_industry.gametest;
 
 import com.mealuet.create_originium_industry.CreateOriginiumIndustry;
 import com.mealuet.create_originium_industry.core.PersistSchema;
-import com.mealuet.create_originium_industry.core.oridust.DustCacheManager;
 import com.mealuet.create_originium_industry.core.oridust.OriDustData;
+import com.mealuet.create_originium_industry.core.oridust.Oridust;
 import com.mealuet.create_originium_industry.core.oridust.OriDustSavedData;
 import com.mealuet.create_originium_industry.core.oridust.PlayerExposureData;
 import com.mealuet.create_originium_industry.index.COIAttachments;
@@ -134,7 +134,7 @@ public final class PersistSchemaGameTests {
         helper.assertValueEqual(attachment.getDustLevel(), 300, "legacy NBT applied to attachment");
 
         saved.set(unique, 200);
-        DustCacheManager.migrateLoadedChunk(overworld, chunk);
+        Oridust.migrateLoadedChunk(overworld, chunk);
         helper.assertValueEqual(saved.get(unique), 500, "unversioned attachment merged");
         helper.assertValueEqual(attachment.getDustLevel(), 0, "attachment zeroed");
         helper.succeed();

@@ -1,4 +1,4 @@
-package com.mealuet.create_originium_industry.core.oridust;
+package com.mealuet.create_originium_industry.core.oridust.internal;
 
 /**
  * Local player's last received exposure / infection. Not other players'.

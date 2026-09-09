@@ -1,7 +1,7 @@
 package com.mealuet.create_originium_industry.network;
 
 import com.mealuet.create_originium_industry.CreateOriginiumIndustry;
-import com.mealuet.create_originium_industry.core.oridust.ClientDustCache;
+import com.mealuet.create_originium_industry.core.oridust.VisibleDust;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -46,6 +46,6 @@ public record DustSyncPayload(long[] chunkKeys, int[] dustValues) implements Cus
     }
 
     public static void handle(DustSyncPayload payload, IPayloadContext context) {
-        context.enqueueWork(() -> ClientDustCache.apply(payload.chunkKeys, payload.dustValues));
+        context.enqueueWork(() -> VisibleDust.applyClientDust(payload.chunkKeys, payload.dustValues));
     }
 }

@@ -21,9 +21,9 @@ public class OriDustData implements INBTSerializable<CompoundTag> {
     private int dustLevel = 0;
 
     /**
-     * Legacy per-chunk attachment payload. Dust is now stored in
-     * {@link OriDustSavedData}; this type remains registered so old worlds can
-     * be migrated on chunk load, after which the attachment is zeroed.
+     * Legacy per-chunk attachment payload (persist contract). Dust is now
+     * stored in {@link OriDustSavedData}; this type remains registered so old
+     * worlds can be migrated on chunk load, after which the attachment is zeroed.
      */
     public OriDustData() {}
 
@@ -33,14 +33,6 @@ public class OriDustData implements INBTSerializable<CompoundTag> {
 
     public void setDustLevel(int level) {
         this.dustLevel = Mth.clamp(level, 0, COIConfig.MAX_DUST_LEVEL.get());
-    }
-
-    public void addDust(int amount) {
-        setDustLevel(this.dustLevel + amount);
-    }
-
-    public void removeDust(int amount) {
-        setDustLevel(this.dustLevel - amount);
     }
 
     @Override
@@ -88,11 +80,5 @@ public class OriDustData implements INBTSerializable<CompoundTag> {
             default -> throw new IllegalStateException(
                     "No chunk_oridust_data upgrade from version " + fromVersion);
         };
-    }
-
-    public OriDustData copy() {
-        OriDustData copy = new OriDustData();
-        copy.setDustLevel(this.dustLevel);
-        return copy;
     }
 }

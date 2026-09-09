@@ -62,7 +62,7 @@ Requires OP 2 and `debug.enableDebugCommands` (default on).
 |---|---|
 | `/coi_debug perf` | Prints last dust-cycle cost, active-set size, this-tick reactor/filter sums, last sync flush, aligned extra |
 | `/coi_debug perf seed` | Writes the 10×10 dusty grid around the player (same as GameTests) |
-| `/coi_debug perf run` | Forces one `DustDiffusionEngine.runActiveSetCycle` + client sync flush, then prints |
+| `/coi_debug perf run` | Forces one `Oridust.runActiveSetCycle` + client sync flush, then prints |
 | `/coi_debug perf clear` | Clears that seeded grid |
 
 Lightweight hooks (`PerfProbe`) wrap the existing tick paths. They are always-on `System.nanoTime()` around work that already ran; they are not a profiler.
@@ -97,7 +97,7 @@ Server sampler (~30 s) with the stated load running:
 
 Or the standalone JAR against a dedicated server. Search the output for:
 
-- `DustDiffusionEngine`
+- `DustDiffusionEngine` (`core.oridust.internal`)
 - `DustCacheManager.snapshotActive`
 - `DustSyncTracker`
 - `PowerCoreBlockEntity.tickReactor`
@@ -157,9 +157,9 @@ Concrete follow-ups (cheapest first):
 |---|---|
 | Budget constants | `core/perf/PerfProbe.java` |
 | 10×10 seed | `core/perf/PerfLoad.java` |
-| Dust cycle hook | `DustDiffusionEngine.runActiveSetCycle` |
+| Dust cycle hook | `Oridust.runActiveSetCycle` → `DustDiffusionEngine` |
 | Reactor hook | `PowerCoreBlockEntity.tickReactor` |
 | Filter hook | `DustFilterBlockEntity.absorbAmbient` |
-| Sync hook | `DustSyncTracker.flush` |
+| Sync hook | `Oridust.flushClientSync` → `DustSyncTracker.flush` |
 | GameTests | `gametest/PerfBaselineGameTests.java` |
 | Debug command | `/coi_debug perf` |

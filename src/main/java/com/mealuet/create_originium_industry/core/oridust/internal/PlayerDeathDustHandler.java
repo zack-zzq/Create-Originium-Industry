@@ -1,8 +1,12 @@
-package com.mealuet.create_originium_industry.core.oridust;
+package com.mealuet.create_originium_industry.core.oridust.internal;
 
 import com.mealuet.create_originium_industry.CreateOriginiumIndustry;
 import com.mealuet.create_originium_industry.compat.WorldSpace;
 import com.mealuet.create_originium_industry.config.COIConfig;
+import com.mealuet.create_originium_industry.core.oridust.DustReason;
+import com.mealuet.create_originium_industry.core.oridust.OriginiumDustManager;
+import com.mealuet.create_originium_industry.core.oridust.PlayerExposure;
+import com.mealuet.create_originium_industry.core.oridust.PlayerExposureData;
 import com.mealuet.create_originium_industry.index.COIAttachments;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -51,17 +55,9 @@ public class PlayerDeathDustHandler {
         if (!event.isWasDeath()) {
             return;
         }
-        PlayerExposureData source = COIAttachments.getPlayerExposure(event.getOriginal());
         PlayerExposureData dest = COIAttachments.getPlayerExposure(event.getEntity());
-        dest.setExposure(PlayerExposureData.retain(source.getExposure(), retainOrDefault(COIConfig.DEATH_EXPOSURE_RETAIN, 0.0)));
-        dest.setInfection(PlayerExposureData.retain(source.getInfection(), retainOrDefault(COIConfig.DEATH_INFECTION_RETAIN, 0.25)));
-        if (event.getEntity() instanceof ServerPlayer serverPlayer) {
-            DustSyncTracker.markExposureDirty(serverPlayer);
-        }
-    }
-
-    private static double retainOrDefault(net.neoforged.neoforge.common.ModConfigSpec.DoubleValue value, double fallback) {
-        return COIConfig.COMMON_SPEC.isLoaded() ? value.get() : fallback;
+        dest.applyDeathRetention();
+        PlayerExposure.markDirty(event.getEntity());
     }
 
     /**

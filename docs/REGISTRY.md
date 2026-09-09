@@ -2,7 +2,7 @@
 
 This document freezes identifiers for Create: Originium Industry so later
 changes do not break existing worlds, recipes, or translations. The v1 loop
-(dust, purification, reactor) is shipped in `0.0.10-dev`; new ids stay additive.
+(dust, purification, reactor) is shipped; new ids stay additive.
 
 **Rule:** registry ids are compatibility contracts. Display names are not.
 
@@ -26,10 +26,40 @@ registry ids, recipe paths, or NBT keys.
 6. **Common tags (`c:`)** already published stay. Conventional aliases may be
    added beside them.
 
-Treat `core/oridust` as unstable **implementation** (helpers and class names
-may still move). Keep the ids in this file stable unless a migration is
-documented here first. Gameplay contracts — chunk dust, `IOridustProducer` /
-`IDustPurifier`, and the published datapack shapes — stay.
+## `core/oridust` Java API
+
+The dust simulation is no longer an unmarked implementation dump. Registry
+ids, NBT keys, and gameplay numbers stay frozen in this file. Java helpers
+may still be reorganized *inside* `core.oridust.internal`.
+
+**Stable surface** (blocks, mixins, commands, JEI, GameTests should call these):
+
+| Type | Role |
+|---|---|
+| `OriginiumDustManager` | Chunk dust get / set / clear (WorldSpace-aware `*At` overloads) |
+| `IOridustProducer` / `DustSubmission` | Machine emission submit path |
+| `IDustPurifier` / `DustPurification` / `PurificationResult` | Capture / absorb |
+| `DustProductionHelper` / `DustEmissionIndex` | Recipe / item emission amounts |
+| `PlayerExposure` | Exposure / infection accessors |
+| `VisibleDust` | Side-aware HUD / goggles / tooltip reads + client sync apply |
+| `Oridust` | Game-bus registration and debug / GameTest hooks |
+| `DustReason`, `DustLevel`, `InfectionStage` | Value types used with the surface above |
+
+Device helpers used by this mod's blocks (`SieveKind`, `ByproductBuffer`,
+`DustByproduct`, `ProcessAttachments`, `DustRedirect`, `AlloyHousing`,
+`ProtectionHooks`) stay in `core.oridust` because blocks implement the
+purifier / attachment contracts. They are not a third-party SPI.
+
+**Persist contract** (do not rename keys or skip migrate steps):
+`OriDustSavedData`, `OriDustData` (legacy chunk attachment),
+`PlayerExposureData`. GameTests that assert migrate steps may construct
+these types directly. See Attachments / SavedData below.
+
+**Internals** (`core.oridust.internal`): diffusion, active-set cache, client
+sync planner/tracker, client caches, exposure/death tick handlers. Those
+classes stay public so GameTests and packet handlers can reach them; they
+are **not** a stability contract. Prefer `Oridust` / `VisibleDust` /
+`PlayerExposure`.
 
 ## Frozen registry ids
 

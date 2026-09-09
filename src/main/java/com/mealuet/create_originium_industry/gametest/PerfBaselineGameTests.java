@@ -7,9 +7,8 @@ import com.mealuet.create_originium_industry.block.DustFilterBlockEntity;
 import com.mealuet.create_originium_industry.block.PowerCoreBlockEntity;
 import com.mealuet.create_originium_industry.compat.WorldSpace;
 import com.mealuet.create_originium_industry.config.COIConfig;
-import com.mealuet.create_originium_industry.core.oridust.DustDiffusionEngine;
 import com.mealuet.create_originium_industry.core.oridust.DustReason;
-import com.mealuet.create_originium_industry.core.oridust.DustSyncTracker;
+import com.mealuet.create_originium_industry.core.oridust.Oridust;
 import com.mealuet.create_originium_industry.core.oridust.OriginiumDustManager;
 import com.mealuet.create_originium_industry.core.perf.PerfLoad;
 import com.mealuet.create_originium_industry.core.perf.PerfProbe;
@@ -71,7 +70,7 @@ public final class PerfBaselineGameTests {
                 PerfLoad.seedMachineDust(level, center);
                 PerfProbe.resetForTests();
                 long start = System.nanoTime();
-                active = DustDiffusionEngine.runActiveSetCycle(level);
+                active = Oridust.runActiveSetCycle(level);
                 samples[i] = System.nanoTime() - start;
             }
             long median = median(samples);
@@ -197,13 +196,13 @@ public final class PerfBaselineGameTests {
             DustFilterBlockEntity filter,
             BlockPos filterAbs
     ) {
-        int active = DustDiffusionEngine.runActiveSetCycle(level);
+        int active = Oridust.runActiveSetCycle(level);
         for (int n = 0; n < PerfProbe.STATED_MACHINE_COUNT; n++) {
             core.tickReactor(level);
         }
         absorbHundredChunks(level, center);
         filter.absorbAmbient(level, filterAbs, COIConfig.FILTER_ABSORPTION_RATE.get());
-        DustSyncTracker.flushNow(level);
+        Oridust.flushClientSync(level);
         return active;
     }
 
@@ -217,7 +216,7 @@ public final class PerfBaselineGameTests {
     private static void warmupDust(ServerLevel level, ChunkPos center) {
         for (int i = 0; i < WARMUP; i++) {
             PerfLoad.seedMachineDust(level, center);
-            DustDiffusionEngine.runActiveSetCycle(level);
+            Oridust.runActiveSetCycle(level);
         }
     }
 

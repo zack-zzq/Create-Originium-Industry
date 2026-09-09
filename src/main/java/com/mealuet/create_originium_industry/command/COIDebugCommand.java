@@ -4,10 +4,13 @@ import com.mealuet.create_originium_industry.advancement.COIAdvancements;
 import com.mealuet.create_originium_industry.block.PowerCoreBlockEntity;
 import com.mealuet.create_originium_industry.config.COIConfig;
 import com.mealuet.create_originium_industry.compat.WorldSpace;
-import com.mealuet.create_originium_industry.core.oridust.*;
+import com.mealuet.create_originium_industry.core.oridust.DustLevel;
+import com.mealuet.create_originium_industry.core.oridust.DustReason;
+import com.mealuet.create_originium_industry.core.oridust.Oridust;
+import com.mealuet.create_originium_industry.core.oridust.OriginiumDustManager;
+import com.mealuet.create_originium_industry.core.oridust.PlayerExposure;
 import com.mealuet.create_originium_industry.core.perf.PerfLoad;
 import com.mealuet.create_originium_industry.core.perf.PerfProbe;
-import com.mealuet.create_originium_industry.index.COIAttachments;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
@@ -210,18 +213,17 @@ public class COIDebugCommand {
         ServerPlayer player = ctx.getSource().getPlayer();
         if (player == null) return 0;
 
-        PlayerExposureData data = COIAttachments.getPlayerExposure(player);
         ChunkPos chunkPos = WorldSpace.toDustChunk(player);
         int dust = OriginiumDustManager.getDust(player.serverLevel(), chunkPos);
-        int exposure = data.getExposure();
-        int infection = data.getInfection();
+        int exposure = PlayerExposure.getExposure(player);
+        int infection = PlayerExposure.getInfection(player);
 
         ctx.getSource().sendSuccess(() -> Component.translatable(
                 "commands.coi_debug.exposure.get", exposure, infection, dust
         ), false);
         ctx.getSource().sendSuccess(() -> Component.translatable(
                 "commands.coi_debug.infection.stage",
-                Component.translatable(data.getInfectionStage().getLangKey())
+                Component.translatable(PlayerExposure.getStage(player).getLangKey())
         ), false);
         return 1;
     }
@@ -231,9 +233,7 @@ public class COIDebugCommand {
         if (player == null) return 0;
 
         int amount = IntegerArgumentType.getInteger(ctx, "amount");
-        PlayerExposureData data = COIAttachments.getPlayerExposure(player);
-        data.setExposure(amount);
-        DustSyncTracker.markExposureDirty(player);
+        PlayerExposure.setExposure(player, amount);
         if (amount > 0) {
             COIAdvancements.dustExposure(player);
         }
@@ -251,11 +251,9 @@ public class COIDebugCommand {
         if (player == null) return 0;
 
         int amount = IntegerArgumentType.getInteger(ctx, "amount");
-        PlayerExposureData data = COIAttachments.getPlayerExposure(player);
-        int before = data.getInfection();
-        data.setInfection(amount);
-        DustSyncTracker.markExposureDirty(player);
-        COIAdvancements.maybeInfectionStage(player, before, data.getInfection());
+        int before = PlayerExposure.getInfection(player);
+        PlayerExposure.setInfection(player, amount);
+        COIAdvancements.maybeInfectionStage(player, before, PlayerExposure.getInfection(player));
 
         ctx.getSource().sendSuccess(() -> Component.translatable(
                 "commands.coi_debug.infection.set", amount
@@ -338,8 +336,8 @@ public class COIDebugCommand {
         ctx.getSource().sendSuccess(() -> Component.translatable(
                 "commands.coi_debug.perf.dust",
                 String.valueOf(PerfProbe.lastDustActiveChunks()),
-                String.valueOf(DustCacheManager.lastActiveCount()),
-                String.valueOf(DustCacheManager.recentWriteCount()),
+                String.valueOf(Oridust.activeChunkCount()),
+                String.valueOf(Oridust.recentWriteCount()),
                 PerfProbe.formatNanos(PerfProbe.lastDustCycleNanos())
         ), false);
         ctx.getSource().sendSuccess(() -> Component.translatable(
@@ -364,8 +362,8 @@ public class COIDebugCommand {
             return 0;
         }
         ServerLevel level = player.serverLevel();
-        int active = DustDiffusionEngine.runActiveSetCycle(level);
-        DustSyncTracker.flushNow(level);
+        int active = Oridust.runActiveSetCycle(level);
+        Oridust.flushClientSync(level);
         ctx.getSource().sendSuccess(() -> Component.translatable(
                 "commands.coi_debug.perf.run",
                 String.valueOf(active),

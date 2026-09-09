@@ -20,6 +20,8 @@ import org.jetbrains.annotations.NotNull;
  *       At high levels causes persistent debuffs even in clean areas.</li>
  * </ul>
  * Stored as a NeoForge Attachment on the player entity.
+ * Gameplay code should use {@link PlayerExposure}; this type is the persist
+ * payload ({@link #SCHEMA_VERSION}, NBT keys, migrate).
  */
 public class PlayerExposureData implements INBTSerializable<CompoundTag> {
 
@@ -146,12 +148,5 @@ public class PlayerExposureData implements INBTSerializable<CompoundTag> {
             default -> throw new IllegalStateException(
                     "No player_exposure_data upgrade from version " + fromVersion);
         };
-    }
-
-    public PlayerExposureData copy() {
-        PlayerExposureData copy = new PlayerExposureData();
-        copy.setExposure(this.exposure);
-        copy.setInfection(this.infection);
-        return copy;
     }
 }

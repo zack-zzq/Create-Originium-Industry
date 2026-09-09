@@ -406,9 +406,18 @@ public class PowerCoreBlockEntity extends GeneratingKineticBlockEntity {
     @Override
     public boolean addToGoggleTooltip(List<Component> tooltip, boolean isPlayerSneaking) {
         super.addToGoggleTooltip(tooltip, isPlayerSneaking);
+        appendOriginiumGoggleLines(tooltip);
+        return true;
+    }
+
+    /**
+     * COI goggle lines only. Safe on a dedicated / GameTest server — Create's
+     * kinetic {@code super.addToGoggleTooltip} pulls in client {@code Minecraft}.
+     */
+    public void appendOriginiumGoggleLines(List<Component> tooltip) {
         boolean minimal = COIClientOptions.uiDetailLevel() == UiDetailLevel.MINIMAL;
         if (minimal && !AccessibilityCues.showMinimalCriticalCues()) {
-            return true;
+            return;
         }
         if (!minimal) {
             tooltip.add(Component.literal("    ").append(Component.translatable(
@@ -438,7 +447,6 @@ public class PowerCoreBlockEntity extends GeneratingKineticBlockEntity {
         if (instability >= COIConfig.reactorInstabilityWarning()) {
             tooltip.add(Component.literal("    ").append(AccessibilityCues.reactorWarnLabel()));
         }
-        return true;
     }
 
     private static String format(double value) {

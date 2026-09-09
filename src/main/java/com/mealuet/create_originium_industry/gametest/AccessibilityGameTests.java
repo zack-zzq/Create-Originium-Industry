@@ -264,7 +264,7 @@ public final class AccessibilityGameTests {
         PowerCoreBlockEntity core = helper.getBlockEntity(new BlockPos(2, 1, 1));
         helper.assertTrue(core != null, "core BE");
         List<Component> coreTip = new ArrayList<>();
-        core.addToGoggleTooltip(coreTip, false);
+        core.appendOriginiumGoggleLines(coreTip);
         helper.assertTrue(
                 containsKey(coreTip, "block.create_originium_industry.originium_power_core.sign.positive")
                         || containsKey(coreTip, "block.create_originium_industry.originium_power_core.sign.zero")

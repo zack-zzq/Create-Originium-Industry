@@ -18,8 +18,9 @@ import net.neoforged.neoforge.common.ModConfigSpec;
  * <p>
  * Client spec is registered as {@link net.neoforged.fml.config.ModConfig.Type#CLIENT}
  * and is <em>not</em> loaded on a dedicated server — read it through
- * {@link COIClientOptions}. Additive client keys {@code enableIndustrialSounds}
- * and {@code soundDensity} sit beside the original accessibility knobs.
+ * {@link COIClientOptions}. Additive client keys {@code enableIndustrialSounds},
+ * {@code soundDensity}, and {@code nonColorAlerts} sit beside the original
+ * accessibility knobs.
  */
 public class COIConfig {
 
@@ -194,6 +195,7 @@ public class COIConfig {
     public static final ModConfigSpec.BooleanValue SHOW_SICKNESS_HUD;
     public static final ModConfigSpec.BooleanValue ENABLE_INDUSTRIAL_SOUNDS;
     public static final ModConfigSpec.DoubleValue SOUND_DENSITY;
+    public static final ModConfigSpec.BooleanValue NON_COLOR_ALERTS;
 
     static {
         ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
@@ -683,16 +685,16 @@ public class COIConfig {
         ).push("client");
 
         REDUCE_FLICKER = client
-                .comment("Disable pulsing/flashing on the sickness HUD and slow ambient particle spawn")
+                .comment("Hold HUD / reactor-alarm indicators steady (no pulse) and slow ambient particle spawn")
                 .define("reduceFlicker", false);
         SIMPLIFY_PARTICLES = client
                 .comment("Disable Originium Industry ambient particles entirely (overrides particleDensity)")
                 .define("simplifyParticles", false);
         PARTICLE_DENSITY = client
-                .comment("Ambient particle density when the player has ori_dust_sickness (0 = none, 1 = full)")
+                .comment("Ambient dust-fog particle density (sickness or synced chunk dust). 0 = none, 1 = full. Default 0.4 matches the original spawn rate.")
                 .defineInRange("particleDensity", 0.4, 0.0, 1.0);
         HIGH_CONTRAST_INDICATORS = client
-                .comment("High-contrast sickness HUD (opaque background, brighter text)")
+                .comment("High-contrast sickness HUD, dust-meter goggles, and reactor instability cues (opaque plates, brighter text)")
                 .define("highContrastIndicators", false);
         UI_DETAIL_LEVEL = client
                 .comment("How much COI UI to show: minimal (hide HUD extras), standard, verbose (goggle numbers)")
@@ -709,6 +711,13 @@ public class COIConfig {
         SOUND_DENSITY = client
                 .comment("Master volume scale for those SFX (0 = mute, 1 = full). Additive; stacks with particleDensity for dust ambience.")
                 .defineInRange("soundDensity", 1.0, 0.0, 1.0);
+        NON_COLOR_ALERTS = client
+                .comment(
+                        "Prefix ASCII icons on goggles / HUD for high dust, exposure, and reactor-unstable,",
+                        "and reuse high_dust / reactor_alarm (plus their subtitles) as a non-color channel.",
+                        "Additive. Off = current color-coded tags only."
+                )
+                .define("nonColorAlerts", false);
 
         client.pop();
 

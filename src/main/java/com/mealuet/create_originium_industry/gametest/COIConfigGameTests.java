@@ -144,6 +144,8 @@ public final class COIConfigGameTests {
         helper.assertValueEqual(COIClientOptions.ambientDustSoundVolume(), 0.4F, "dust ambience follows particleDensity");
         helper.assertTrue(COIClientOptions.pulseAudio(), "alarm pulses unless reduceFlicker");
         helper.assertValueEqual(COIClientOptions.soundPeriod(20), 20, "default sound period");
+        helper.assertFalse(COIClientOptions.nonColorAlerts(), "default nonColorAlerts");
+        helper.assertValueEqual(COIClientOptions.particlePeriod(), 4, "default particle period");
         helper.succeed();
     }
 

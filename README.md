@@ -141,6 +141,7 @@ water + 培养液 + packed ice → originium coolant
 - `/coi_debug` and the debug wand for inspection
 - Advancements: obtain raw originium → first dust exposure → first filter/sieve capture → first power-core start. Side milestones: first alloy, first protection gear, first infection stage, first power-core meltdown.
 - Industrial SFX (`sounds.json`): filter work, high-dust ambience, reactor steady / alarm. Subtitles in `en_us` / `zh_cn`. Client `enableIndustrialSounds` / `soundDensity` plus `reduceFlicker` / particle knobs.
+- Accessibility (CLIENT, defaults preserve current feel): `reduceFlicker` steadies HUD / reactor-alarm pulse; `highContrastIndicators` brightens HUD, dust-meter goggles, and reactor warn lines; `simplifyParticles` / `particleDensity` thin the dust fog; `nonColorAlerts` adds ASCII icons and reuses `high_dust` / `reactor_alarm` subtitles so high dust, exposure, and reactor-unstable are not color-only.
 
 The dust Java API is stable: `OriginiumDustManager`, `IOridustProducer` /
 `IDustPurifier`, `PlayerExposure`, and `VisibleDust`. Tick engines and client

@@ -36,6 +36,14 @@ public final class COIClientOptions {
         return COIConfig.CLIENT_SPEC.isLoaded() && COIConfig.HIGH_CONTRAST_INDICATORS.get();
     }
 
+    /**
+     * Icon / subtitle channel for critical states. Off by default so existing
+     * color-coded goggles and HUD stay unchanged.
+     */
+    public static boolean nonColorAlerts() {
+        return COIConfig.CLIENT_SPEC.isLoaded() && COIConfig.NON_COLOR_ALERTS.get();
+    }
+
     public static UiDetailLevel uiDetailLevel() {
         if (!COIConfig.CLIENT_SPEC.isLoaded()) {
             return UiDetailLevel.STANDARD;
@@ -118,5 +126,13 @@ public final class COIClientOptions {
     public static int soundPeriod(int baseTicks) {
         int base = Math.max(1, baseTicks);
         return reduceFlicker() ? base * 2 : base;
+    }
+
+    /**
+     * Client ash-particle spawn interval. Reduce-flicker doubles the wait so
+     * the fog strobes less.
+     */
+    public static int particlePeriod() {
+        return reduceFlicker() ? 10 : 4;
     }
 }

@@ -108,6 +108,8 @@
 
   "hud.create_originium_industry.sickness": "Originium exposure",
   "hud.create_originium_industry.sickness.verbose": "Originium exposure  Lv.%s",
+  "hud.create_originium_industry.high_dust": "High originium dust",
+  "hud.create_originium_industry.reactor_unstable": "Reactor unstable",
   "hud.create_originium_industry.debug.no_sickness": "[COI] no sickness effect",
   "hud.create_originium_industry.debug.dust_unsynced": "[COI] chunk dust HUD needs client sync (off)",
   "hud.create_originium_industry.debug.dust": "[COI] dust %s %s",
@@ -166,6 +168,11 @@
   "dust_level.create_originium_industry.medium": "§6[Medium Risk]",
   "dust_level.create_originium_industry.high": "§c[High Risk]",
   "dust_level.create_originium_industry.critical": "§4[Critical]",
+  "dust_level.create_originium_industry.safe.plain": "[Safe]",
+  "dust_level.create_originium_industry.low.plain": "[Low Risk]",
+  "dust_level.create_originium_industry.medium.plain": "[Medium Risk]",
+  "dust_level.create_originium_industry.high.plain": "[High Risk]",
+  "dust_level.create_originium_industry.critical.plain": "[Critical]",
 
   "infection_stage.create_originium_industry.none": "None",
   "infection_stage.create_originium_industry.weakness": "Weakness",

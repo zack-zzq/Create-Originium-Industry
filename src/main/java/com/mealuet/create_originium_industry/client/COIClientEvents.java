@@ -4,6 +4,8 @@ import com.mealuet.create_originium_industry.config.COIClientOptions;
 import com.mealuet.create_originium_industry.config.COIConfig;
 import com.mealuet.create_originium_industry.config.DebugOverlayDetail;
 import com.mealuet.create_originium_industry.config.UiDetailLevel;
+import com.mealuet.create_originium_industry.core.a11y.AccessibilityCues;
+import com.mealuet.create_originium_industry.core.audio.IndustrialSoundPolicy;
 import com.mealuet.create_originium_industry.core.oridust.DustLevel;
 import com.mealuet.create_originium_industry.core.oridust.VisibleDust;
 import com.mealuet.create_originium_industry.index.COIEffects;
@@ -40,11 +42,35 @@ public final class COIClientEvents {
         }
         MobEffectInstance sickness = player.getEffect(COIEffects.ORI_DUST_SICKNESS_EFFECT);
         GuiGraphics graphics = event.getGuiGraphics();
+        int line = 0;
         if (sickness != null && (COIClientOptions.showSicknessHud()
                 || COIClientOptions.debugOverlayDetail() != DebugOverlayDetail.OFF)) {
-            drawSicknessHud(graphics, mc, player, sickness);
+            line = drawSicknessHud(graphics, mc, player, sickness);
         } else if (COIClientOptions.debugOverlayDetail() == DebugOverlayDetail.FULL) {
             drawDebugLines(graphics, mc, player, 0);
+            line = 3;
+        }
+        if (COIClientOptions.nonColorAlerts()) {
+            DustLevel dust = visibleDustLevel(player);
+            if (sickness == null && AccessibilityCues.isHighDust(dust)) {
+                drawCueLine(
+                        graphics,
+                        mc,
+                        AccessibilityCues.highDustHudText(dust, true),
+                        dust.getArgb(COIClientOptions.highContrastIndicators()),
+                        line++
+                );
+            }
+            if (COIIndustrialSounds.peekReactorCue(mc, player) == IndustrialSoundPolicy.ReactorCue.ALARM) {
+                boolean contrast = COIClientOptions.highContrastIndicators();
+                drawCueLine(
+                        graphics,
+                        mc,
+                        AccessibilityCues.reactorHudText(true),
+                        contrast ? 0xFFFF00FF : 0xFFFF5555,
+                        line
+                );
+            }
         }
     }
 
@@ -64,8 +90,7 @@ public final class COIClientEvents {
         if (count <= 0) {
             return;
         }
-        int period = COIClientOptions.reduceFlicker() ? 10 : 4;
-        if (player.tickCount % period != 0) {
+        if (player.tickCount % COIClientOptions.particlePeriod() != 0) {
             return;
         }
         var random = player.getRandom();
@@ -116,32 +141,40 @@ public final class COIClientEvents {
         COIIndustrialSounds.stopAll();
     }
 
-    private static void drawSicknessHud(GuiGraphics graphics, Minecraft mc, LocalPlayer player, MobEffectInstance sickness) {
+    private static int drawSicknessHud(GuiGraphics graphics, Minecraft mc, LocalPlayer player, MobEffectInstance sickness) {
         int amplifier = sickness.getAmplifier();
         DustLevel visual = dustVisual(player, amplifier);
         boolean contrast = COIClientOptions.highContrastIndicators();
-        int color = visual.getArgb(contrast);
-
-        int x = 8;
-        int y = mc.getWindow().getGuiScaledHeight() - 48;
-        String text;
-        if (COIClientOptions.uiDetailLevel() == UiDetailLevel.VERBOSE
-                || COIClientOptions.debugOverlayDetail() == DebugOverlayDetail.FULL) {
-            text = Component.translatable("hud.create_originium_industry.sickness.verbose", amplifier + 1)
-                    .getString();
-        } else {
-            text = Component.translatable("hud.create_originium_industry.sickness").getString();
-        }
-
-        int width = mc.font.width(text) + 8;
-        int alpha = contrast ? 0xEE : (COIClientOptions.reduceFlicker() ? 0x88 : pulseAlpha(mc));
-        int bg = alpha << 24;
-        graphics.fill(x - 2, y - 2, x + width, y + 12, bg);
-        graphics.drawString(mc.font, text, x, y, color, !contrast);
+        boolean verbose = COIClientOptions.uiDetailLevel() == UiDetailLevel.VERBOSE
+                || COIClientOptions.debugOverlayDetail() == DebugOverlayDetail.FULL;
+        Component text = AccessibilityCues.exposureHudText(
+                visual,
+                amplifier,
+                verbose,
+                COIClientOptions.nonColorAlerts()
+        );
+        drawCueLine(graphics, mc, text, visual.getArgb(contrast), 0);
 
         if (COIClientOptions.debugOverlayDetail() == DebugOverlayDetail.FULL) {
             drawDebugLines(graphics, mc, player, 1);
+            return 3;
         }
+        return 1;
+    }
+
+    private static void drawCueLine(GuiGraphics graphics, Minecraft mc, Component text, int color, int line) {
+        boolean contrast = COIClientOptions.highContrastIndicators();
+        int x = 8;
+        int y = mc.getWindow().getGuiScaledHeight() - 48 + line * 12;
+        String rendered = text.getString();
+        int width = mc.font.width(rendered) + 8;
+        int alpha = AccessibilityCues.indicatorBackgroundAlpha(
+                contrast,
+                COIClientOptions.reduceFlicker(),
+                pulseAlpha(mc)
+        );
+        graphics.fill(x - 2, y - 2, x + width, y + 12, alpha << 24);
+        graphics.drawString(mc.font, rendered, x, y, color, !contrast);
     }
 
     private static void drawDebugLines(GuiGraphics graphics, Minecraft mc, LocalPlayer player, int startIndex) {
@@ -205,12 +238,17 @@ public final class COIClientEvents {
         };
     }
 
+    private static DustLevel visibleDustLevel(LocalPlayer player) {
+        if (!VisibleDust.dustSyncEnabled()) {
+            return DustLevel.SAFE;
+        }
+        return DustLevel.fromDust(VisibleDust.chunkDustAt(player));
+    }
+
     private static DustLevel dustVisual(LocalPlayer player, int amplifier) {
-        if (VisibleDust.dustSyncEnabled()) {
-            DustLevel fromDust = DustLevel.fromDust(VisibleDust.chunkDustAt(player));
-            if (fromDust != DustLevel.SAFE) {
-                return fromDust;
-            }
+        DustLevel fromDust = visibleDustLevel(player);
+        if (fromDust != DustLevel.SAFE) {
+            return fromDust;
         }
         return amplifierToVisual(amplifier);
     }

@@ -108,6 +108,8 @@
 
   "hud.create_originium_industry.sickness": "源石暴露",
   "hud.create_originium_industry.sickness.verbose": "源石暴露  %s级",
+  "hud.create_originium_industry.high_dust": "高浓度源石尘",
+  "hud.create_originium_industry.reactor_unstable": "反应炉不稳",
   "hud.create_originium_industry.debug.no_sickness": "[COI] 无暴露效果",
   "hud.create_originium_industry.debug.dust_unsynced": "[COI] 区块粉尘 HUD 需客户端同步（当前关闭）",
   "hud.create_originium_industry.debug.dust": "[COI] 粉尘 %s %s",
@@ -166,6 +168,11 @@
   "dust_level.create_originium_industry.medium": "§6[中等风险]",
   "dust_level.create_originium_industry.high": "§c[高风险]",
   "dust_level.create_originium_industry.critical": "§4[严重污染]",
+  "dust_level.create_originium_industry.safe.plain": "[安全]",
+  "dust_level.create_originium_industry.low.plain": "[低风险]",
+  "dust_level.create_originium_industry.medium.plain": "[中等风险]",
+  "dust_level.create_originium_industry.high.plain": "[高风险]",
+  "dust_level.create_originium_industry.critical.plain": "[严重污染]",
 
   "infection_stage.create_originium_industry.none": "无",
   "infection_stage.create_originium_industry.weakness": "虚弱",

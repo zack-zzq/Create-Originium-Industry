@@ -3,9 +3,11 @@ package com.mealuet.create_originium_industry.client;
 import com.mealuet.create_originium_industry.block.DustFilterBlockEntity;
 import com.mealuet.create_originium_industry.block.PowerCoreBlockEntity;
 import com.mealuet.create_originium_industry.config.COIClientOptions;
+import com.mealuet.create_originium_industry.core.a11y.AccessibilityCues;
 import com.mealuet.create_originium_industry.core.audio.IndustrialSoundPolicy;
 import com.mealuet.create_originium_industry.core.oridust.DustLevel;
 import com.mealuet.create_originium_industry.core.oridust.VisibleDust;
+import com.mealuet.create_originium_industry.index.COIEffects;
 import com.mealuet.create_originium_industry.index.COISounds;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -78,18 +80,27 @@ public final class COIIndustrialSounds {
         filterLoop = maintain(mc, filterLoop, COISounds.FILTER_WORK.get(), SoundSource.BLOCKS, false, pos, volume);
     }
 
-    private static void tickReactor(Minecraft mc, LocalPlayer player) {
-        PowerCoreBlockEntity nearest = null;
-        double best = HEAR_RANGE_SQR;
-        for (BlockEntity be : nearbyBlockEntities(mc.level, player)) {
-            if (be instanceof PowerCoreBlockEntity core && core.isGenerating()) {
-                double d = distanceSqr(player, be.getBlockPos());
-                if (d < best) {
-                    best = d;
-                    nearest = core;
-                }
-            }
+    /**
+     * Nearest generating core cue, even when industrial SFX are muted.
+     * HUD non-color alerts reuse this so reactor-unstable is not color-only.
+     */
+    public static IndustrialSoundPolicy.ReactorCue peekReactorCue(Minecraft mc, LocalPlayer player) {
+        if (mc.level == null || player == null) {
+            return IndustrialSoundPolicy.ReactorCue.NONE;
         }
+        PowerCoreBlockEntity nearest = nearestGeneratingCore(mc, player);
+        if (nearest == null) {
+            return IndustrialSoundPolicy.ReactorCue.NONE;
+        }
+        return IndustrialSoundPolicy.reactorCue(
+                nearest.isGenerating(),
+                nearest.snapshot().stability(),
+                nearest.instability()
+        );
+    }
+
+    private static void tickReactor(Minecraft mc, LocalPlayer player) {
+        PowerCoreBlockEntity nearest = nearestGeneratingCore(mc, player);
         IndustrialSoundPolicy.ReactorCue cue = nearest == null
                 ? IndustrialSoundPolicy.ReactorCue.NONE
                 : IndustrialSoundPolicy.reactorCue(
@@ -116,6 +127,13 @@ public final class COIIndustrialSounds {
             level = DustLevel.fromDust(VisibleDust.chunkDustAt(player));
         }
         float gain = IndustrialSoundPolicy.dustAmbienceGain(level) * ambient * 0.45F;
+        if (gain <= 0.0F) {
+            gain = AccessibilityCues.exposureFallbackAmbience(
+                    COIClientOptions.nonColorAlerts(),
+                    player.hasEffect(COIEffects.ORI_DUST_SICKNESS_EFFECT),
+                    COIClientOptions.machineSoundVolume()
+            );
+        }
         dustLoop = maintain(
                 mc,
                 dustLoop,
@@ -165,6 +183,21 @@ public final class COIIndustrialSounds {
         if (sound != null) {
             sound.requestStop();
         }
+    }
+
+    private static PowerCoreBlockEntity nearestGeneratingCore(Minecraft mc, LocalPlayer player) {
+        PowerCoreBlockEntity nearest = null;
+        double best = HEAR_RANGE_SQR;
+        for (BlockEntity be : nearbyBlockEntities(mc.level, player)) {
+            if (be instanceof PowerCoreBlockEntity core && core.isGenerating()) {
+                double d = distanceSqr(player, be.getBlockPos());
+                if (d < best) {
+                    best = d;
+                    nearest = core;
+                }
+            }
+        }
+        return nearest;
     }
 
     private static Iterable<BlockEntity> nearbyBlockEntities(Level level, LocalPlayer player) {

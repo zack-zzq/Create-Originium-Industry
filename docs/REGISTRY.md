@@ -199,7 +199,7 @@ Do not rename these sections once a release has shipped. New sections are fine.
 
 Client spec is `COIConfig.CLIENT_SPEC` (`ModConfig.Type.CLIENT`). Top-level key:
 
-- `client` — accessibility: `reduceFlicker`, `simplifyParticles`, `particleDensity`, `highContrastIndicators`, `uiDetailLevel`, `debugOverlayDetail`, `showSicknessHud`; additive SFX: `enableIndustrialSounds`, `soundDensity`
+- `client` — accessibility: `reduceFlicker`, `simplifyParticles`, `particleDensity`, `highContrastIndicators`, `uiDetailLevel`, `debugOverlayDetail`, `showSicknessHud`; additive SFX: `enableIndustrialSounds`, `soundDensity`; additive non-color channel: `nonColorAlerts`
 
 Read client values through `COIClientOptions` so a dedicated server (where the client spec is not loaded) never calls `.get()` on an unloaded spec.
 
@@ -470,7 +470,7 @@ Pattern: `<category>.create_originium_industry.<path>`
 | `effect` | `effect.create_originium_industry.ori_dust_sickness` |
 | `itemGroup` | `itemGroup.create_originium_industry.main` |
 | `commands` | `commands.coi_debug.dust.get` |
-| `hud` | `hud.create_originium_industry.sickness` |
+| `hud` | `hud.create_originium_industry.sickness` / `.high_dust` / `.reactor_unstable` |
 | `infection_stage` | `infection_stage.create_originium_industry.weakness` |
 | `advancements` | `advancements.create_originium_industry.obtain_raw_originium.title` |
 | `ponder` | `create_originium_industry.ponder.<sceneId>.header` / `.text_N` and `.ponder.tag.<id>` |
@@ -561,6 +561,8 @@ Criterion trigger ids (`dust_exposure`, `dust_purified`, `power_core_started`, `
 | `reactor_alarm` | Power core generating while S<0 or instability ≥ warning | `subtitles.create_originium_industry.reactor_alarm` |
 
 High-dust volume follows `simplifyParticles` / `particleDensity`. `reduceFlicker` holds alarm volume steady instead of pulsing. `enableIndustrialSounds` / `soundDensity` mute or scale the set.
+
+`nonColorAlerts` (default false) prefixes ASCII icons on meter goggles, reactor goggles, and the small HUD cues, and uses `high_dust` as a quiet exposure fallback so high dust / exposure / reactor-unstable stay readable without color. Subtitle keys stay the existing `sounds.json` entries. `highContrastIndicators` also restyles those goggle / HUD lines (brighter formatting, opaque plates). Options off keep the original color-coded tags.
 
 ## Debug surface
 

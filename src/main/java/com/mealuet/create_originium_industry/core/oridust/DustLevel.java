@@ -91,6 +91,14 @@ public enum DustLevel {
     }
 
     /**
+     * Unstyled tag for high-contrast / non-color goggle and HUD restyling.
+     * The original {@link #getLangKey()} keeps baked-in § codes for defaults.
+     */
+    public String getPlainLangKey() {
+        return getLangKey() + ".plain";
+    }
+
+    /**
      * Returns a colored display string like "§aSafe" for chat messages.
      */
     public String getColoredTag(String translatedName) {

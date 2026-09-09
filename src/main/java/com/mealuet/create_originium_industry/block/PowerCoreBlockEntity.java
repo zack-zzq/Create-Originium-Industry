@@ -4,6 +4,7 @@ import com.mealuet.create_originium_industry.advancement.COIAdvancements;
 import com.mealuet.create_originium_industry.config.COIClientOptions;
 import com.mealuet.create_originium_industry.config.COIConfig;
 import com.mealuet.create_originium_industry.config.UiDetailLevel;
+import com.mealuet.create_originium_industry.core.a11y.AccessibilityCues;
 import com.mealuet.create_originium_industry.core.oridust.DustReason;
 import com.mealuet.create_originium_industry.core.oridust.OriginiumDustManager;
 import com.mealuet.create_originium_industry.core.perf.PerfProbe;
@@ -405,35 +406,47 @@ public class PowerCoreBlockEntity extends GeneratingKineticBlockEntity {
     @Override
     public boolean addToGoggleTooltip(List<Component> tooltip, boolean isPlayerSneaking) {
         super.addToGoggleTooltip(tooltip, isPlayerSneaking);
-        if (COIClientOptions.uiDetailLevel() == UiDetailLevel.MINIMAL) {
-            return true;
+        appendOriginiumGoggleLines(tooltip);
+        return true;
+    }
+
+    /**
+     * COI goggle lines only. Safe on a dedicated / GameTest server — Create's
+     * kinetic {@code super.addToGoggleTooltip} pulls in client {@code Minecraft}.
+     */
+    public void appendOriginiumGoggleLines(List<Component> tooltip) {
+        boolean minimal = COIClientOptions.uiDetailLevel() == UiDetailLevel.MINIMAL;
+        if (minimal && !AccessibilityCues.showMinimalCriticalCues()) {
+            return;
         }
-        tooltip.add(Component.literal("    ").append(Component.translatable(
-                "block.create_originium_industry.originium_power_core.goggle.s",
-                format(stability)
+        if (!minimal) {
+            tooltip.add(Component.literal("    ").append(Component.translatable(
+                    "block.create_originium_industry.originium_power_core.goggle.s",
+                    format(stability)
+            )));
+            if (COIClientOptions.verboseUi()) {
+                tooltip.add(Component.literal("    ").append(Component.translatable(
+                        "block.create_originium_industry.originium_power_core.goggle.hcm",
+                        format(heat), format(capacity), format(cooling)
+                )));
+                tooltip.add(Component.literal("    ").append(Component.translatable(
+                        "block.create_originium_industry.originium_power_core.goggle.fuel",
+                        fuelCount, format(instability)
+                )));
+            }
+        }
+        tooltip.add(Component.literal("    ").append(AccessibilityCues.reactorSignLabel(
+                StabilityMath.sign(stability),
+                signLangKey()
         )));
-        if (COIClientOptions.verboseUi()) {
-            tooltip.add(Component.literal("    ").append(Component.translatable(
-                    "block.create_originium_industry.originium_power_core.goggle.hcm",
-                    format(heat), format(capacity), format(cooling)
-            )));
-            tooltip.add(Component.literal("    ").append(Component.translatable(
-                    "block.create_originium_industry.originium_power_core.goggle.fuel",
-                    fuelCount, format(instability)
-            )));
-        }
-        tooltip.add(Component.literal("    ").append(Component.translatable(signLangKey())));
         if (shutdown) {
             tooltip.add(Component.literal("    ").append(Component.translatable(
                     "block.create_originium_industry.originium_power_core.shutdown"
             )));
         }
         if (instability >= COIConfig.reactorInstabilityWarning()) {
-            tooltip.add(Component.literal("    ").append(Component.translatable(
-                    "block.create_originium_industry.originium_power_core.goggle.warn"
-            )));
+            tooltip.add(Component.literal("    ").append(AccessibilityCues.reactorWarnLabel()));
         }
-        return true;
     }
 
     private static String format(double value) {

@@ -4,6 +4,7 @@ import com.mealuet.create_originium_industry.compat.WorldSpace;
 import com.mealuet.create_originium_industry.config.COIClientOptions;
 import com.mealuet.create_originium_industry.config.COIConfig;
 import com.mealuet.create_originium_industry.config.UiDetailLevel;
+import com.mealuet.create_originium_industry.core.a11y.AccessibilityCues;
 import com.mealuet.create_originium_industry.core.oridust.DustLevel;
 import com.mealuet.create_originium_industry.core.oridust.OriginiumDustManager;
 import com.mealuet.create_originium_industry.core.oridust.ProtectionHooks;
@@ -134,14 +135,14 @@ public class DustMeterBlockEntity extends SmartBlockEntity implements IHaveGoggl
     @Override
     public boolean addToGoggleTooltip(List<Component> tooltip, boolean isPlayerSneaking) {
         if (COIClientOptions.uiDetailLevel() == UiDetailLevel.MINIMAL) {
-            tooltip.add(Component.literal("    ").append(Component.translatable(risk().getLangKey())));
+            tooltip.add(Component.literal("    ").append(AccessibilityCues.dustRiskLabel(risk())));
             return true;
         }
         tooltip.add(Component.literal("    ").append(Component.translatable(
                 "block.create_originium_industry.originium_dust_meter.goggle.dust",
                 displayedDust()
         )));
-        tooltip.add(Component.literal("    ").append(Component.translatable(risk().getLangKey())));
+        tooltip.add(Component.literal("    ").append(AccessibilityCues.dustRiskLabel(risk())));
         if (protectionPercent > 0) {
             tooltip.add(Component.literal("    ").append(Component.translatable(
                     "block.create_originium_industry.originium_dust_meter.goggle.protection",
